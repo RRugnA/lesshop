@@ -1,0 +1,145 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+<body>
+	<header th:replace="~{baseIndex :: header}"></header>
+	<div th:replace="~{baseIndex :: navbar}"></div>
+	<main>
+		<section class="destaque">
+	      <div class="swiper-container" id="destaque">
+	        <div class="swiper-wrapper">
+	          <div class="swiper-slide slide__destaque">
+	            <img src="/img/guitar-wallpaper.jpg" class="img-fluid" alt="">
+	            <div class="promo-destaque promo1">
+	              <h2>As melhores<br>marcas<br>de Guitarra!</h2>
+	              <h3>Em até 10x sem juros!</h3>
+	            </div>
+	          </div>
+	
+	          <div class="swiper-slide slide__destaque">
+	            <img src="/img/bateria-wallpaper.jpg" class="img-fluid" alt="">
+	            <div class="promo-destaque promo2">
+	              <h2>Tudo para<br>sua Bateria!</h2>
+	              <h3>Acessórios, pratos <br>e ferragens!</h3>
+	            </div>
+	          </div>
+	
+	          <div class="swiper-slide slide__destaque">
+	            <img src="/img/piano-wallpaper.jpg" class="img-fluid" alt="">
+	            <div class="promo-destaque promo4">
+	              <h2>Qualidade e Maestria<br>no comércio de Instrumentos!</h2>
+	              <h3>As melhores marcas a um click!</h3>
+	            </div>
+	          </div>
+	        </div>
+	        <div class="swiper-pagination"></div>
+	      </div>
+	    </section>
+	
+	    <section class="painel container my-5" id="painel">
+	      <div class="title painel__title my-5">
+	        <h2 class="fw-bold">Confira nossas Promoções</h2>
+	      </div>
+	     
+		<!-- CARD PRODUTO -->
+	      <div class="painel__grid">	
+	        <div class="painel__card card" th:each="produto : ${produtos}">
+	          <div class="card-body">
+	            <div class="painel__img py-3">
+	              <img class="img-fluid" th:src="${produto.proImg}" alt="">
+	            </div>
+	            <div class="painel__price">
+	              <span class="fw-bold" th:text="'R$ ' + ${produto.proValor}">VALOR</span>
+	            </div>
+	            <div class="painel__desc">
+	              <a href="/produto" class="painel__link"><p th:text="${produto.proNome}">PRODUTO</p></a>
+	            </div>
+	            
+	            <form method="post">
+	            	<input type="hidden" th:value="${produto.id}" name="id">
+	            	<div class="text-center">
+	              		<button type="submit" class="btn btn-carrinho">Adicionar ao Carrinho</button>
+	            	</div>
+	            </form>
+	            
+	          </div>
+	        </div>	        		
+		  </div>
+		<!-- FIM CARD PRODUTO -->
+			  
+	   	</section>
+	
+	    <section class="marcas container my-5" id="marcas">
+	      <div class="title painel__title">
+	        <h2 class="fw-bold">Trabalhamos com as melhores marcas!</h2>
+	      </div>
+	      <div class="swiper-container swiper-marcas">
+	        <div class="swiper-wrapper">
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-fender.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-korg.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-pearl.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-rozini.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-strinberg.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-tagima.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-yamaha.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-akg.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-casio.png" alt="">
+	          </div>
+	          <div class="swiper-slide">
+	            <img class="img-fluid" src="/img/swiper-logo-daddario.png" alt="">
+	          </div>
+	        </div>
+	        <div class="swiper-button-next"></div>
+	        <div class="swiper-button-prev"></div>
+	      </div>
+	    </section>
+	
+	    <section class="pt-5" id="newsletter">
+	      <div class="newsletter d-flex justify-content-end py-3 position-relative">
+	        <div class="newsl__img col-lg-4 position-absolute start-0">
+	          <img class="img-fluid" src="/img/rockband-nobg.png" alt="">
+	        </div>
+	        <div class="newsl__desc col-lg-3 d-flex flex-column align-items-center justify-content-center">
+	          <div class="title">
+	            <h3 class="fw-bold">NEWSLETTER</h3>
+	          </div>
+	          <div class="text text-center">
+	            <span>Cadastre seu e-mail e receba as nossas promoções</span>
+	          </div>
+	        </div>
+	        <div class="newsl__form col-lg-5 d-flex align-items-center justify-content-center">
+	          <div class="input__name pe-2">
+	            <input class="form-control" type="text" placeholder="Nome">
+	          </div>
+	          <div class="input">
+	            <input class="form-control" type="mail" placeholder="Email">
+	          </div>
+	          <div>
+	            <button class="btn btn-dark">OK</button>
+	          </div>
+	        </div>
+	
+	      </div>
+	      
+	    </section>
+	</main>
+  	<footer th:replace="~{baseIndex :: footer}" ></footer>
+	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

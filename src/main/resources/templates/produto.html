@@ -1,0 +1,116 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+<body>
+	<header th:replace="~{baseIndex :: header}"></header>
+	<main>
+		<section class="produto mx-3 my-5">
+			<form method="post">
+		      <div class="row">
+		        <div class="col-lg-6 prod__img text-center">
+		          <img th:src="${produto.proImg}" alt="">
+		        </div>
+		
+		        <div class="col-lg-6 prod__desc pe-5">
+		          <div class="prod__title pb-5">
+		            <h3 class="prod__name" th:text="${produto.proNome}">NOME PRODUTO</h3>
+		            <small class="painel__link">Marca: STRINBERG</small>
+		          </div>
+		          <div class="prod__cor pb-3">
+		            <span>Cor: </span>
+		          </div>
+		          <div class="prod__pgto row py-4 d-flex align-items-center border-bottom border-top border-dark">
+		            <div class="prod__valor col-lg-6 ">
+		              <p><span class="prod__vista fw-bold" th:text="'R$ ' + ${produto.proValor}">VALOR</span> em até <br><span>10 x de </span><span class="fw-bold" th:text="${'R$ ' + produto.proValor/10}">PARCELA</span> sem juros</p>
+		            </div>
+		            <div class="prod__button col-lg-6 text-end">
+	
+	            		<input type="hidden" th:value="${produto.id}" name="id">
+	            		<div class="text-center">
+	            			<a href="/login" class="btn btn-success prod__btn" sec:authorize="!isAuthenticated()">COMPRAR</a>
+              				<button type="submit" class="btn btn-success prod__btn" sec:authorize="isAuthenticated()">COMPRAR</button>
+	            		</div>
+		            		
+		            </div>
+		            
+		          </div>
+		          <div class="prod__estoque py-3 row">
+		            <span class="prod__estoque__text col-lg-3">Em estoque.</span>
+		            <div class="d-flex align-items-center py-3">
+		              <label class="pe-3">Quantidade:</label>
+		              <input type="number" name="proQtde" min="1" th:max="${produto.proQtde}" required>
+		            </div>            
+		          </div>
+		          <div class="row align-items-center">
+		            <div class="col-lg-3">
+		              <label for="frete">
+		                <h6>Calcular Frete:</h6>
+		              </label>
+		            </div>
+		            
+		            <div class="col-lg-6 d-flex align-items-center">
+		              <input type="number" id="frete" class="form-control" placeholder="Informe apenas números">
+		              <a onclick="calculaFrete()" class="btn btn-secondary">Calcular</a>
+		            </div>
+		            <div class="valor fw-bold"></div>
+		          </div>
+		        </div>
+		      </div>
+		   </form>
+	    </section>
+
+	    <section class="info mx-4 pb-5 border-top border-bottom border-dark">
+	      <div class="container">
+	        <div class="info__title text-center py-3 ">
+	          <h3 class="fw-bold">DETALHES DO PRODUTO</h3>
+	        </div>
+	        <div class="info__detail">
+	          <span class="fw-bold">Características</span>
+	          <ul>
+<!-- 	            <li>Guitarra Les Paul Stringberg Lps230</li> -->
+<!-- 	            <li>Marca: Strinberg</li> -->
+<!-- 	            <li>Modelo: LPS 230</li> -->
+<!-- 	            <li>Corpo: Basswood</li> -->
+<!-- 	            <li>Construção: Bolt-On</li> -->
+<!-- 	            <li>Braço: Maple</li> -->
+<!-- 	            <li>Escala: Rosewood</li> -->
+<!-- 	            <li>Captadores: 2HB</li> -->
+<!-- 	            <li>Controles: 2V, 2T</li> -->
+<!-- 	            <li>Chave: 3 Posições</li> -->
+<!-- 	            <li>Tarraxa: Cromada</li> -->
+				<li th:text="${produto.proDesc}">
+	          </ul>
+	        </div>
+	      </div>
+	    </section>
+
+	    <section class="pt-5 d-none" id="newsletter">
+	      <div class="newsletter d-flex justify-content-end py-3 position-relative">
+	        <div class="newsl__img col-lg-4 position-absolute start-0">
+	          <img class="img-fluid" src="src/img/rockband-nobg.png" alt="">
+	        </div>
+	        <div class="newsl__desc col-lg-3 d-flex flex-column align-items-center justify-content-center">
+	          <div class="title">
+	            <h3 class="fw-bold">NEWSLETTER</h3>
+	          </div>
+	          <div class="text text-center">
+	            <span>Cadastre seu e-mail e receba as nossas promoções</span>
+	          </div>
+	        </div>
+	        <div class="newsl__form col-lg-5 d-flex align-items-center justify-content-center">
+	          <div class="input__name pe-2">
+	            <input class="form-control" type="text" placeholder="Nome">
+	          </div>
+	          <div class="input">
+	            <input class="form-control" type="mail" placeholder="Email">
+	          </div>
+	          <div>
+	            <button class="btn btn-dark">OK</button>
+	          </div>
+	        </div>
+	      </div>
+	    </section>
+  	</main>
+  	<footer th:replace="~{baseIndex :: footer}" ></footer>
+  	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

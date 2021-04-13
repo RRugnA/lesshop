@@ -1,0 +1,64 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+<body>
+	<header th:replace="~{baseIndex :: header}"></header>
+	
+	<main class="carrinho">
+	    <div class="py-5 text__sucesso">
+	      <h3 class="text-center">Compra realizada com sucesso!</h3>
+	      <h4 class="text-center">Código da compra: C4D1E5</h4>
+	    </div>
+	    
+	    <div class="container py-4">      
+	      <div class="row py-4 justify-content-center">
+	        <div class="col-8 carrinho__desc">
+	          <div class="container">
+	            <div class="d-flex justify-content-center align-items-center">
+	              <div>
+	                <h6 class="fw-bold">Você comprou: <span class="fw-normal">Guitarra Les Paul - Lps-230 Cherry Sunburst Strinberg</span></h6>
+	              </div>
+	              <div>
+	                <img src="/img/prod-lespaul.jpg" class="img-fluid" alt="">
+	              </div>
+	            </div>
+	            
+	            <hr>
+	
+	            <div class="row my-4">
+	              <div class="col-lg-6">
+	                <span>Entrega no endereço:</span>
+	              </div>
+	              <div class="col-lg-6">
+	                <h5 class="mb-0" style="font-size: 16px;">Rua Quinze, 22 - Centro</h5>
+	                <span style="font-size: 14px; color: gray;">Mogi das Cruzes, São Paulo - CEP 08711-222</span>
+	              </div>
+	            </div>
+	
+	            <hr>
+	
+	            <div class="row my-4">
+	              <div class="col-lg-6">
+	                <span>Você pagou:</span>
+	              </div>
+	              <div class="col-lg-6">
+	                <h5 class="mb-0" style="font-size: 16px;">R$ 1.150,00</h5>
+	                <span style="font-size: 14px; color: gray;">10x R$115,00 com o cartão de crédito Mastercard final 123</span>
+	              </div>
+	            </div>
+	
+	            <hr>
+	
+	            <div class="row mt-4">
+	              <h6><small>Acesse seu e-mail para ver os detalhes da sua compra!<br>Após a confirmação do pagamento, você receberá a nota fiscal por e-mail</small></h6>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+
+    </main>
+    
+    <footer th:replace="~{baseIndex :: footer}" ></footer>
+  	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

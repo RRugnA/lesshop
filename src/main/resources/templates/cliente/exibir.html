@@ -1,0 +1,41 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-user}"></nav>
+		
+		<main>
+			
+			<div class="container mt-5">
+				<div class="card mt-3" >
+					<div class="card-header">Dados do Cliente: </div>
+					<div class="card-body">
+						<div class="row">
+							
+							<div class="col-lg-12">
+								<div>Nome: <span th:text="${cliente.nome}">Nome</span></div>
+							</div>
+							<div class="col-lg-12">
+              					<div>Tipo: Pessoa <span th:text="${cliente.tipoCliente}">Tipo Cliente</span></div>
+            				</div>
+            				<div class="col-lg-12">
+            					<div><span th:text="${cliente.tipoDocumento}"></span>: <span th:text="${cliente.numeroDocumento}"></span></div>
+            				</div>
+							<div class="d-flex flex-direction-row justify-content-end">
+								<div>
+									<a th:href="@{'/cliente/editar-dados-pessoais/'}">
+										<button class="btn btn-primary mr-3 my-3">Editar</button>
+									</a>
+								</div>
+							</div>				
+							
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</main>
+		<div th:replace="~{baseIndex :: scripts}"></div>
+	</body>
+</html>

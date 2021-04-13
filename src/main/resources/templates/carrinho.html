@@ -1,0 +1,93 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+<body>
+	<header th:replace="~{baseIndex :: header}"></header>
+	
+	<div class="nav-carrinho my-4">
+      <nav class="nav-container d-flex justify-content-center">
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-shopping-cart nav-active"></i>
+          <span class="nav-carrinho__text nav-active">Carrinho</span>
+        </div>
+        <i class="fas fa-long-arrow-alt-right"></i>
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-user "></i>
+          <span class="nav-carrinho__text ">Informações</span>
+        </div>
+        <i class="fas fa-long-arrow-alt-right"></i>
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-credit-card"></i>
+          <span class="nav-carrinho__text">Pagamento</span>
+        </div>
+      </nav>
+    </div>	
+
+	<main class="carrinho">
+		<section class="finalizar py-5">
+	      <div class="mx-4">
+	        <div class="row">
+	          <div class="fin__button col-lg-12 text-end my-3 d-none">
+	            <a href="carrinho-login.html" class="btn btn-success nav-carrinho__btn">FINALIZAR COMPRA</a>
+	          </div>
+	          <h3 class="mb-4">Meu carrinho</h3>
+	    
+	          <div class="fin__info col-12">
+	            <table class="table border border-dark">
+	              <thead style="background-color: white;">
+	                <tr>
+	                  <td>DESCRIÇÃO DO PRODUTO</td>
+	                  <td class="text-center">REMOVER</td>
+	                  <td>QUANTIDADE</td>
+	                  <td>PREÇO UNITÁRIO</td>
+	                  <td>TOTAL</td>
+	                </tr>
+	              </thead>
+	              <tbody class="align-middle" style="background-color: white;">
+	                <tr th:each="produto : ${produtos}">
+	                  <td class="d-flex">
+	                    <img th:src="${produto.proImg}" alt="" class="img-fluid car__img">
+	                    <div style="width:250px; align-self:center;">
+	                      <span th:text="${produto.proNome}">NOME PRODUTO</span>
+	                    </div>
+	                  </td>
+	                  <td class="text-center">
+	                    <div class=>
+	                      <a href="#"><i class="far fa-trash-alt"></i></a>
+	                    </div>
+	                  </td>
+	                  <td><input type="number" min="1" th:value="${produto.proQtde}" style="width: 70px;"></td>
+	                  <td th:text="${produto.proValor}">VALOR</td>
+	                  <td th:text="${produto.proValor} + 33">VALOR TOTAL</td>
+	                </tr>
+	              </tbody>
+	              <tfoot style="background-color: white;">
+	                <tr>
+	                  <td></td>
+	                  <td></td>
+	                  <td></td>
+	                  <th scope="col">SUBTOTAL</th>
+	                  <td>R$ 1.150,00</td>
+	                </tr>
+	              </tfoot>
+	            </table>
+	          </div>
+	
+	
+	          <div class="d-flex justify-content-between mt-4">
+	            <div class="fin__button my-3">
+	              <a href="/lesshop" class="btn btn-secondary nav-carrinho__btn">CONTINUAR COMPRANDO</a>
+	            </div>
+	            <div class="fin__button my-3">
+	              <a href="/carrinho-login" class="btn btn-success nav-carrinho__btn" sec:authorize="!isAuthenticated()">FINALIZAR COMPRA</a>
+	              <a href="/carrinho-endereco" class="btn btn-success nav-carrinho__btn" sec:authorize="isAuthenticated()">FINALIZAR COMPRA</a>
+	            </div>
+	          </div>
+	          
+	        </div>
+	      </div>
+	    </section>
+  	</main>
+  	<footer th:replace="~{baseIndex :: footer}" ></footer>
+  	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<head th:fragment="head">
+	<meta charset="utf-8" />
+	<link
+		href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
+		rel="stylesheet"
+		integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+		crossorigin="anonymous" />
+	<link rel="stylesheet" href="/css/style.css" />
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+</head>
+
+<div th:fragment="logo"
+	class="logo-container mb-3 p-3 d-flex justify-content-between align-items-center">
+	<img src="/img/logo-les-shop-black-small-removebg-preview.png" style="width:150px;"/> 
+	<div>
+		<a class="text-light" sec:authorize="!isAuthenticated()" href="/login">Login</a>
+		<a onclick="document.querySelector('#form-login').submit()" sec:authorize="isAuthenticated()" class="text-light" href="#">Logout</a>
+		<form id="form-login" th:action="@{/logout}" method="POST" style="display:none;"></form>
+	</div>
+</div>
+
+<nav th:fragment="nav-new">
+	<div class="container header-img">
+		<div class="my-3">
+	        <h2>Painel do Usuário</h2>
+	    </div>
+		<nav class="navbar navbar-expand navbar-light bg-light mb-3v">
+			<a class="nav-item nav-link mr-1" href="/home">Home</a> <a
+				class="nav-item nav-link mr-1" href="/cliente/cadastro-pessoal">Novo</a> <a
+				class="nav-item nav-link mr-1" href="/cliente/exibir">Dados do Cliente</a>
+		</nav>
+	</div>
+</nav>
+
+<nav th:fragment="nav-adm">
+	<div class="container header-img">
+      <div class="my-3">
+        <h2>Painel Administrativo</h2>
+      </div>
+      <nav class="navbar navbar-expand navbar-light bg-light mb-3v">
+        <a class="nav-item nav-link mr-1" href="/adm/adm-clientes">Clientes</a>
+        <a class="nav-item nav-link mr-1"  style="color: gray;">Vendas</a>
+        <a class="nav-item nav-link mr-1" href="/adm/controle-estoque">Estoque</a>
+        <a class="nav-item nav-link mr-1"  style="color: gray;">Análise de Vendas</a>
+      </nav>
+    </div>
+</nav>
+
+<nav th:fragment="nav-prod">
+	<div class="container header-img">
+      <div class="my-3">
+        <h2>Controle de Estoque</h2>
+      </div>
+      <nav class="navbar navbar-expand navbar-light bg-light mb-3v">
+        <a class="nav-item nav-link mr-1" href="/adm/cadastrar-produto">Novo Produto</a>
+        <a class="nav-item nav-link mr-1" href="/adm/listar-produtos">Listar produtos</a>
+      </nav>
+    </div>
+</nav>
+
+<nav th:fragment="nav-user">
+	<div class="container header-img">
+		<div class="my-3">
+	        <h2>Painel do Usuário</h2>
+	    </div>
+		<nav class="navbar navbar-expand navbar-light bg-light mb-3v">
+			<a class="nav-item nav-link mr-1" href="/cliente/exibir-dados-pessoais">Dados Pessoais</a> 
+			<a class="nav-item nav-link mr-1" href="/cliente/exibir-enderecos">Endereços</a> 
+			<a class="nav-item nav-link mr-1" href="/cliente/exibir-opcoes-pagamento">Opções de Pagamento</a>
+		</nav>
+	</div>
+</nav>
+
+<footer th:fragment="footer">
+	<div class="footer text-center py-2">
+		<span>Desenvolvido por Raphael Rugna Vaqueiro, 2021</span>
+	</div>
+</footer>

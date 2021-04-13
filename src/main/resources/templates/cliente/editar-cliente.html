@@ -1,0 +1,52 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-user}"></nav>
+
+	<main>
+	
+		<div class="container mt-5">
+			<div class="card">
+				<form class="card-body" th:action="@{'/cliente/editar-cliente/' + ${cliente.id}}" method="POST">
+
+					<input type="hidden" name="clienteId" th:value="${cliente.id}">
+					<div class="form-group mb-3">
+						<label class="form-label" for="nome">Nome:</label> 
+						<input class="form-control" type="text" name="nome"	placeholder="Insira o nome completo sem abreviatura" th:value="${cliente.nome}" required />
+					</div>
+					
+					<div class="row">
+						<div class="d-flex mb-3">
+							<div class="form-check me-3">
+								<input class="form-check-input" type="radio" name="tipoCliente" id="tipoCliente1" value="FISICA"> 
+								<label class="form-check-label" for="tipoCliente1"> Pessoa Física </label>
+							</div>
+							<div class="form-check me-3">
+								<input class="form-check-input" type="radio" name="tipoCliente" id="tipoCliente2" value="JURIDICA"> 
+								<label class="form-check-label" for="tipoCliente2"> Pessoa Jurídica </label>
+							</div>
+						</div>
+					</div>
+					<div class="row comboBoxContainer mb-2">
+						<label class="col-form-label col-2" for="doc">Documento:</label>
+						<div class="col-2">
+							<select class="form-select selectDoc" name="tipoDocumento">
+							</select>
+						</div>
+						<div class="col-2">
+							<input class="form-control cad-num" type="number" name="codigo" id="doc" th:value="${cliente.numeroDocumento}" required>
+						</div>
+					</div>
+					<div class="text-end">
+						<button class="btn btn-primary" type="submit">Salvar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+
+</html>

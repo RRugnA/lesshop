@@ -1,0 +1,16 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-user}"></nav>
+		
+		<div class="container mt-5 text-center">
+			<h1 class="mb-5"><span th:text="${sucesso}"></span> com sucesso!</h1>			
+			<a href="/login-home">
+				<button class="btn btn-primary">Voltar ao Painel</button>
+			</a>
+		</div>
+		<div th:replace="~{baseIndex :: scripts}"></div>
+	</body>
+</html>

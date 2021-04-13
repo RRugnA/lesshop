@@ -1,0 +1,23 @@
+<html>
+
+	<head th:replace="~{baseCrud :: head}"></head>
+	
+	<body class="d-flex justify-content-center align-items-center">
+	
+		<div class="card login_card">
+			<div class="card-header">
+				<h2>Login</h2>
+			</div>
+			<div class="card-body">
+				<form th:action="@{/login}" class="d-flex flex-column" method="POST">
+					<input type="text" placeholder="Usuário" name="username" class="form-control mb-3">
+					<input type="password" placeholder="Senha" name="password" class="form-control mb-3">
+					<button class="btn btn-primary" type="submit">Login</button>
+<!-- 					<a href="#" class="mb-3">Esqueceu a Senha</a> -->
+<!-- 					<a href="usuario/novo">Novo usuário</a> -->
+				</form>
+			</div>
+		</div>
+	</body>
+
+</html>

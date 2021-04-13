@@ -1,0 +1,95 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+<body>
+	<header th:replace="~{baseIndex :: header}"></header>
+	
+	<div class="nav-carrinho my-4">
+      <nav class="nav-container d-flex justify-content-center">
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-shopping-cart "></i>
+          <span class="nav-carrinho__text ">Carrinho</span>
+        </div>
+        <i class="fas fa-long-arrow-alt-right"></i>
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-user "></i>
+          <span class="nav-carrinho__text">Informações</span>
+        </div>
+        <i class="fas fa-long-arrow-alt-right"></i>
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-credit-card nav-active"></i>
+          <span class="nav-carrinho__text nav-active">Pagamento</span>
+        </div>
+      </nav>
+    </div>	
+    
+  	<main class="carrinho">
+
+	    <div class="container py-4">
+	      <div class="row py-4">
+	        <div class="col-lg-7 me-5">
+	          <h3 class="mb-4">Como você prefere pagar?</h3>
+	
+	          <h6>Forma de Pagamento:</h6>
+	          <div class="cartao__pgto my-3 d-flex align-items-center">
+	            <input type="radio" name="pgto" id="cartao1">
+	            <div class="mx-3">
+	              <i class="far fa-credit-card pgto__ico"></i>
+	            </div>
+	            <label for="cartao1">Cartão: *** 123</label>
+	          </div>
+	
+	          <div class="cartao__pgto my-3 d-flex align-items-center">
+	            <input type="radio" name="pgto" id="cartao2">
+	            <div class="mx-3">
+	              <i class="far fa-credit-card pgto__ico"></i>
+	            </div>
+	            <label for="cartao2">Cartão: *** 444</label>
+	          </div>
+	          <div class="mb-5">
+	            <a href="login-documento-editar.html">Cadastrar novo Cartão</a>
+	          </div>
+	
+	          <div class="cartao__pgto my-3 d-flex align-items-center">
+	            <input type="radio" name="pgto" id="boleto">
+	            <div class="mx-3">
+	              <i class="fas fa-barcode"></i>
+	            </div>
+	            <label for="boleto">Boleto <br><small style="color: gray;">Será aprovado em até 3 dias úteis</small></label>
+	          </div>
+	          <div class="text-end">
+	            <a href="/carrinho-parcelamento" class="btn btn-success">Continuar</a>
+	          </div>
+	        </div>
+	        
+	        <div class="col-lg-4 text-center carrinho__desc">
+	          <div class="container">
+	            <div class="img__pgto">
+	              <img src="/img/prod-lespaul.jpg" class="img-fluid" alt="">
+	            </div>
+	            <div>
+	              <span class="pgto__desc">Guitarra Les Paul - Lps-230 Cherry Sunburst Strinberg</span>
+	            </div>
+	            <div class="text-center mt-2">
+	              <span class="pgto__qtd">Quantidade: 1</span>
+	            </div>
+	            <hr>
+	            <div class="text-center d-flex justify-content-between my-4">
+	              <span>Produto:</span>
+	              <span>R$ 1.150,00</span>
+	            </div>
+	            <hr>
+	            <div class="text-center d-flex justify-content-between my-4">
+	              <span class="desc__pgto">Você pagará:</span>
+	              <span class="desc__pgto">R$ 1.150,00</span>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+	
+	</main>
+	
+	<footer th:replace="~{baseIndex :: footer}" ></footer>
+  	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

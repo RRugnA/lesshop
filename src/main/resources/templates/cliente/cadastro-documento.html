@@ -1,0 +1,56 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-user}"></nav>
+
+	<main>
+	
+		<div class="container mt-5">
+			<div class="card">
+				<form class="card-body" method="POST">
+<!-- 					<input type="hidden" th:value="${clienteId}" name="clienteId" /> -->
+					
+					<div class="row comboBoxContainer mb-2">
+						
+						<div class="col-3">
+							<label class="col-form-label" for="bandeiraCartao">Cartão:</label>
+							<select class="form-select selectDoc" name="bandeiraCartao" id="bandeiraCartao">
+								<option value="MASTERCARD">Mastercard</option>
+								<option value="VISA">Visa</option>
+							</select>
+						</div>
+						<div class="col-4">
+							<label class="col-form-label" for="numeroCartao">Nome escrito no Cartão:</label>
+							<input class="form-control" type="text" name="nomeCartao" id="nomeCartao" required>
+						</div>
+						<div class="col-2">
+							<label class="col-form-label" for="validadeCartao">Vencimento:</label>
+							<input class="form-control" type="date" name="validadeCartao" id="validadeCartao" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-4">
+							<label class="col-form-label" for="numeroCartao">Número do Cartão:</label>
+							<input class="form-control cad-num" type="number" name="numeroCartao" id="numeroCartao" required>
+						</div>
+						<div class="col-2">
+							<label class="col-form-label" for="codigoCartao">Código do Cartão:</label>
+							<input class="form-control cad-num" type="number" name="codigoCartao" id="codigoCartao" required>
+						</div>
+					</div>
+					
+					<div class="text-end">
+						<button class="btn btn-primary" type="submit">Salvar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	
+	
+	</main>
+	
+<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

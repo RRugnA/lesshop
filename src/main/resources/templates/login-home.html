@@ -1,0 +1,18 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	<header sec:authorize="hasRole('USER')" th:replace="~{baseCrud :: nav-user}"></header>
+	<header sec:authorize="hasRole('ADMIN')" th:replace="~{baseCrud :: nav-adm}"></header>
+	
+	<main>
+	
+<!-- 		Logged user: <span sec:authentication="name"></span> -->
+<!-- 		Roles: <span sec:authentication="principal.authorities"></span> -->
+		
+		
+	</main>
+	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>	
+</html>

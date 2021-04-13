@@ -1,0 +1,151 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+<body>
+	<header th:replace="~{baseIndex :: header}"></header>
+	
+	<div class="nav-carrinho my-4">
+      <nav class="nav-container d-flex justify-content-center">
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-shopping-cart "></i>
+          <span class="nav-carrinho__text ">Carrinho</span>
+        </div>
+        <i class="fas fa-long-arrow-alt-right"></i>
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-user "></i>
+          <span class="nav-carrinho__text">Informações</span>
+        </div>
+        <i class="fas fa-long-arrow-alt-right"></i>
+        <div class="d-flex flex-column justify-content-center align-items-center px-4">
+          <i class="fas fa-credit-card nav-active"></i>
+          <span class="nav-carrinho__text nav-active">Pagamento</span>
+        </div>
+      </nav>
+    </div>	
+    
+    <main class="carrinho">
+
+		<div class="container py-4">
+	      <div class="row py-4">
+	        <div class="col-7 me-5">
+	          <h3 class="mb-4">Como você prefere pagar?</h3>
+	          <div class="cartao__pgto my-3 d-flex align-items-center justify-content-between">
+	            <div class="d-flex align-items-center">
+	              <div class="mx-3">
+	                <i class="far fa-credit-card pgto__ico"></i>
+	              </div>
+	              <label for="cartao1">Cartão: *** 123</label>
+	            </div>            
+	            <a href="carrinho-pgto.html">Alterar</a>
+	          </div>
+	
+	          <div class="cartao__pgto my-3 d-flex align-items-center justify-content-between ">
+	            <div class="d-flex align-items-center form-group">
+	              <label for="vale-troca" style="width: 125px;">Cupom:</label>
+	              <input type="text" class="form-control" id="vale-troca">
+	            </div>            
+	            <a href="carrinho-pgto.html">Utilizar</a>
+	          </div>
+	
+	          <div class="mt-5">
+	            <h3 class="mb-4">Em quantas vezes?</h3>
+	            <ul class="parc__list">
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc1" class="me-2">
+	                  <label for="parc1"><span class="fw-bold">1x</span> R$ 1.150,00</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc2" class="me-2">
+	                  <label for="parc2"><span class="fw-bold">2x</span> R$ 575,00</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc3" class="me-2">
+	                  <label for="parc3"><span class="fw-bold">3x</span> R$ 383,33</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc4" class="me-2">
+	                  <label for="parc4"><span class="fw-bold">4x</span> R$ 287,50</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc5" class="me-2">
+	                  <label for="parc5"><span class="fw-bold">5x</span> R$ 230,00</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc6" class="me-2">
+	                  <label for="parc6"><span class="fw-bold">6x</span> R$ 191,66</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc7" class="me-2">
+	                  <label for="parc7"><span class="fw-bold">7x</span> R$ 164,28</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc8" class="me-2">
+	                  <label for="parc8"><span class="fw-bold">8x</span> R$ 143,75</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc9" class="me-2">
+	                  <label for="parc9"><span class="fw-bold">9x</span> R$ 127,77</label>
+	                </div>
+	              </li>
+	              <li class="parc__pgto">
+	                <div>
+	                  <input type="radio" name="parcela" id="parc10" class="me-2">
+	                  <label for="parc10"><span class="fw-bold">10x</span> R$ 115,00</label>
+	                </div>
+	              </li>
+	            </ul>
+	          </div>
+	
+	          <div class="text-end">
+	            <a href="/carrinho-revisao" class="btn btn-success">Continuar</a>
+	          </div>
+	        </div>
+	        
+	        <div class="col-4 text-center carrinho__desc">
+	          <div class="container">
+	            <div class="img__pgto">
+	              <img src="/img/prod-lespaul.jpg" class="img-fluid" alt="">
+	            </div>
+	            <div>
+	              <span class="pgto__desc">Guitarra Les Paul - Lps-230 Cherry Sunburst Strinberg</span>
+	            </div>
+	            <div class="text-center mt-2">
+	              <span class="pgto__qtd">Quantidade: 1</span>
+	            </div>
+	            <hr>
+	            <div class="text-center d-flex justify-content-between my-4">
+	              <span>Produto:</span>
+	              <span>R$ 1.150,00</span>
+	            </div>
+	            <hr>
+	            <div class="text-center d-flex justify-content-between my-4">
+	              <span class="desc__pgto">Você pagará:</span>
+	              <span class="desc__pgto">R$ 1.150,00</span>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+	
+	</main>
+	
+	<footer th:replace="~{baseIndex :: footer}" ></footer>
+  	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

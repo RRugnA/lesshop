@@ -1,0 +1,47 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	
+	<header sec:authorize="hasRole('ADM')" th:replace="~{baseCrud :: nav-adm}"></header>
+
+    <main>
+
+	    <div class="container">
+	      <div class="input-group my-3">
+	        <label class="input-group-text" for="">Pesquisar: </label>
+	        <input class="form-control" type="text" id="filtrar-tabela" placeholder="Digite o nome do cliente.">
+	      </div>
+	      
+	      <table class="table">
+	        <thead>
+	          <tr>
+	            <th scope="col">#</th>
+	            <th scope="col">Produto</th>
+	            <th scope="col">Qtde</th>
+	            <th scope="col">Valor</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	          <tr class="cliente" th:each="produto : ${produtos}">
+	            <th scope="row"><span th:text="${#ids.seq('')}"></span></th>
+	            <td class="info-nome"><a href="#"><span th:text="${produto.proNome}">NOME</span></a></td>
+	            <td><span th:text="${produto.proQtde}">QTDE</span></td>
+	            <td>R$ <span th:text="${produto.proValor}">VALOR</span></td>
+	          </tr>
+	        </tbody>
+	      </table>
+	
+	      <div class="text-end">
+	        <a href="/login-home">
+	          <button class="btn btn-primary">Voltar</button>
+	        </a>
+	      </div>
+	    </div>
+	
+	</main>
+    
+    <div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>
