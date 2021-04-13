@@ -193,6 +193,9 @@ a, a:hover  {
   background: linear-gradient(to bottom,#f7dfa5,#f0c14b);
   border-color: #a88734 #9c7e31 #846a29;
 }
+.log__input {
+	width: 350px;
+}
 
 /* ===== NEWSLETTER ===== */
 .newsletter {

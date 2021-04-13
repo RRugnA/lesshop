@@ -65,16 +65,17 @@ public class HomeController {
 	}
 	
 	@PostMapping("produto/{id}")
-	public String produto(@PathVariable("id") Long id, Principal principal) {
+	public String produto(@PathVariable("id") Long id, Principal principal, RequisicaoProduto requisicao) {
 		
 //		REMOVENDO PRODUTO DO ESTOQUE
 		Produto produto = prodRepo.findById(id).get();
-		produto.setProQtde(produto.getProQtde() -1);
+		produto.setProEstoque(produto.getProEstoque() - Integer.parseInt(requisicao.getQtdProduto()));
 		prodRepo.save(produto);
 		
 //		ADICIONANDO PRODUTO AO CLIENTE
 		Usuario usuario = userRepo.findByLogin(principal.getName());
-		Cliente cliente = usuario.getCliente();		
+		Cliente cliente = usuario.getCliente();	
+		produto.setProQtde(Integer.parseInt(requisicao.getQtdProduto()));
 		cliente.addProduto(produto);		
 		clienteRepo.save(cliente);
 		
@@ -106,9 +107,9 @@ public class HomeController {
 		Cliente cliente = user.getCliente();
 
 //		DEVOLVENDO AO ESTOQUE
-		Produto prod = new Produto();
-		prod.setId(Long.valueOf(requisicao.getId()));
-		prod.setProQtde(prod.getProQtde() + 1);		
+		Produto prod = prodRepo.findById(Long.valueOf(requisicao.getId())).get();
+		prod.setProEstoque(prod.getProEstoque() + prod.getProQtde());
+		prod.setProQtde(0);
 		prodRepo.save(prod);
 		
 //		RETIRANDO DO CARRINHO DO CLIENTE

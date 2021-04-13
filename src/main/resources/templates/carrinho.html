@@ -24,72 +24,73 @@
 
 	<main class="carrinho">
 		<section class="finalizar py-5">
-	      <div class="mx-4">
-	        <div class="row">
-	          <div class="fin__button col-lg-12 text-end my-3 d-none">
-	            <a href="carrinho-login.html" class="btn btn-success nav-carrinho__btn">FINALIZAR COMPRA</a>
-	          </div>
-	          <h3 class="mb-4">Meu carrinho</h3>
-	    
-	          <div class="fin__info col-12">
-	            <table class="table border border-dark">
-	              <thead style="background-color: white;">
-	                <tr>
-	                  <td>DESCRIÇÃO DO PRODUTO</td>
-	                  <td class="text-center">REMOVER</td>
-	                  <td>QUANTIDADE</td>
-	                  <td>PREÇO UNITÁRIO</td>
-	                  <td>TOTAL</td>
-	                </tr>
-	              </thead>
-	              <tbody class="align-middle" style="background-color: white;">
-	                <tr th:each="produto : ${produtos}">
-	                  <td>
-	                  	<div class="d-flex">
-		                  	<img th:src="${produto.proImg}" alt="" class="img-fluid car__img">
-		                    <div style="width:250px; align-self:center;">
-		                      <span th:text="${produto.proNome}">NOME PRODUTO</span>
+			
+		      <div class="mx-4">
+		        <div class="row">
+		          <div class="fin__button col-lg-12 text-end my-3 d-none">
+		            <a href="carrinho-login.html" class="btn btn-success nav-carrinho__btn">FINALIZAR COMPRA</a>
+		          </div>
+		          <h3 class="mb-4">Meu carrinho</h3>
+		    
+		          <div class="fin__info col-12">
+		            <table class="table border border-dark">
+		              <thead style="background-color: white;">
+		                <tr>
+		                  <td>DESCRIÇÃO DO PRODUTO</td>
+		                  <td class="text-center">REMOVER</td>
+		                  <td>QUANTIDADE</td>
+		                  <td>PREÇO UNITÁRIO</td>
+		                  <td>TOTAL</td>
+		                </tr>
+		              </thead>
+		              <tbody class="align-middle" style="background-color: white;">
+		                <tr th:each="produto : ${produtos}">
+		                  <td>
+		                  	<div class="d-flex">
+			                  	<img th:src="${produto.proImg}" alt="" class="img-fluid car__img">
+			                    <div style="width:250px; align-self:center;">
+			                      <span th:text="${produto.proNome}">NOME PRODUTO</span>
+			                    </div>
+		                  	</div>	                    
+		                  </td>
+		                  <td class="text-center">
+		                    <div>
+		                    	<form method="post" th:action="@{/excluir-carrinho}">
+		                    		<input type="hidden" th:value="${produto.id}" name="id">
+		                      		<button type="submit" class="btn-delete"><i class="far fa-trash-alt"></i></button>
+	                      		</form>
 		                    </div>
-	                  	</div>	                    
-	                  </td>
-	                  <td class="text-center">
-	                    <div>
-	                    	<form method="post" th:action="@{/excluir-carrinho}">
-	                    		<input type="hidden" th:value="${produto.id}" name="id">
-	                      		<button type="submit" class="btn-delete"><i class="far fa-trash-alt"></i></button>
-	                    	</form>
-	                    </div>
-	                  </td>
-	                  <td><input type="number" min="1" th:value="${produto.proQtde}" style="width: 70px;"></td>
-	                  <td th:text="${produto.proValor}">VALOR</td>
-	                  <td th:text="${produto.proValor} + 33">VALOR TOTAL</td>
-	                </tr>
-	              </tbody>
-	              <tfoot style="background-color: white;">
-	                <tr>
-	                  <td></td>
-	                  <td></td>
-	                  <td></td>
-	                  <th scope="col">SUBTOTAL</th>
-	                  <td>R$ 1.150,00</td>
-	                </tr>
-	              </tfoot>
-	            </table>
-	          </div>
-	
-	
-	          <div class="d-flex justify-content-between mt-4">
-	            <div class="fin__button my-3">
-	              <a href="/lesshop" class="btn btn-secondary nav-carrinho__btn">CONTINUAR COMPRANDO</a>
-	            </div>
-	            <div class="fin__button my-3">
-	              <a href="/carrinho-login" class="btn btn-success nav-carrinho__btn" sec:authorize="!isAuthenticated()">FINALIZAR COMPRA</a>
-	              <a href="/carrinho-endereco" class="btn btn-success nav-carrinho__btn" sec:authorize="isAuthenticated()">FINALIZAR COMPRA</a>
-	            </div>
-	          </div>
-	          
-	        </div>
-	      </div>
+		                  </td>
+		                  <td><span th:text="${produto.proQtde}">QTDE</span></td>
+		                  <td th:text="${produto.proValor}">VALOR</td>
+		                  <td th:text="${produto.proValor} + 33">VALOR TOTAL</td>
+		                </tr>
+		              </tbody>
+		              <tfoot style="background-color: white;">
+		                <tr>
+		                  <td></td>
+		                  <td></td>
+		                  <td></td>
+		                  <th scope="col">SUBTOTAL</th>
+		                  <td>R$ 1.150,00</td>
+		                </tr>
+		              </tfoot>
+		            </table>
+		          </div>
+		
+		          <div class="d-flex justify-content-between mt-4">
+		            <div class="fin__button my-3">
+		              <a href="/lesshop" class="btn btn-secondary nav-carrinho__btn">CONTINUAR COMPRANDO</a>
+		            </div>
+		            <div class="fin__button my-3">
+		              <a href="/carrinho-login" class="btn btn-success nav-carrinho__btn" sec:authorize="!isAuthenticated()">FINALIZAR COMPRA</a>
+		              <a href="/carrinho-endereco" class="btn btn-success nav-carrinho__btn" sec:authorize="isAuthenticated()">FINALIZAR COMPRA</a>
+		            </div>
+		          </div>
+		          
+		        </div>
+		      </div>
+			
 	    </section>
   	</main>
   	<footer th:replace="~{baseIndex :: footer}" ></footer>

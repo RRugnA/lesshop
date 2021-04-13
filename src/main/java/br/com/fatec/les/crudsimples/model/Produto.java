@@ -16,6 +16,7 @@ public class Produto extends EntidadeDominio {
 	private int proQtde;
 	private String proDesc;
 	private BigDecimal proValor;
+	private int proEstoque;
 
 	@Enumerated(EnumType.STRING)
 	private TipoProduto prodTipo;
@@ -88,6 +89,14 @@ public class Produto extends EntidadeDominio {
 
 	public void setClientes(List<Cliente> clientes) {
 		this.clientes = clientes;
+	}
+
+	public int getProEstoque() {
+		return proEstoque;
+	}
+
+	public void setProEstoque(int proEstoque) {
+		this.proEstoque = proEstoque;
 	}
 
 }

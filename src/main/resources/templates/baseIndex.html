@@ -23,7 +23,7 @@
       </div>
 
       <div class="login">
-        <a href="/carrinho">
+        <a sec:authorize="hasRole('USER')" href="/carrinho">
           <i class="fas fa-shopping-cart"></i>
           <span class="nav-carrinho__text" style="color: white">Meu Carrinho</span>
         </a>

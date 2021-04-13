@@ -16,6 +16,7 @@ public class RequisicaoProduto {
 	private String imgProduto;
 	private String valorProduto;
 	private String descProduto;
+	private String estoqueProduto;
 
 	public String getId() {
 		return id;
@@ -73,11 +74,26 @@ public class RequisicaoProduto {
 		this.descProduto = descProduto;
 	}
 
+	public String getEstoqueProduto() {
+		return estoqueProduto;
+	}
+
+	public void setEstoqueProduto(String estoqueProduto) {
+		this.estoqueProduto = estoqueProduto;
+	}
+
 	public Produto toProduto() {
 		Produto prod = new Produto();
 
 		prod.setProNome(nomeProduto);
-		prod.setProQtde(Integer.parseInt(qtdProduto));
+		
+		if (this.getQtdProduto() != null) {
+			prod.setProQtde(Integer.parseInt(qtdProduto));
+		}
+		if (this.getEstoqueProduto() != null) {
+			prod.setProEstoque(Integer.parseInt(estoqueProduto));
+		}
+		
 		prod.setProdTipo(TipoProduto.valueOf(tipoProduto));
 		prod.setProImg(imgProduto);
 
