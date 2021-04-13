@@ -44,15 +44,20 @@
 	              </thead>
 	              <tbody class="align-middle" style="background-color: white;">
 	                <tr th:each="produto : ${produtos}">
-	                  <td class="d-flex">
-	                    <img th:src="${produto.proImg}" alt="" class="img-fluid car__img">
-	                    <div style="width:250px; align-self:center;">
-	                      <span th:text="${produto.proNome}">NOME PRODUTO</span>
-	                    </div>
+	                  <td>
+	                  	<div class="d-flex">
+		                  	<img th:src="${produto.proImg}" alt="" class="img-fluid car__img">
+		                    <div style="width:250px; align-self:center;">
+		                      <span th:text="${produto.proNome}">NOME PRODUTO</span>
+		                    </div>
+	                  	</div>	                    
 	                  </td>
 	                  <td class="text-center">
-	                    <div class=>
-	                      <a href="#"><i class="far fa-trash-alt"></i></a>
+	                    <div>
+	                    	<form method="post" th:action="@{/excluir-carrinho}">
+	                    		<input type="hidden" th:value="${produto.id}" name="id">
+	                      		<button type="submit" class="btn-delete"><i class="far fa-trash-alt"></i></button>
+	                    	</form>
 	                    </div>
 	                  </td>
 	                  <td><input type="number" min="1" th:value="${produto.proQtde}" style="width: 70px;"></td>

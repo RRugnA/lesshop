@@ -330,8 +330,14 @@ a, a:hover  {
 .pgto__desc, .pgto__qtd {
   font-size: 14px;
 }
+.btn-delete {
+  border: none;
+  background-color: transparent;
+  color: red;
+}
+    
 
-/* ===== Consulta ===== */
+/* ===== CONSULTA ===== */
 .invisivel {
   display: none;
 }

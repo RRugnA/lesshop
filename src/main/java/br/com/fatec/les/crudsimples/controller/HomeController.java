@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.fatec.les.crudsimples.dto.RequisicaoProduto;
@@ -66,17 +67,15 @@ public class HomeController {
 	@PostMapping("produto/{id}")
 	public String produto(@PathVariable("id") Long id, Principal principal) {
 		
+//		REMOVENDO PRODUTO DO ESTOQUE
 		Produto produto = prodRepo.findById(id).get();
-//		produto.setProdStatus(StatusProduto.CARRINHO);
 		produto.setProQtde(produto.getProQtde() -1);
 		prodRepo.save(produto);
 		
-		System.out.println("Produto: " + produto.getProNome() + " comprado!") ;
-		
+//		ADICIONANDO PRODUTO AO CLIENTE
 		Usuario usuario = userRepo.findByLogin(principal.getName());
 		Cliente cliente = usuario.getCliente();		
-		cliente.addProduto(produto);
-		
+		cliente.addProduto(produto);		
 		clienteRepo.save(cliente);
 		
 		return "redirect:/carrinho/";
@@ -87,14 +86,42 @@ public class HomeController {
 		Usuario user = userRepo.findByLogin(principal.getName());
 		Cliente cliente = user.getCliente();
 
+//		IDENTIFICANDO OS PRODUTOS NO CARRINHO DO CLIENTE
 		List<Produto> produtos = new ArrayList<Produto>();		
 		for(Produto produto : cliente.getProdutos()) {
 			produtos.add(produto);
 		}
 		
 		mv = new ModelAndView("carrinho");
+//		DEVOLVENDO OS PRODUTOS PARA A PÁGINA		
 		mv.addObject("produtos", produtos);
 		return mv;
+	}
+	
+	@PostMapping("/excluir-carrinho")
+	public String deleteProduto(Principal principal, RequisicaoProduto requisicao) {
+		System.out.println("Removendo item");
+
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();
+
+//		DEVOLVENDO AO ESTOQUE
+		Produto prod = new Produto();
+		prod.setId(Long.valueOf(requisicao.getId()));
+		prod.setProQtde(prod.getProQtde() + 1);		
+		prodRepo.save(prod);
+		
+//		RETIRANDO DO CARRINHO DO CLIENTE
+		List<Produto> produtos = new ArrayList<Produto>();	
+		for(Produto produto : cliente.getProdutos()) {
+			if(produto.getId() != Long.valueOf(requisicao.getId())) {
+				produtos.add(produto);
+			}
+		}		
+		cliente.setProdutos(produtos);		
+		clienteRepo.save(cliente);
+		
+		return "redirect:/carrinho";
 	}
 	
 	@GetMapping("carrinho-login")

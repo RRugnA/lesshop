@@ -127,4 +127,5 @@ public class Cliente extends EntidadeDominio {
 	public Produto getProduto(int index) {
 		return this.produtos.get(index);
 	}
+	
 }
