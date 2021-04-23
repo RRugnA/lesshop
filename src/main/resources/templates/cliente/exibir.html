@@ -7,7 +7,18 @@
 		
 		<main>
 			
-			<div class="container mt-5">
+			<div th:if="${cliente == null}" class="container mt-5">
+				<div class="mb-4">
+					<span>Dados pessoais não cadastrados!</span>
+				</div>
+				<div>
+					<a th:href="@{'cadastro-pessoal'}" class="btn btn-primary">Cadastrar</a>
+				</div>			
+			</div>
+			
+			
+			<div th:if="${cliente != null}" class="container mt-5">
+				
 				<div class="card mt-3" >
 					<div class="card-header">Dados do Cliente: </div>
 					<div class="card-body">

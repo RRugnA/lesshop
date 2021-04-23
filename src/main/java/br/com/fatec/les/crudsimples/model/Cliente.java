@@ -1,5 +1,6 @@
 package br.com.fatec.les.crudsimples.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -21,7 +22,7 @@ public class Cliente extends EntidadeDominio {
 	private String nome;
 	private String numeroDocumento;
 
-	@OneToOne(cascade={CascadeType.PERSIST,CascadeType.REMOVE})
+	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
 	private Usuario usuario;
 
 	@Enumerated(EnumType.STRING)
@@ -29,7 +30,7 @@ public class Cliente extends EntidadeDominio {
 
 	@Enumerated(EnumType.STRING)
 	private TipoDocumento tipoDocumento;
-	
+
 	@Enumerated(EnumType.STRING)
 	private TipoStatus tipoStatus;
 
@@ -40,14 +41,15 @@ public class Cliente extends EntidadeDominio {
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<Documento> documentos;
-	
+
 	@ManyToMany
-	@JoinTable(
-			name = "cliente_produto", joinColumns = @JoinColumn(
-			name = "cliente_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(
-			name = "produto_id", referencedColumnName = "id"))
+	@JoinTable(name = "cliente_produto", joinColumns = @JoinColumn(name = "cliente_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "produto_id", referencedColumnName = "id"))
 	private List<Produto> produtos;
 
+	private BigDecimal valorDeCompra;
+
+	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	private Compra compra;
 	public Usuario getUsuario() {
 		return usuario;
 	}
@@ -120,12 +122,37 @@ public class Cliente extends EntidadeDominio {
 		this.produtos = produtos;
 	}
 
-	public void addProduto (Produto produto) {
+	public void addProduto(Produto produto) {
 		this.produtos.add(produto);
 	}
-	
+
 	public Produto getProduto(int index) {
 		return this.produtos.get(index);
 	}
+
+	public BigDecimal getValorDeCompra() {
+		return valorDeCompra;
+	}
+
+	public void setValorDeCompra(BigDecimal valorDoProduto) {
+		this.valorDeCompra = valorDoProduto;
+	}
 	
+	public void addValorDeCompra(BigDecimal valorDoProduto, int quantidade) {
+		
+		BigDecimal valor = new BigDecimal("0");
+		valor = valor.add(valorDoProduto);
+		valor = valor.multiply(new BigDecimal(quantidade));
+		
+		if(this.valorDeCompra != null) {
+			valor = valor.add(this.valorDeCompra);
+		} 
+		
+		this.valorDeCompra = valor;
+	}
+	
+	public void zeraValorDeCompra() {
+		this.valorDeCompra = new BigDecimal(0);
+	}
+
 }

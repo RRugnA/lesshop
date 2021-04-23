@@ -10,15 +10,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.fatec.les.crudsimples.dto.RequisicaoCompra;
 import br.com.fatec.les.crudsimples.dto.RequisicaoProduto;
+import br.com.fatec.les.crudsimples.model.Cidade;
 import br.com.fatec.les.crudsimples.model.Cliente;
+import br.com.fatec.les.crudsimples.model.Compra;
+import br.com.fatec.les.crudsimples.model.CompraStatus;
+import br.com.fatec.les.crudsimples.model.Documento;
+import br.com.fatec.les.crudsimples.model.Endereco;
+import br.com.fatec.les.crudsimples.model.Estado;
 import br.com.fatec.les.crudsimples.model.Produto;
 import br.com.fatec.les.crudsimples.model.StatusProduto;
 import br.com.fatec.les.crudsimples.model.Usuario;
 import br.com.fatec.les.crudsimples.repository.ClienteRepository;
+import br.com.fatec.les.crudsimples.repository.CompraRepository;
+import br.com.fatec.les.crudsimples.repository.DocumentoRepository;
+import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
 import br.com.fatec.les.crudsimples.repository.ProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
 
@@ -29,12 +38,16 @@ public class HomeController {
 	
 	@Autowired
 	private ProdutoRepository prodRepo;
-	
 	@Autowired
 	private UsuarioRepository userRepo;
-	
 	@Autowired
 	private ClienteRepository clienteRepo;
+	@Autowired
+	private EnderecoRepository endRepo;
+	@Autowired
+	private DocumentoRepository docRepo;
+	@Autowired
+	private CompraRepository compraRepo;
 	
 	@GetMapping("lesshop")
 	public ModelAndView index() {		
@@ -76,7 +89,8 @@ public class HomeController {
 		Usuario usuario = userRepo.findByLogin(principal.getName());
 		Cliente cliente = usuario.getCliente();	
 		produto.setProQtde(Integer.parseInt(requisicao.getQtdProduto()));
-		cliente.addProduto(produto);		
+		cliente.addProduto(produto);
+		cliente.addValorDeCompra(produto.getProValor(), produto.getProQtde());
 		clienteRepo.save(cliente);
 		
 		return "redirect:/carrinho/";
@@ -93,8 +107,17 @@ public class HomeController {
 			produtos.add(produto);
 		}
 		
+//		IDENTIFICANDO E DELETANDO COMPRAS INTERROMPIDAS
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		for(Compra compra : compras) {
+			if(compra.getCompraStatus().equals(CompraStatus.valueOf("INTERROMPIDA"))) {
+				compraRepo.delete(compra);
+			}
+		}
+		
 		mv = new ModelAndView("carrinho");
-//		DEVOLVENDO OS PRODUTOS PARA A PÁGINA		
+//		DEVOLVENDO OS PRODUTOS PARA A PÁGINA
+		mv.addObject("cliente", cliente);
 		mv.addObject("produtos", produtos);
 		return mv;
 	}
@@ -105,7 +128,8 @@ public class HomeController {
 
 		Usuario user = userRepo.findByLogin(principal.getName());
 		Cliente cliente = user.getCliente();
-
+		cliente.zeraValorDeCompra();
+		
 //		DEVOLVENDO AO ESTOQUE
 		Produto prod = prodRepo.findById(Long.valueOf(requisicao.getId())).get();
 		prod.setProEstoque(prod.getProEstoque() + prod.getProQtde());
@@ -117,6 +141,7 @@ public class HomeController {
 		for(Produto produto : cliente.getProdutos()) {
 			if(produto.getId() != Long.valueOf(requisicao.getId())) {
 				produtos.add(produto);
+				cliente.addValorDeCompra(produto.getProValor(), produto.getProQtde());
 			}
 		}		
 		cliente.setProdutos(produtos);		
@@ -125,27 +150,80 @@ public class HomeController {
 		return "redirect:/carrinho";
 	}
 	
-	@GetMapping("carrinho-login")
-	public ModelAndView carrinhoLogin() {
-		mv = new ModelAndView("carrinho-login");
+	@GetMapping("carrinho-endereco")
+	public ModelAndView carrinhoEndereco(Principal principal) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();
+		
+		List<Endereco> enderecos = endRepo.findByCliente(cliente);
+		
+		List<Produto> produtos = new ArrayList<Produto>();		
+		for(Produto produto : cliente.getProdutos()) {
+			produtos.add(produto);
+		}			
+		
+		mv = new ModelAndView("carrinho-endereco");
+		mv.addObject("enderecos", enderecos);	
+		mv.addObject("produtos", produtos);
+		mv.addObject("cliente", cliente);		
+		
 		return mv;
 	}
 	
-	@GetMapping("carrinho-endereco")
-	public ModelAndView carrinhoEndereco() {
-		mv = new ModelAndView("carrinho-endereco");
-		return mv;
+	@PostMapping("carrinho-endereco")
+	public String carrinhoEndereco(RequisicaoCompra requisicao, Principal principal) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();
+		
+		Endereco end = endRepo.findById(Long.valueOf(requisicao.getEndereco())).get();
+		Cidade cidade = end.getCidade();
+		Estado estado = cidade.getEstado();
+		
+		Compra compra = requisicao.toCompra();
+		compra.setCliente(cliente);
+		compra.setEndereco(end.getLogradouro() + ", " + end.getNumero() + " - " + cidade.getCidade() + "/" + estado.getEstado());
+		compra.setCompraStatus(CompraStatus.INTERROMPIDA);
+		compraRepo.save(compra);
+		
+		return "redirect:/carrinho-pgto";
 	}
 	
 	@GetMapping("carrinho-pgto")
-	public ModelAndView carrinhoPgto() {
+	public ModelAndView carrinhoPgto(Principal principal) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();		
+		
+		List<Documento> documentos = docRepo.findByCliente(cliente);
+		
+		List<Produto> produtos = new ArrayList<Produto>();		
+		for(Produto produto : cliente.getProdutos()) {
+			produtos.add(produto);
+		}
+		
 		mv = new ModelAndView("carrinho-pgto");
+		mv.addObject("documentos", documentos);
+		mv.addObject("produtos", produtos);
+		mv.addObject("cliente", cliente);	
+		
 		return mv;
 	}
 	
 	@GetMapping("carrinho-parcelamento")
-	public ModelAndView carrinhoParcelamento() {
+	public ModelAndView carrinhoParcelamento(Principal principal) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();		
+		
+		List<Documento> documentos = docRepo.findByCliente(cliente);
+		
+		List<Produto> produtos = new ArrayList<Produto>();		
+		for(Produto produto : cliente.getProdutos()) {
+			produtos.add(produto);
+		}
 		mv = new ModelAndView("carrinho-parcelamento");
+		mv.addObject("documentos", documentos);
+		mv.addObject("produtos", produtos);
+		mv.addObject("cliente", cliente);	
+		
 		return mv;
 	}
 	

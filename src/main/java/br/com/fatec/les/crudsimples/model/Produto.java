@@ -27,6 +27,9 @@ public class Produto extends EntidadeDominio {
 	@ManyToMany(mappedBy = "produtos")
 	private List<Cliente> clientes;
 
+	@ManyToMany(mappedBy = "produtos")
+	private List<Compra> compras;
+
 	public String getProNome() {
 		return proNome;
 	}
@@ -97,6 +100,14 @@ public class Produto extends EntidadeDominio {
 
 	public void setProEstoque(int proEstoque) {
 		this.proEstoque = proEstoque;
+	}
+
+	public List<Compra> getCompras() {
+		return compras;
+	}
+
+	public void setCompras(List<Compra> compras) {
+		this.compras = compras;
 	}
 
 }

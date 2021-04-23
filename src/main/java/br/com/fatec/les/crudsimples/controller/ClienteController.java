@@ -125,7 +125,7 @@ public class ClienteController {
 		
 		Usuario user = userRepo.findByLogin(principal.getName());	
 		if(user.getCliente() == null) {
-			mv = new ModelAndView("cliente/cadastro-pessoal");
+			mv = new ModelAndView("cliente/exibir");
 		} else {
 			mv = new ModelAndView("cliente/exibir");
 			Cliente cliente = user.getCliente();

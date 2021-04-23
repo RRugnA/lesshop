@@ -63,7 +63,7 @@
 		                  </td>
 		                  <td><span th:text="${produto.proQtde}">QTDE</span></td>
 		                  <td th:text="${produto.proValor}">VALOR</td>
-		                  <td th:text="${produto.proValor} + 33">VALOR TOTAL</td>
+		                  <td th:text="${produto.proValor} * ${produto.proQtde}" class="valorProduto">VALOR TOTAL</td>
 		                </tr>
 		              </tbody>
 		              <tfoot style="background-color: white;">
@@ -72,7 +72,7 @@
 		                  <td></td>
 		                  <td></td>
 		                  <th scope="col">SUBTOTAL</th>
-		                  <td>R$ 1.150,00</td>
+		                  <td th:text="${cliente.valorDeCompra}">R$ 0</td>
 		                </tr>
 		              </tfoot>
 		            </table>

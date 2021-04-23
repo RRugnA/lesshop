@@ -1,5 +1,6 @@
 package br.com.fatec.les.crudsimples.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.fatec.les.crudsimples.model.Cliente;
@@ -15,6 +16,7 @@ public class RequisicaoCliente {
 	private String tipoDocumento;
 	private String codigo;
 	private String tipoStatus;
+	private String valorDeCompra;
 
 	public String getClienteId() {
 		return clienteId;
@@ -64,6 +66,19 @@ public class RequisicaoCliente {
 		this.tipoStatus = tipoStatus;
 	}
 
+	public String getValorDeCompra() {
+		return valorDeCompra;
+	}
+
+	public void setValorDeCompra(String valorDeCompra) {
+		this.valorDeCompra = valorDeCompra;
+	}
+
+	public BigDecimal toValorDeCompra(String valorDeCompra) {
+		BigDecimal valor = new BigDecimal(valorDeCompra);
+		return valor;
+	}
+	
 	public Cliente toCliente() {
 
 		Cliente cliente = new Cliente();
@@ -79,7 +94,7 @@ public class RequisicaoCliente {
 		cliente.setTipoDocumento(TipoDocumento.valueOf(tipoDocumento));
 		cliente.setNumeroDocumento(codigo);
 		cliente.setTipoStatus(TipoStatus.ATIVO);
-		
+
 		return cliente;
 	}
 
