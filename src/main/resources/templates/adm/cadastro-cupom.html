@@ -1,0 +1,64 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-prod}"></nav>
+
+	<main>
+	
+		<div class="container my-5">
+	
+			<div class="text-end">
+	        	<a href="/adm/controle-estoque">
+	          		<button class="btn">Voltar</button>
+	        	</a>
+  			</div>
+	
+			<div class="card">
+			
+				<form class="card-body" method="POST">
+				
+					<div class="mb-3">
+						<h3>Cadastro de Cupons</h3>
+					</div>
+					
+					<div class="row">
+						<div class="col-lg-4 mb-3">
+							<div class="form-floating">
+	  							<input type="text" class="form-control" id="codigo" name="codigo" placeholder="Código do cupom">
+	  							<label for="nomeProduto">Código do Cupom:</label>
+							</div>
+						</div>
+						
+						<div class="col-lg-4 mb-3">
+							<div class="form-floating">								
+								<input class="form-control" type="number" min="0" max="100" name="valorDesconto" id="valorDesconto" placeholder="Valor do Desconto" required />
+								<label for="imgProduto">Valor do desconto (%):</label> 
+							</div>
+						</div>
+						
+						<div class="col-lg-2 mb-3">
+							<div class="form-floating">					
+								<select class="form-select selectDoc" name="tipoCupom" id="tipoCupom">
+									<option value="DESCONTO">DESCONTO</option>
+									<option value="TROCA">TROCA</option>									
+								</select>
+								<label for="tipoProduto">Classificação:</label>	
+							</div>							
+						</div>
+					</div>
+					
+					<div class="text-end">
+						<button class="btn btn-primary" type="submit">Salvar</button>
+					</div>
+				</form>
+			</div>
+		
+		</div>
+		
+	</main>
+	
+	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

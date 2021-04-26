@@ -13,12 +13,12 @@
 	      <div class="row py-4 justify-content-center">
 	        <div class="col-8 carrinho__desc">
 	          <div class="container">
-	            <div class="d-flex justify-content-center align-items-center">
+	            <div class="d-flex justify-content-center align-items-center" th:each="produto : ${produtos}">
 	              <div>
-	                <h6 class="fw-bold">Você comprou: <span class="fw-normal">Guitarra Les Paul - Lps-230 Cherry Sunburst Strinberg</span></h6>
+	                <h6 class="fw-bold">Você comprou: <span class="fw-normal" th:text="${produto.proNome}">Guitarra Les Paul - Lps-230 Cherry Sunburst Strinberg</span></h6>
 	              </div>
 	              <div>
-	                <img src="/img/prod-lespaul.jpg" class="img-fluid" alt="">
+	                <img th:src="${produto.proImg}" class="img-fluid" alt="">
 	              </div>
 	            </div>
 	            
@@ -29,8 +29,7 @@
 	                <span>Entrega no endereço:</span>
 	              </div>
 	              <div class="col-lg-6">
-	                <h5 class="mb-0" style="font-size: 16px;">Rua Quinze, 22 - Centro</h5>
-	                <span style="font-size: 14px; color: gray;">Mogi das Cruzes, São Paulo - CEP 08711-222</span>
+	                <h5 class="mb-0 f-16" th:text="${compra.endereco}">Endereço</h5>
 	              </div>
 	            </div>
 	
@@ -41,8 +40,9 @@
 	                <span>Você pagou:</span>
 	              </div>
 	              <div class="col-lg-6">
-	                <h5 class="mb-0" style="font-size: 16px;">R$ 1.150,00</h5>
-	                <span style="font-size: 14px; color: gray;">10x R$115,00 com o cartão de crédito Mastercard final 123</span>
+	                <h5 class="mb-0 f-16" th:text="'R$ ' + ${compra.valorTotal}">R$ 0,00</h5>
+	                <span class="f-14 c-gray" th:text="${compra.parcelas} + 'x R$' + ${compra.valorParcela} + ' com o cartão de crédito ' + ${compra.documento}">
+	                INFO PGTO</span>
 	              </div>
 	            </div>
 	

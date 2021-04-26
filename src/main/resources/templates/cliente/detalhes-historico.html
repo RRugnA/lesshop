@@ -1,0 +1,95 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	
+	<header sec:authorize="hasRole('ADM')" th:replace="~{baseCrud :: nav-adm}"></header>
+
+    <main>
+
+    	<div class="container">
+	      	<div th:if="${compra != null}" class="container mt-5">
+				
+				<div class="card mt-3" >
+					<div class="card-header">Detalhes da Compra: </div>
+					<div class="card-body">					
+            			
+            			<div class="row mb-4" th:each="produto : ${produtos}">
+            			
+            				<div class="col-lg-12">
+            					<span class="fw-bold">Produto: </span>
+            					<span th:text="${produto.proNome}">PRODUTO</span>
+            				</div>
+            				
+            				<div class="col-lg-6">
+            					<span class="fw-bold">Quantidade: </span>
+            					<span th:text="${produto.proQtde}">QUANTIDADE</span>
+            				</div>
+            				
+            				<div class="col-lg-6">
+            					<span class="fw-bold">Valor: </span>
+            					<span th:text="${produto.proValor}">VALOR</span>
+            				</div>
+            				
+            			</div>
+            			
+            			<hr>
+            			
+            			<div class="row">
+            				
+            				<div class="col-lg-6">
+            					<span class="fw-bold">Forma de pagamento: </span>
+            					<span th:text="${compra.formaPgto}">FORMA_PGTO</span>
+            				</div>
+            				
+            				<div class="col-lg-6">
+	            				<span class="fw-bold">Cartão nº: </span>
+            					<span th:text="${compra.documento}">FORMA_PGTO</span>
+            				</div>
+            				
+            				<div class="col-lg-6">
+            					<span class="fw-bold">Quantidade de parcelas: </span>
+            					<span th:text="${compra.parcelas}">PARCELAS</span>
+            				</div>
+            				
+            				<div class="col-lg-6">
+	            				<span class="fw-bold">Valor das parcelas: </span>
+            					<span th:text="${compra.valorParcela}">VALOR_PARCELA</span>
+            				</div>	
+            				
+            				<div class="col-lg-6">
+	            				<span class="fw-bold">Valor total: </span>
+            					<span th:text="'R$ ' + ${compra.valorTotal}">VALOR_TOTAL</span>
+            				</div>		
+							
+						</div>
+						
+						<hr>
+						
+						<div class="row">
+						
+							<div class="col-lg-6">
+	            				<span class="fw-bold">Status da Compra: </span>
+            					<span th:text="${compra.compraStatus}">STATUS</span>
+            				</div>
+						
+							<div class="d-flex flex-direction-row justify-content-end">
+								<div>
+									<a href="/cliente/historico-de-compras" class="btn btn-primary mr-3 my-3">Voltar</a>
+								</div>
+							</div>
+								
+						</div>
+						
+					</div>
+				</div>
+				
+			</div>
+	    </div>
+	
+	</main>
+    
+    <div th:replace="~{baseIndex :: scripts}"></div>
+</body>
+</html>

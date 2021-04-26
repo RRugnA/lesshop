@@ -14,6 +14,18 @@ a, a:hover  {
   -webkit-appearance: none;
   margin: 0;
 }
+.f-14 {
+  font-size: 14px;
+}
+.f-16 {
+  font-size: 16px;
+}
+.c-gray {
+  color: gray;
+}
+.bg-0 {
+  background: none !important;
+}
 .cad-num {
   -moz-appearance: textfield;
 }
@@ -391,4 +403,31 @@ a, a:hover  {
 }
 .text__sucesso h3 {
   font-weight: 800;
+}
+
+/* ===== MODAL ===== */
+.modal-status {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  background: white;
+  box-shadow: 0 0 4px #464646;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .4s;
+}
+.show {
+  opacity: 1;
+  visibility: visible;
+  transition: all .4s;
+}
+.close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  color: black;
+  background: white;
+  border-radius: 50%;
 }

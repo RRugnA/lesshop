@@ -1,12 +1,14 @@
 <html>
 <head th:replace="~{baseIndex :: head}"></head>
 
-<body>
+<body sec:authorize="hasRole('ADMIN')">
+
+
 	<div th:replace="~{baseIndex :: header}"></div>
 	<nav th:replace="~{baseCrud :: nav-prod}"></nav>
 
 	<main>
-	
+		
 		<div class="container my-5">
 		
 			<div class="text-end">
@@ -16,6 +18,7 @@
   			</div>
 			
 			<div class="card">
+			
 				<form class="card-body" method="POST">
 					<div class="mb-3">
 						<h3>Cadastro de Produto</h3>
@@ -70,8 +73,11 @@
 						<button class="btn btn-primary" type="submit">Salvar</button>
 					</div>
 				</form>
+				
 			</div>
+			
 		</div>
+		
 	</main>
 	<div th:replace="~{baseIndex :: scripts}"></div>
 </body>

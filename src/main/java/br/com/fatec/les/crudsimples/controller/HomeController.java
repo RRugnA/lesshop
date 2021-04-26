@@ -1,5 +1,7 @@
 package br.com.fatec.les.crudsimples.controller;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ import br.com.fatec.les.crudsimples.model.CompraStatus;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
 import br.com.fatec.les.crudsimples.model.Estado;
+import br.com.fatec.les.crudsimples.model.FormaPgto;
 import br.com.fatec.les.crudsimples.model.Produto;
 import br.com.fatec.les.crudsimples.model.StatusProduto;
 import br.com.fatec.les.crudsimples.model.Usuario;
@@ -51,7 +54,7 @@ public class HomeController {
 	
 	@GetMapping("lesshop")
 	public ModelAndView index() {		
-		PageRequest paginacao = PageRequest.of(0, 6);		
+		PageRequest paginacao = PageRequest.of(0, 8);		
 		List<Produto> produtos = prodRepo.findByProdStatus(StatusProduto.ESTOQUE, paginacao);
 		
 		mv = new ModelAndView("lesshop");
@@ -107,15 +110,16 @@ public class HomeController {
 			produtos.add(produto);
 		}
 		
-//		IDENTIFICANDO E DELETANDO COMPRAS INTERROMPIDAS
+//		IDENTIFICANDO E DELETANDO COMPRAS NÃO FINALIZADAS
 		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
 		for(Compra compra : compras) {
-			if(compra.getCompraStatus().equals(CompraStatus.valueOf("INTERROMPIDA"))) {
+			if(compra.getCompraStatus().equals(CompraStatus.valueOf("ANDAMENTO"))) {
 				compraRepo.delete(compra);
 			}
 		}
 		
 		mv = new ModelAndView("carrinho");
+		
 //		DEVOLVENDO OS PRODUTOS PARA A PÁGINA
 		mv.addObject("cliente", cliente);
 		mv.addObject("produtos", produtos);
@@ -150,6 +154,28 @@ public class HomeController {
 		return "redirect:/carrinho";
 	}
 	
+	@PostMapping("carrinho")
+	public String carrinho(Principal principal, RequisicaoCompra requisicao) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();
+		
+		Compra compra = requisicao.toCompra();
+		
+		compra.setCliente(cliente);
+		compra.setValorTotal(cliente.getValorDeCompra());
+		compraRepo.save(compra);
+		
+		List<Produto> produtos = new ArrayList<Produto>();		
+		for(Produto produto : cliente.getProdutos()) {
+			produtos.add(produto);
+		}
+		
+		compra.setListaCompras(produtos);
+		compraRepo.save(compra);
+		
+		return "redirect:/carrinho-endereco";
+	}
+	
 	@GetMapping("carrinho-endereco")
 	public ModelAndView carrinhoEndereco(Principal principal) {
 		Usuario user = userRepo.findByLogin(principal.getName());
@@ -179,11 +205,12 @@ public class HomeController {
 		Cidade cidade = end.getCidade();
 		Estado estado = cidade.getEstado();
 		
-		Compra compra = requisicao.toCompra();
-		compra.setCliente(cliente);
-		compra.setEndereco(end.getLogradouro() + ", " + end.getNumero() + " - " + cidade.getCidade() + "/" + estado.getEstado());
-		compra.setCompraStatus(CompraStatus.INTERROMPIDA);
-		compraRepo.save(compra);
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
+		
+		compraAtual.setEndereco(end.getLogradouro() + ", " + end.getNumero() + " - " + cidade.getCidade() + "/" + estado.getEstado());
+		compraAtual.setValorTotal(cliente.getValorDeCompra());
+		compraRepo.save(compraAtual);
 		
 		return "redirect:/carrinho-pgto";
 	}
@@ -208,40 +235,140 @@ public class HomeController {
 		return mv;
 	}
 	
+	@PostMapping("carrinho-pgto")
+	public String carrinhoPgto(Principal principal, RequisicaoCompra requisicao) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();	
+		Compra compraAtual = new Compra();
+		
+//		IDENTIFICANDO COMPRA ATUAL
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		
+//		IDENTIFICANDO FORMA DE PAGAMENTO
+		if(!requisicao.getDocumento().equals("0")) {
+			Documento doc = docRepo.findById(Long.valueOf(requisicao.getDocumento())).get();
+			compraAtual.setDocumento(doc.getNumeroCartao());
+			compraAtual.setFormaPgto(FormaPgto.CARTAO);
+			compraRepo.save(compraAtual);
+			
+			return "redirect:/carrinho-parcelamento";
+		}
+		
+		compraAtual.setFormaPgto(FormaPgto.BOLETO);
+		compraRepo.save(compraAtual);
+		
+		return "redirect:/carrinho-parcelamento";		
+	}
+	
 	@GetMapping("carrinho-parcelamento")
 	public ModelAndView carrinhoParcelamento(Principal principal) {
 		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();		
+		Cliente cliente = user.getCliente();	
 		
-		List<Documento> documentos = docRepo.findByCliente(cliente);
+		Compra compraAtual = new Compra();
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
 		
 		List<Produto> produtos = new ArrayList<Produto>();		
 		for(Produto produto : cliente.getProdutos()) {
 			produtos.add(produto);
 		}
+		
+//		CALCULANDO O VALOR DAS PARCELAS
+		List<BigDecimal> parcelas = new ArrayList<BigDecimal>();		
+		for(int i = 1; i <= 10; i++) {		
+			BigDecimal valorParcela = cliente.getValorDeCompra();
+			valorParcela = valorParcela.divide(new BigDecimal(i), 2, RoundingMode.HALF_DOWN);
+			parcelas.add(valorParcela);
+		}
+		
 		mv = new ModelAndView("carrinho-parcelamento");
-		mv.addObject("documentos", documentos);
+		mv.addObject("compra", compraAtual);
 		mv.addObject("produtos", produtos);
 		mv.addObject("cliente", cliente);	
+		mv.addObject("parcelas", parcelas);
 		
 		return mv;
 	}
 	
+	@PostMapping("carrinho-parcelamento")
+	public String carrinhoParcelamento(Principal principal, RequisicaoCompra requisicao) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();	
+		Compra compraAtual = new Compra();
+		
+//		IDENTIFICANDO COMPRA ATUAL
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		
+		compraAtual.setValorParcela(compraAtual.toValorParcela(requisicao.getParcela()));
+		compraAtual.setParcelas(compraAtual.toQtdeParcela(requisicao.getParcela()));
+		
+		compraRepo.save(compraAtual);
+		
+		return "redirect:/carrinho-revisao";
+	}
+	
 	@GetMapping("carrinho-revisao")
-	public ModelAndView carrinhoRevisao() {
+	public ModelAndView carrinhoRevisao(Principal principal) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();	
+		
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
+		
+		List<Produto> produtos = new ArrayList<Produto>();		
+		for(Produto produto : cliente.getProdutos()) {
+			produtos.add(produto);
+		}
+		
 		mv = new ModelAndView("carrinho-revisao");
+		mv.addObject("compra", compraAtual);
+		mv.addObject("cliente", cliente);
+		mv.addObject("produtos", produtos);
 		return mv;
+	}
+	
+	@PostMapping("carrinho-revisao")
+	public String carrinhoRevisao(Principal principal, RequisicaoCompra requisicao) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();	
+		
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
+		
+		compraAtual.setCompraStatus(CompraStatus.valueOf(requisicao.getCompraStatus()));
+		compraRepo.save(compraAtual);
+		
+		return "redirect:/carrinho-sucesso";
 	}
 	
 	@GetMapping("carrinho-sucesso")
-	public ModelAndView carrinhoSucesso() {
+	public ModelAndView carrinhoSucesso(Principal principal) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();	
+		
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.PROCESSAMENTO, compras);
+		
+		List<Produto> produtos = new ArrayList<Produto>();
+		for(Produto produto: compraAtual.getListaCompras()) {
+			produtos.add(produto);
+		}
+		
 		mv = new ModelAndView("carrinho-sucesso");
-		return mv;
-	}
-	
-	@GetMapping("home")
-	public ModelAndView home() {
-		mv = new ModelAndView("home");
+		mv.addObject("produtos", produtos);
+		mv.addObject("compra", compraAtual);
+		mv.addObject("cliente", cliente);
+		
+		compraAtual.setCompraStatus(CompraStatus.AGUARDANDO_PGTO);
+		compraRepo.save(compraAtual);
+		
+		List<Produto> listaVazia = new ArrayList<Produto>();
+		cliente.setProdutos(listaVazia);
+		clienteRepo.save(cliente);
+		
 		return mv;
 	}
 }

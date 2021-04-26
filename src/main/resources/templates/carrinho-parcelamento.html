@@ -27,94 +27,42 @@
 		<div class="container py-4">
 	      <div class="row py-4">
 	        <div class="col-7 me-5">
-	          <h3 class="mb-4">Como você prefere pagar?</h3>
-	          <div class="cartao__pgto my-3 d-flex align-items-center justify-content-between">
-	            <div class="d-flex align-items-center">
-	              <div class="mx-3">
-	                <i class="far fa-credit-card pgto__ico"></i>
-	              </div>
-	              <label for="cartao1">Cartão: *** 123</label>
-	            </div>            
-	            <a href="carrinho-pgto.html">Alterar</a>
-	          </div>
+	          	<h3 class="mb-4">Como você prefere pagar?</h3>
+	          	<div class="cartao__pgto my-3 d-flex align-items-center justify-content-between">
+	            	<div class="d-flex align-items-center">
+	              		<div class="mx-3">
+	                		<i class="far fa-credit-card pgto__ico"></i>
+	              		</div>
+	              		<label th:text="'Cartão: ' + ${compra.documento}">Cartão: xxx-xxx</label>
+	            	</div>            
+	            	<a href="carrinho-pgto">Alterar</a>
+	          	</div>
 	
-	          <div class="cartao__pgto my-3 d-flex align-items-center justify-content-between ">
-	            <div class="d-flex align-items-center form-group">
-	              <label for="vale-troca" style="width: 125px;">Cupom:</label>
-	              <input type="text" class="form-control" id="vale-troca">
-	            </div>            
-	            <a href="carrinho-pgto.html">Utilizar</a>
-	          </div>
+	          	<div class="cartao__pgto my-3 d-flex align-items-center justify-content-between ">
+	            	<div class="d-flex align-items-center form-group">
+	              		<label for="vale-troca" style="width: 125px;">Cupom:</label>
+	              		<input type="text" name="cupom" class="form-control" id="vale-troca">
+            		</div>            
+	            	<a href="carrinho-pgto.html">Utilizar</a>
+	          	</div>
 	
-	          <div class="mt-5">
-	            <h3 class="mb-4">Em quantas vezes?</h3>
-	            <ul class="parc__list">
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc1" class="me-2">
-	                  <label for="parc1"><span class="fw-bold">1x</span> R$ 1.150,00</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc2" class="me-2">
-	                  <label for="parc2"><span class="fw-bold">2x</span> R$ 575,00</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc3" class="me-2">
-	                  <label for="parc3"><span class="fw-bold">3x</span> R$ 383,33</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc4" class="me-2">
-	                  <label for="parc4"><span class="fw-bold">4x</span> R$ 287,50</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc5" class="me-2">
-	                  <label for="parc5"><span class="fw-bold">5x</span> R$ 230,00</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc6" class="me-2">
-	                  <label for="parc6"><span class="fw-bold">6x</span> R$ 191,66</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc7" class="me-2">
-	                  <label for="parc7"><span class="fw-bold">7x</span> R$ 164,28</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc8" class="me-2">
-	                  <label for="parc8"><span class="fw-bold">8x</span> R$ 143,75</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc9" class="me-2">
-	                  <label for="parc9"><span class="fw-bold">9x</span> R$ 127,77</label>
-	                </div>
-	              </li>
-	              <li class="parc__pgto">
-	                <div>
-	                  <input type="radio" name="parcela" id="parc10" class="me-2">
-	                  <label for="parc10"><span class="fw-bold">10x</span> R$ 115,00</label>
-	                </div>
-	              </li>
-	            </ul>
-	          </div>
-	
-	          <div class="text-end">
-	            <a href="/carrinho-revisao" class="btn btn-success">Continuar</a>
-	          </div>
+				<form method="post">
+		          	<div class="mt-5">		          
+			            <h3 class="mb-4">Em quantas vezes?</h3>		            	            
+		            	<ul class="parc__list">	            
+		              		<li class="parc__pgto" th:each="parcela, parcStat : ${parcelas}">
+		                		<div>		           
+		                  			<input type="radio" name="parcela" th:id="${parcStat.index}" class="me-2" th:value="${parcela} + ':' + (${parcStat.index} +1)" required>
+		                  			<label th:for="${parcStat.index}"><span class="fw-bold" th:text="${#ids.seq('')}">1x</span><span th:text="'x R$ ' + ${parcela}">R$ 0,00</span></label>
+		                		</div>
+		              		</li>
+		            	</ul>
+		          	</div>
+		
+		          	<div class="text-end">
+		            	<button type="submit" class="btn btn-success">Continuar</a>
+		          	</div>
+	       		</form>
 	        </div>
 	        
 	        <div th:replace="~{baseProdutoCarrinho :: baseProduto}"></div>

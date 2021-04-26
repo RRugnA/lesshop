@@ -1,0 +1,22 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<header th:replace="~{baseIndex :: header}"></header>
+	<nav th:replace="~{baseCrud :: nav-cupom}"></nav>
+	
+	<main>
+	
+		<div class="container mt-4">
+			<div class="text-end">
+	        	<a href="/login-home">
+	          		<button class="btn btn-primary">Voltar</button>
+	        	</a>
+	    	</div>
+		</div>
+		
+	</main>	
+	
+	<div th:replace="~{baseIndex :: scripts}"></div>
+</body>	
+</html>

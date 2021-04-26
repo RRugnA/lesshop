@@ -17,10 +17,13 @@ import br.com.fatec.les.crudsimples.dto.RequisicaoDocumento;
 import br.com.fatec.les.crudsimples.dto.RequisicaoEndereco;
 import br.com.fatec.les.crudsimples.dto.RequisicaoUsuario;
 import br.com.fatec.les.crudsimples.model.Cliente;
+import br.com.fatec.les.crudsimples.model.Compra;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
+import br.com.fatec.les.crudsimples.model.Produto;
 import br.com.fatec.les.crudsimples.model.Usuario;
 import br.com.fatec.les.crudsimples.repository.ClienteRepository;
+import br.com.fatec.les.crudsimples.repository.CompraRepository;
 import br.com.fatec.les.crudsimples.repository.DocumentoRepository;
 import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
 import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
@@ -33,15 +36,14 @@ public class ClienteController {
 	
 	@Autowired
 	private ClienteRepository clienteRepo;
-	
 	@Autowired
 	private EnderecoRepository endRepo;
-	
 	@Autowired
 	private DocumentoRepository docRepo;
-	
 	@Autowired
 	private UsuarioRepository userRepo;
+	@Autowired
+	private CompraRepository compraRepo;
 	
 	@GetMapping("cadastro-login")
 	public ModelAndView cadastrarLogin() {
@@ -173,17 +175,6 @@ public class ClienteController {
 		return mv;
 	}
 	
-//	@GetMapping("editar-cliente/{id}")
-//	public ModelAndView editarCliente(@PathVariable("id") Long id) {
-//		mv = new ModelAndView("cliente/editar-cliente");
-//		
-//		Cliente cliente = clienteRepo.findById(id).get();
-//
-//		mv.addObject("cliente", cliente);
-//		
-//		return mv;
-//	}
-	
 	@PostMapping("editar-cliente/{id}")
 	public String editarCliente(@PathVariable("id") Long id, RequisicaoCliente requisicao, Principal principal) {
 		Cliente cliente = clienteRepo.findById(id).get();
@@ -253,8 +244,6 @@ public class ClienteController {
 		
 		return "redirect:/cliente/enderecos-cadastrados/" + cliente.getId().toString();
 	}
-	
-	
 	
 	@GetMapping("cadastrar-documento/{id}")
 	public ModelAndView incluirDocumento() {
@@ -362,6 +351,28 @@ public class ClienteController {
 		String sucesso = "Documento excluído";
 		mv.addObject("sucesso", sucesso);
 		
+		return mv;
+	}
+	
+	@GetMapping("historico-de-compras")
+	public ModelAndView historico(Principal principal) {
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		
+		mv = new ModelAndView("cliente/historico");
+		mv.addObject("compras", compras);
+		return mv;
+	}
+	
+	@GetMapping("detalhes-historico/{id}")
+	public ModelAndView detalhesHistorico(@PathVariable("id") Long id) {
+		Compra compra = compraRepo.findById(id).get();
+		List<Produto> produtos = compra.getListaCompras();
+		
+		mv = new ModelAndView("cliente/detalhes-historico");
+		mv.addObject("compra", compra);
+		mv.addObject("produtos", produtos);
 		return mv;
 	}
 }

@@ -3,15 +3,26 @@ package br.com.fatec.les.crudsimples.dto;
 import java.time.LocalDate;
 
 import br.com.fatec.les.crudsimples.model.Compra;
+import br.com.fatec.les.crudsimples.model.CompraStatus;
 
 public class RequisicaoCompra {
 
+	private String id;
 	private String cliente;
 	private String endereco;
 	private String documento;
 	private String parcela;
 	private String valorTotal;
 	private String nomeProduto;
+	private String compraStatus;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getCliente() {
 		return cliente;
@@ -61,10 +72,21 @@ public class RequisicaoCompra {
 		this.nomeProduto = nomeProduto;
 	}
 
+	public String getCompraStatus() {
+		return compraStatus;
+	}
+
+	public void setCompraStatus(String compraStatus) {
+		this.compraStatus = compraStatus;
+	}
+
 	public Compra toCompra() {
 		Compra compra = new Compra();
+
 		compra.setDataCadastro(LocalDate.now());
-		
+		compra.setCompraStatus(CompraStatus.ANDAMENTO);
+
 		return compra;
 	}
+
 }

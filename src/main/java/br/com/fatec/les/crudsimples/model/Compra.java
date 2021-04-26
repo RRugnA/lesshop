@@ -15,8 +15,11 @@ import javax.persistence.OneToOne;
 public class Compra extends EntidadeDominio {
 
 	@ManyToMany
-	@JoinTable(name = "compra_produto", joinColumns = @JoinColumn(name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "produto_id", referencedColumnName = "id"))
-	private List<Produto> produtos;
+	@JoinTable(
+			name = "compra_produto", joinColumns = @JoinColumn(
+			name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(
+			name = "prod_id", referencedColumnName = "id"))
+	private List<Produto> listaCompras;
 
 	@OneToOne
 	private Cliente cliente;
@@ -32,13 +35,14 @@ public class Compra extends EntidadeDominio {
 	private String documento;
 	private int parcelas;
 	private BigDecimal valorTotal;
+	private BigDecimal valorParcela;
 
-	public List<Produto> getProdutos() {
-		return produtos;
+	public List<Produto> getListaCompras() {
+		return listaCompras;
 	}
 
-	public void setProdutos(List<Produto> produtos) {
-		this.produtos = produtos;
+	public void setListaCompras(List<Produto> listaCompras) {
+		this.listaCompras = listaCompras;
 	}
 
 	public Cliente getCliente() {
@@ -97,4 +101,39 @@ public class Compra extends EntidadeDominio {
 		this.compraStatus = compraStatus;
 	}
 
+	public BigDecimal getValorParcela() {
+		return valorParcela;
+	}
+
+	public void setValorParcela(BigDecimal valorParcela) {
+		this.valorParcela = valorParcela;
+	}
+
+	public Compra localizaCompra(CompraStatus situacao, List<Compra> compras) {
+		
+		for(Compra compra : compras) {
+			if(compra.getCompraStatus().equals(situacao)) {
+				return compra;
+			}
+		}
+		
+				
+//		for (Compra compra : compras) {
+//			if (compra.getCompraStatus().equals(CompraStatus.valueOf("ANDAMENTO"))) {
+//				return compra;
+//			}
+//		}
+		return null;
+	}
+
+	public BigDecimal toValorParcela(String inputParcela) {
+		String[] splitParcela = inputParcela.split(":");
+		BigDecimal valor = new BigDecimal(splitParcela[0]);
+		return valor;
+	}
+
+	public int toQtdeParcela(String inputParcela) {
+		String[] splitParcela = inputParcela.split(":");
+		return Integer.parseInt(splitParcela[1]);
+	}
 }

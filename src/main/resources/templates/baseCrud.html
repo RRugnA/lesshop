@@ -40,9 +40,10 @@
         <h2>Painel Administrativo</h2>
       </div>
       <nav class="navbar navbar-expand navbar-light bg-light mb-3v">
-        <a class="nav-item nav-link mr-1" href="/adm/adm-clientes">Clientes</a>
-        <a class="nav-item nav-link mr-1"  style="color: gray;">Vendas</a>
+        <a class="nav-item nav-link mr-1" href="/adm/exibir-clientes">Clientes</a>
+        <a class="nav-item nav-link mr-1" href="/adm/exibir-vendas">Vendas</a>
         <a class="nav-item nav-link mr-1" href="/adm/controle-estoque">Estoque</a>
+        <a class="nav-item nav-link mr-1" href="/adm/controle-cupom">Cupons</a>
         <a class="nav-item nav-link mr-1"  style="color: gray;">Análise de Vendas</a>
       </nav>
     </div>
@@ -60,6 +61,18 @@
     </div>
 </nav>
 
+<nav th:fragment="nav-cupom">
+	<div class="container header-img">
+      <div class="my-3">
+        <h2>Controle de Cupons</h2>
+      </div>
+      <nav class="navbar navbar-expand navbar-light bg-light mb-3v">
+        <a class="nav-item nav-link mr-1" href="/adm/cadastrar-cupom">Novo Cupom</a>
+        <a class="nav-item nav-link mr-1" href="/adm/listar-cupons">Listar Cupons</a>
+      </nav>
+    </div>
+</nav>
+
 <nav th:fragment="nav-user">
 	<div class="container header-img">
 		<div class="my-3">
@@ -69,6 +82,7 @@
 			<a class="nav-item nav-link mr-1" href="/cliente/exibir-dados-pessoais">Dados Pessoais</a> 
 			<a class="nav-item nav-link mr-1" href="/cliente/exibir-enderecos">Endereços</a> 
 			<a class="nav-item nav-link mr-1" href="/cliente/exibir-opcoes-pagamento">Opções de Pagamento</a>
+			<a class="nav-item nav-link mr-1" href="/cliente/historico-de-compras">Histórico de Compras</a>
 		</nav>
 	</div>
 </nav>
