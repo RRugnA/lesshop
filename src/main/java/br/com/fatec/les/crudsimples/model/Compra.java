@@ -32,6 +32,13 @@ public class Compra extends EntidadeDominio {
 	@Enumerated(EnumType.STRING)
 	private CompraStatus compraStatus;
 
+	@ManyToMany
+	@JoinTable(
+			name = "compra_cupom", joinColumns = @JoinColumn(
+			name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(
+			name = "cupom_id", referencedColumnName = "codigo"))
+	private List<Cupom> cupons;
+	
 	private String documento;
 	private int parcelas;
 	private BigDecimal valorTotal;
@@ -109,6 +116,22 @@ public class Compra extends EntidadeDominio {
 		this.valorParcela = valorParcela;
 	}
 
+	public List<Cupom> getCupons() {
+		return cupons;
+	}
+
+	public void setCupons(List<Cupom> cupons) {
+		this.cupons = cupons;
+	}
+	
+	public void addCupom(Cupom cupom) {
+		this.cupons.add(cupom);
+	}
+	
+	public void removeCupom(Cupom cupom) {
+		this.cupons.remove(cupom);
+	}
+
 	public Compra localizaCompra(CompraStatus situacao, List<Compra> compras) {
 		
 		for(Compra compra : compras) {
@@ -136,4 +159,6 @@ public class Compra extends EntidadeDominio {
 		String[] splitParcela = inputParcela.split(":");
 		return Integer.parseInt(splitParcela[1]);
 	}
+	
+	
 }

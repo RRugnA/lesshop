@@ -87,6 +87,9 @@ public class RequisicaoProduto {
 
 		prod.setProNome(nomeProduto);
 		
+		if (this.getId() != null) {
+			prod.setId(Long.valueOf(id));
+		}
 		if (this.getQtdProduto() != null) {
 			prod.setProQtde(Integer.parseInt(qtdProduto));
 		}

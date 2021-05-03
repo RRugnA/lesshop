@@ -38,15 +38,30 @@
 	            	<a href="carrinho-pgto">Alterar</a>
 	          	</div>
 	
-	          	<div class="cartao__pgto my-3 d-flex align-items-center justify-content-between ">
-	            	<div class="d-flex align-items-center form-group">
-	              		<label for="vale-troca" style="width: 125px;">Cupom:</label>
-	              		<input type="text" name="cupom" class="form-control" id="vale-troca">
-            		</div>            
-	            	<a href="carrinho-pgto.html">Utilizar</a>
+	          	<div class="cartao__pgto my-3">
+	          	
+	          		<form method="post" class="d-flex align-items-center justify-content-between" th:action="@{/verificar-cupom}">
+	            		<div class="d-flex align-items-center form-group">
+		              		<label for="vale-troca" class="me-4">Cupom:</label>
+		              		<input type="text" name="codigo" class="form-control" id="codigo" >		           		              		
+            			</div>            
+	            		<button type="submit" class="border-0 bg-0">Utilizar</button>	            		          
+	            	</form>
+	            	
+	            	
+	            	<div th:if="${cupons != null}" th:each="cupom : ${cupons}" class="d-flex align-items-center form-group mb-3">	              		
+              			<label for="vale-troca" class="me-4">Cupom:</label>
+              			<input  type="text" name="codigo" class="form-control me-4" id="codigo" th:value="${cupom.codigo} + ' - R$ ' + ${cupom.valorDesconto} + ' de desconto!'" >
+              			<a th:href="@{'/carrinho-parcelamento/' + ${cupom.codigo}}" class="far fa-times-circle c-red" alt="remover cupom"></a>	              		
+	            	</div>
+	            	
+	            	<div>
+              			<span th:text="${aviso}" th:classappend="${aviso} == 'Código Válido' ? 'c-green' : 'c-red'"></span>
+              		</div>
+              			 
 	          	</div>
 	
-				<form method="post">
+				<form method="post" th:action="@{/carrinho-parcelamento}">
 		          	<div class="mt-5">		          
 			            <h3 class="mb-4">Em quantas vezes?</h3>		            	            
 		            	<ul class="parc__list">	            
@@ -58,7 +73,6 @@
 		              		</li>
 		            	</ul>
 		          	</div>
-		
 		          	<div class="text-end">
 		            	<button type="submit" class="btn btn-success">Continuar</a>
 		          	</div>

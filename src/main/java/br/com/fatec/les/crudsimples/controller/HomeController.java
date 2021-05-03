@@ -3,8 +3,10 @@ package br.com.fatec.les.crudsimples.controller;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -15,24 +17,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.fatec.les.crudsimples.dto.RequisicaoCompra;
+import br.com.fatec.les.crudsimples.dto.RequisicaoCupom;
 import br.com.fatec.les.crudsimples.dto.RequisicaoProduto;
 import br.com.fatec.les.crudsimples.model.Cidade;
 import br.com.fatec.les.crudsimples.model.Cliente;
 import br.com.fatec.les.crudsimples.model.Compra;
 import br.com.fatec.les.crudsimples.model.CompraStatus;
+import br.com.fatec.les.crudsimples.model.Cupom;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
 import br.com.fatec.les.crudsimples.model.Estado;
 import br.com.fatec.les.crudsimples.model.FormaPgto;
 import br.com.fatec.les.crudsimples.model.Produto;
 import br.com.fatec.les.crudsimples.model.StatusProduto;
+import br.com.fatec.les.crudsimples.model.TipoCupom;
+import br.com.fatec.les.crudsimples.model.UsoCupom;
 import br.com.fatec.les.crudsimples.model.Usuario;
 import br.com.fatec.les.crudsimples.repository.ClienteRepository;
 import br.com.fatec.les.crudsimples.repository.CompraRepository;
+import br.com.fatec.les.crudsimples.repository.CupomRepository;
 import br.com.fatec.les.crudsimples.repository.DocumentoRepository;
 import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
 import br.com.fatec.les.crudsimples.repository.ProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
+import br.com.fatec.les.crudsimples.strategy.ValidaCupom;
 
 @Controller
 public class HomeController {
@@ -51,6 +59,8 @@ public class HomeController {
 	private DocumentoRepository docRepo;
 	@Autowired
 	private CompraRepository compraRepo;
+	@Autowired
+	private CupomRepository cupomRepo;
 	
 	@GetMapping("lesshop")
 	public ModelAndView index() {		
@@ -304,11 +314,108 @@ public class HomeController {
 		
 		compraAtual.setValorParcela(compraAtual.toValorParcela(requisicao.getParcela()));
 		compraAtual.setParcelas(compraAtual.toQtdeParcela(requisicao.getParcela()));
-		
+		compraAtual.setValorTotal(cliente.getValorDeCompra());
 		compraRepo.save(compraAtual);
 		
 		return "redirect:/carrinho-revisao";
 	}
+	
+	@PostMapping("/verificar-cupom")
+	public ModelAndView verificarCupom(Principal principal, RequisicaoCupom requisicao) {
+		mv = carrinhoParcelamento(principal);
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();	
+		
+		Compra compraAtual = new Compra();
+
+//		IDENTIFICANDO COMPRA ATUAL
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		
+//		VALIDANDO CÓDIGO DO CUPOM INFORMADO
+		try {
+			Cupom cupom = cupomRepo.findById(requisicao.getCodigo()).get();
+			
+			if(!ValidaCupom.cupomValido(cupom.getCodigo(), compraAtual.getCupons())) {
+				mv.addObject("aviso", "Código Já utilizado");
+				mv.addObject("cupons", compraAtual.getCupons());
+				return mv;
+			}			
+			
+//		BARRANDO CUPONS DESNECESSÁRIOS (RN0036)
+			BigDecimal somaCupons = ValidaCupom.somaCupons(compraAtual.getCupons());
+			if(ValidaCupom.cupomMaior(somaCupons, compraAtual.getValorTotal())){
+				mv.addObject("aviso", "Cupom não utilizado. O valor atual é suficiente para realizar a compra!");
+				mv.addObject("cupons", compraAtual.getCupons());
+				return mv;
+			}
+			
+			compraAtual.addCupom(cupom);
+			compraRepo.save(compraAtual);					
+			mv.addObject("aviso", "Código Válido");
+			mv.addObject("cupons", compraAtual.getCupons());
+			
+		}catch (NoSuchElementException er){
+			mv.addObject("aviso", "Código inválido");
+			
+		}
+		
+//		APLICANDO DESCONTO NO VALOR DA COMPRA
+		if(compraAtual.getCupons() != null) {
+			BigDecimal valorDesconto = new BigDecimal(0);
+			for(Cupom cupom : compraAtual.getCupons()) {
+				valorDesconto = valorDesconto.add(cupom.getValorDesconto());
+			}
+			
+			System.out.println("Valor desconto: " + valorDesconto);
+			
+			cliente.setValorDeCompra(cliente.getValorDeCompra().subtract(valorDesconto));
+			if(cliente.getValorDeCompra().doubleValue() < 0) {
+				cliente.setValorDeCompra(new BigDecimal(0));
+			}
+			System.out.println("valor com desconto: " + cliente.getValorDeCompra());
+			clienteRepo.save(cliente);
+		}
+		
+//		CALCULANDO O VALOR DAS PARCELAS
+		List<BigDecimal> parcelas = new ArrayList<BigDecimal>();		
+		for(int i = 1; i <= 10; i++) {		
+			BigDecimal valorParcela = cliente.getValorDeCompra();
+			valorParcela = valorParcela.divide(new BigDecimal(i), 2, RoundingMode.HALF_DOWN);
+			parcelas.add(valorParcela);
+		}
+		
+		mv.addObject("parcelas", parcelas);
+		return mv;
+	}
+	
+	@GetMapping("carrinho-parcelamento/{codigo}")
+	public ModelAndView removerCupom(@PathVariable("codigo")String codigo, Principal principal, RequisicaoCupom requisicao) {
+		mv = verificarCupom(principal, requisicao);
+		
+		Cupom cupom = cupomRepo.findById(codigo).get();
+		
+		Usuario user = userRepo.findByLogin(principal.getName());
+		Cliente cliente = user.getCliente();	
+		
+		Compra compraAtual = new Compra();
+
+//		IDENTIFICANDO COMPRA ATUAL
+		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		
+//		REMOVENDO CUPOM DA COMPRA
+		compraAtual.removeCupom(cupom);		
+		compraRepo.save(compraAtual);
+		
+//		REMOVENDO DESCONTO DO VALOR DA COMPRA
+		cliente.setValorDeCompra(cliente.getValorDeCompra().add(cupom.getValorDesconto()));
+		clienteRepo.save(cliente);
+		
+		mv.addObject("aviso", "Cupom excluído");
+		return mv;
+	}
+	
 	
 	@GetMapping("carrinho-revisao")
 	public ModelAndView carrinhoRevisao(Principal principal) {
@@ -352,10 +459,13 @@ public class HomeController {
 		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
 		Compra compraAtual = new Compra().localizaCompra(CompraStatus.PROCESSAMENTO, compras);
 		
+		BigDecimal valorTotalProdutos = new BigDecimal(0);		
 		List<Produto> produtos = new ArrayList<Produto>();
 		for(Produto produto: compraAtual.getListaCompras()) {
 			produtos.add(produto);
+			valorTotalProdutos = valorTotalProdutos.add(produto.getProValor());
 		}
+		System.out.println("Valor dos produtos: " + valorTotalProdutos);
 		
 		mv = new ModelAndView("carrinho-sucesso");
 		mv.addObject("produtos", produtos);
@@ -363,10 +473,35 @@ public class HomeController {
 		mv.addObject("cliente", cliente);
 		
 		compraAtual.setCompraStatus(CompraStatus.AGUARDANDO_PGTO);
+		
+//		INATIVANDO CUPONS UNITÁRIOS
+		List<Cupom> cupons = compraAtual.getCupons();
+		for(Cupom cupom : cupons) {
+			if(cupom.getUsoCupom().equals(UsoCupom.UNICO))
+				cupom.setTipoCupom(TipoCupom.INATIVO);
+		}
+		compraAtual.setCupons(cupons);
+		
+//		GERANDO CUPOM DE COMPENSAÇÃO
+		BigDecimal somaCupons = ValidaCupom.somaCupons(compraAtual.getCupons());
+		System.out.println("Soma dos cupons: " + somaCupons);
+		if(ValidaCupom.cupomMaior(somaCupons, valorTotalProdutos)) {
+			Cupom cupomCompensacao = new Cupom();
+			cupomCompensacao.setCodigo(ValidaCupom.gerarCupom(compraAtual.getCupons()));
+			cupomCompensacao.setDataCadastro(LocalDate.now());
+			cupomCompensacao.setTipoCupom(TipoCupom.COMPENSACAO);
+			cupomCompensacao.setUsoCupom(UsoCupom.UNICO);
+			cupomCompensacao.setValorDesconto(ValidaCupom.valorCompensado(somaCupons, valorTotalProdutos));
+			System.out.println("Cupom de compensação: " + cupomCompensacao.getCodigo() + " - valor: R$ " + cupomCompensacao.getValorDesconto());
+			cupomRepo.save(cupomCompensacao);
+			compraAtual.addCupom(cupomCompensacao);
+		}		
+		
 		compraRepo.save(compraAtual);
 		
 		List<Produto> listaVazia = new ArrayList<Produto>();
 		cliente.setProdutos(listaVazia);
+		cliente.setValorDeCompra(new BigDecimal(0));
 		clienteRepo.save(cliente);
 		
 		return mv;

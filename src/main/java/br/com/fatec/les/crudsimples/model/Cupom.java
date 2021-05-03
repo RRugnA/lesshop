@@ -1,22 +1,32 @@
 package br.com.fatec.les.crudsimples.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Cupom {
 
 	@Id
 	private String codigo;
-	
+
 	@Enumerated(EnumType.STRING)
 	private TipoCupom tipoCupom;
-	private int valorDesconto;
+
+	@Enumerated(EnumType.STRING)
+	private UsoCupom usoCupom;
+
+	private BigDecimal valorDesconto;
 	private LocalDate dataCadastro;
+
+	@ManyToMany
+	private List<Compra> compras;
 
 	public String getCodigo() {
 		return codigo;
@@ -25,7 +35,7 @@ public class Cupom {
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
-	
+
 	public TipoCupom getTipoCupom() {
 		return tipoCupom;
 	}
@@ -34,11 +44,11 @@ public class Cupom {
 		this.tipoCupom = tipoCupom;
 	}
 
-	public int getValorDesconto() {
+	public BigDecimal getValorDesconto() {
 		return valorDesconto;
 	}
 
-	public void setValorDesconto(int valorDesconto) {
+	public void setValorDesconto(BigDecimal valorDesconto) {
 		this.valorDesconto = valorDesconto;
 	}
 
@@ -50,5 +60,24 @@ public class Cupom {
 		this.dataCadastro = dataCadastro;
 	}
 
-	
+	public List<Compra> getCompras() {
+		return compras;
+	}
+
+	public void setCompras(List<Compra> compras) {
+		this.compras = compras;
+	}
+
+	public void addCompra(Compra compra) {
+		this.compras.add(compra);
+	}
+
+	public UsoCupom getUsoCupom() {
+		return usoCupom;
+	}
+
+	public void setUsoCupom(UsoCupom usoCupom) {
+		this.usoCupom = usoCupom;
+	}
+
 }

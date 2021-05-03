@@ -18,10 +18,12 @@ import br.com.fatec.les.crudsimples.model.Compra;
 import br.com.fatec.les.crudsimples.model.CompraStatus;
 import br.com.fatec.les.crudsimples.model.Cupom;
 import br.com.fatec.les.crudsimples.model.Produto;
+import br.com.fatec.les.crudsimples.model.StatusProduto;
 import br.com.fatec.les.crudsimples.repository.ClienteRepository;
 import br.com.fatec.les.crudsimples.repository.CompraRepository;
 import br.com.fatec.les.crudsimples.repository.CupomRepository;
 import br.com.fatec.les.crudsimples.repository.ProdutoRepository;
+import br.com.fatec.les.crudsimples.strategy.GeraCupom;
 
 @Controller
 @RequestMapping("adm")
@@ -59,7 +61,7 @@ public class AdmController {
 	public ModelAndView painelEstoque() {
 		mv = new ModelAndView("adm/adm-produtos");
 		return mv;
-	}
+	}	
 	
 	@GetMapping("/cadastrar-produto")
 	public ModelAndView novoProduto() {
@@ -74,6 +76,49 @@ public class AdmController {
 		prodRepo.save(prod);
 		
 		return "redirect:/adm/controle-estoque";
+	}
+	
+	@GetMapping("/editar-produto/{id}")
+	public ModelAndView editarProduto(@PathVariable("id") Long id) {
+		Produto produto = prodRepo.findById(Long.valueOf(id)).get();
+		
+		mv = new ModelAndView("adm/editar-produto");
+		mv.addObject("produto", produto);
+		
+		return mv;
+	}
+	
+	@PostMapping("/editar-produto/{id}")
+	public String editarProduto(RequisicaoProduto requisicao) {
+		Produto produto = requisicao.toProduto();		
+		prodRepo.save(produto);
+		
+		return "redirect:/adm/listar-produtos";
+	}
+	
+	@GetMapping("/listar-produtos")
+	public ModelAndView exibiProdutos() {
+		mv = new ModelAndView("adm/adm-exibir-produtos");
+		
+		List<Produto> produtos = prodRepo.findAll();
+		
+		mv.addObject("produtos", produtos);
+		
+		return mv;
+	}
+	
+	@PostMapping("/listar-produtos")
+	public String inativarProduto(RequisicaoProduto requisicao) {
+		Produto produto = prodRepo.findById(Long.valueOf(requisicao.getId())).get();
+		if(produto.getProdStatus().equals(StatusProduto.ESTOQUE)) {
+			produto.setProdStatus(StatusProduto.INATIVO);
+		} else {
+			produto.setProdStatus(StatusProduto.ESTOQUE);
+		}		
+		
+		prodRepo.save(produto);
+		
+		return "redirect:/adm/listar-produtos";
 	}
 	
 	@GetMapping("/controle-cupom")
@@ -121,12 +166,30 @@ public class AdmController {
 		mv.addObject("produtos", produtos);
 		return mv;
 	}
+	
 	@PostMapping("/exibir-vendas")
 	public String alterarStatus(RequisicaoCompra requisicao) {
 		Compra compra = compraRepo.findById(Long.valueOf(requisicao.getId())).get();
+		
+		if(compra.getCompraStatus().equals(CompraStatus.TROCA_SOLICITADA)){
+			List<Cupom> cupons = cupomRepo.findAll();
+			
+			Cupom cupomTroca = new Cupom();				
+			cupomTroca = new RequisicaoCupom().cupomTroca(compra.getValorTotal());			
+			cupomTroca.setCodigo(GeraCupom.gerarCupom(cupons));
+			System.out.println("Código: " + cupomTroca.getCodigo());			
+			cupomRepo.save(cupomTroca);
+			
+			compra.addCupom(cupomTroca);
+			compra.setCompraStatus(CompraStatus.TROCA_AUTORIZADA);
+			compraRepo.save(compra);
+			
+			return "redirect:/adm/exibir-vendas";
+		} 
+		
 		compra.setCompraStatus(CompraStatus.valueOf(requisicao.getCompraStatus()));
 		compraRepo.save(compra);
+		return "redirect:/adm/exibir-vendas";		
 		
-		return "redirect:/adm/exibir-vendas";
 	}
 }

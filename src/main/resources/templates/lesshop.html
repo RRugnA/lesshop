@@ -54,7 +54,7 @@
 	              <a href="/produto" class="painel__link"><p th:text="${produto.proNome}">PRODUTO</p></a>
 	            </div>
 	            
-	            <form method="post">
+	            <form method="post" th:id="'form'+${produto.id}">
 	            	<input type="hidden" th:value="${produto.id}" name="id">
 	            	<div class="text-center">
 	              		<button type="submit" class="btn btn-carrinho">Adicionar ao Carrinho</button>

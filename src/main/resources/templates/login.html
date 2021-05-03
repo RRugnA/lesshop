@@ -13,9 +13,9 @@
 	      <div class="d-flex flex-column align-items-center mb-5">
 	        
 	        <div class="log__input" style="width: 350px;">
-				<form th:action="@{/login}" class="d-flex flex-column mb-0" method="POST">
-					<input type="text" placeholder="Usuário" name="username" class="form-control mb-3">
-					<input type="password" placeholder="Senha" name="password" class="form-control mb-3">
+				<form th:action="@{/login}" class="d-flex flex-column mb-0" method="POST" id="login-form">
+					<input id="username" type="text" placeholder="Usuário" name="username" class="form-control mb-3">
+					<input id="password" type="password" placeholder="Senha" name="password" class="form-control mb-3">
 					<button class="btn btn-primary" type="submit">Login</button>			
 				</form>
 			</div>

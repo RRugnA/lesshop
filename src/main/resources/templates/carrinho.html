@@ -87,7 +87,7 @@
 			            	<a href="/carrinho-login" class="btn btn-success nav-carrinho__btn" sec:authorize="!isAuthenticated()">FINALIZAR COMPRA</a>
 			            </div>
 		              	<div th:if="!${#arrays.isEmpty(produtos)}">	
-		              		<form action="/carrinho" method="post">
+		              		<form action="/carrinho" method="post" id="carrinho-finalizar">
 		              			<input th:each="produto : ${produtos}" type="hidden" th:name="${produto.id}">	              		
 		              			<button type="submit" class="btn btn-success nav-carrinho__btn" sec:authorize="isAuthenticated()">FINALIZAR COMPRA</button>
 		              		</form>

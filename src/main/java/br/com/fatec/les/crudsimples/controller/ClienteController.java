@@ -18,6 +18,8 @@ import br.com.fatec.les.crudsimples.dto.RequisicaoEndereco;
 import br.com.fatec.les.crudsimples.dto.RequisicaoUsuario;
 import br.com.fatec.les.crudsimples.model.Cliente;
 import br.com.fatec.les.crudsimples.model.Compra;
+import br.com.fatec.les.crudsimples.model.CompraStatus;
+import br.com.fatec.les.crudsimples.model.Cupom;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
 import br.com.fatec.les.crudsimples.model.Produto;
@@ -369,10 +371,21 @@ public class ClienteController {
 	public ModelAndView detalhesHistorico(@PathVariable("id") Long id) {
 		Compra compra = compraRepo.findById(id).get();
 		List<Produto> produtos = compra.getListaCompras();
+		List<Cupom> cupons = compra.getCupons();
 		
 		mv = new ModelAndView("cliente/detalhes-historico");
 		mv.addObject("compra", compra);
 		mv.addObject("produtos", produtos);
+		mv.addObject("cupons", cupons);
 		return mv;
+	}
+	
+	@PostMapping("detalhes-historico/{id}")
+	public String solicitarTroca(@PathVariable("id") Long id) {
+		Compra compra = compraRepo.findById(id).get();
+		compra.setCompraStatus(CompraStatus.TROCA_SOLICITADA);
+		compraRepo.save(compra);
+		
+		return "redirect:/cliente/detalhes-historico/{id}";
 	}
 }

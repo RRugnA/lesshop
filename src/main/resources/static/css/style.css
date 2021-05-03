@@ -23,6 +23,15 @@ a, a:hover  {
 .c-gray {
   color: gray;
 }
+.c-light-gray {
+  color: #b9b9b9;
+}
+.c-red {
+  color: red;
+}
+.c-green {
+  color: green;
+}
 .bg-0 {
   background: none !important;
 }
@@ -32,6 +41,10 @@ a, a:hover  {
 .title {
   color: var(--color-black1);
   text-align: center;
+}
+.btn-ico {
+  background-color: transparent;
+  border: none;
 }
 /* ===== HEADER ===== */
 .header {
@@ -406,7 +419,7 @@ a, a:hover  {
 }
 
 /* ===== MODAL ===== */
-.modal-status {
+.modal-status, .modal-status-troca {
   position: fixed;
   top: 50%;
   left: 50%;

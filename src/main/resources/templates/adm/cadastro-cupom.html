@@ -33,18 +33,31 @@
 						
 						<div class="col-lg-4 mb-3">
 							<div class="form-floating">								
-								<input class="form-control" type="number" min="0" max="100" name="valorDesconto" id="valorDesconto" placeholder="Valor do Desconto" required />
-								<label for="imgProduto">Valor do desconto (%):</label> 
+								<input class="form-control" type="number" name="valorDesconto" id="valorDesconto" placeholder="Valor do Desconto" required />
+								<label for="imgProduto">Valor do desconto (R$):</label> 
 							</div>
 						</div>
-						
+					</div>
+					
+					<div class="row">
 						<div class="col-lg-2 mb-3">
 							<div class="form-floating">					
 								<select class="form-select selectDoc" name="tipoCupom" id="tipoCupom">
 									<option value="DESCONTO">DESCONTO</option>
-									<option value="TROCA">TROCA</option>									
+									<option value="TROCA">TROCA</option>	
+									<option value="COMPENSACAO">COMPENSAÇÃO</option>									
 								</select>
 								<label for="tipoProduto">Classificação:</label>	
+							</div>							
+						</div>
+						
+						<div class="col-lg-2 mb-3">
+							<div class="form-floating">					
+								<select class="form-select selectDoc" name="usoCupom" id="usoCupom">
+									<option value="UNICO">ÚNICO</option>
+									<option value="MULTIPLO">MÚLTIPLO</option>									
+								</select>
+								<label for="usoCupom">Uso:</label>	
 							</div>							
 						</div>
 					</div>

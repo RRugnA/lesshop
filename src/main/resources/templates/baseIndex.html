@@ -28,11 +28,11 @@
           <span class="nav-carrinho__text" style="color: white">Meu Carrinho</span>
         </a>
         <i class="fas fa-user mx-2"></i>
-        <a class="header__link" href="/login" sec:authorize="!isAuthenticated()">Login</a>
-        <a class="header__link" href="/logout" sec:authorize="isAuthenticated()">Logout</a> 
+        <a class="header__link" id="linkLogin" href="/login" sec:authorize="!isAuthenticated()">Login</a>
+        <a class="header__link" id="linkLogout" href="/logout" sec:authorize="isAuthenticated()">Logout</a> 
         <span style="color:white;"> / </span> 
         <a style="color:white;text-decoration: none;" href="/cliente/cadastro-login" sec:authorize="!isAuthenticated()">Cadastre-se</a>
-        <a style="color:white;text-decoration: none;" href="/login-home" sec:authorize="isAuthenticated()"><span sec:authentication="name"></span></a>
+        <a style="color:white;text-decoration: none;" href="/login-home" sec:authorize="isAuthenticated()"><span id="usuario-logado" sec:authentication="name"></span></a>
       </div>
     </div>
 </header>

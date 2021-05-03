@@ -8,7 +8,7 @@
 
     <main>
 
-	    <div class="container">
+	    <div class="container mb-5">
 	      <div class="input-group my-3">
 	        <label class="input-group-text" for="">Pesquisar: </label>
 	        <input class="form-control" type="text" id="filtrar-tabela" placeholder="Digite o nome do produto.">
@@ -21,20 +21,41 @@
 	            <th scope="col">Produto</th>
 	            <th scope="col" class="text-center">Qtde em Estoque</th>
 	            <th scope="col">Valor</th>
+	            <th scope="col" class="text-center">Editar</th>
+	            <th scope="col" class="text-center">Ativar/Inativar</th>
 	          </tr>
 	        </thead>
+	        
 	        <tbody>
 	          <tr class="cliente" th:each="produto : ${produtos}">
-	            <th scope="row"><span th:text="${#ids.seq('')}"></span></th>
-	            <td class="info-nome"><a href="#"><span th:text="${produto.proNome}">NOME</span></a></td>
-	            <td class="text-center"><span th:text="${produto.proEstoque}">QTDE</span></td>
-	            <td>R$ <span th:text="${produto.proValor}">VALOR</span></td>
+	            <th scope="row">
+	            	<span  th:text="${#ids.seq('')}"></span>
+	            </th>
+	            <td th:classappend="${produto.prodStatus.name()} == 'INATIVO' ? 'c-light-gray' ">
+	            	<span th:text="${produto.proNome}">NOME</span>
+	            </td>
+	            <td class="text-center" th:classappend="${produto.prodStatus.name()} == 'INATIVO' ? 'c-light-gray'">
+	            	<span th:text="${produto.proEstoque}">QTDE</span>
+	            </td>
+	            <td th:classappend="${produto.prodStatus.name()} == 'INATIVO' ? 'c-light-gray'">
+	            	<span th:text="'R$ ' + ${produto.proValor}">VALOR</span>
+	            </td>
+	            <td class="text-center" th:classappend="${produto.prodStatus.name()} == 'INATIVO' ? 'c-light-gray'">
+	            	<a th:href="@{'/adm/editar-produto/' + ${produto.id}}" class="far fa-edit"></a>
+	            </td>
+	            <td class="text-center">
+	            	<form method="post">
+	            		<input type="hidden" name="id" th:value="${produto.id}">
+	            		<button type="submit" th:classappend="${produto.prodStatus.name()} == 'INATIVO' ? 'fa-unlock-alt' : 'fa-ban'" class="fas btn-ico c-red"></a>
+	            	</form>
+	            </td>
 	          </tr>
 	        </tbody>
+	        
 	      </table>
 	
 	      <div class="text-end">
-	        <a href="/login-home">
+	        <a href="/adm/controle-estoque">
 	          <button class="btn btn-primary">Voltar</button>
 	        </a>
 	      </div>

@@ -20,14 +20,14 @@ public class ProdutoController {
 	@Autowired
 	private ProdutoRepository prodRepo;
 	
-	@GetMapping("/listar-produtos")
-	public ModelAndView exibir() {
-		mv = new ModelAndView("adm/adm-exibir-produtos");
-		
-		List<Produto> produtos = prodRepo.findAll();
-		
-		mv.addObject("produtos", produtos);
-		
-		return mv;
-	}
+//	@GetMapping("/listar-produtos")
+//	public ModelAndView exibir() {
+//		mv = new ModelAndView("adm/adm-exibir-produtos");
+//		
+//		List<Produto> produtos = prodRepo.findAll();
+//		
+//		mv.addObject("produtos", produtos);
+//		
+//		return mv;
+//	}
 }

@@ -2,5 +2,5 @@ package br.com.fatec.les.crudsimples.model;
 
 public enum TipoCupom {
 
-	DESCONTO, TROCA;
+	DESCONTO, TROCA, COMPENSACAO, INATIVO;
 }

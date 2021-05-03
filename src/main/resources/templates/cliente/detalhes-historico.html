@@ -61,19 +61,54 @@
             				<div class="col-lg-6">
 	            				<span class="fw-bold">Valor total: </span>
             					<span th:text="'R$ ' + ${compra.valorTotal}">VALOR_TOTAL</span>
-            				</div>		
-							
+            				</div>								
+            				
+							<div class="col-lg-6">
+								<span th:if="${#lists.isEmpty(cupons)}" class="">Nenhum cupom utilizado na compra </span>
+								
+								<div th:each="cupom : ${cupons}" th:if="${cupom.tipoCupom.name()} != 'TROCA' and ${cupom.tipoCupom.name()} != 'COMPENSACAO'">									
+	            					<span class="fw-bold" >Cupom: </span>
+            						<span class="pe-1" th:text="${cupom.codigo}">CÓDIGO</span>
+            					</div>
+            				</div>
+            				
 						</div>
 						
 						<hr>
 						
 						<div class="row">
 						
-							<div class="col-lg-6">
+							<div class="col-lg-6 mb-3">
 	            				<span class="fw-bold">Status da Compra: </span>
             					<span th:text="${compra.compraStatus}">STATUS</span>
             				</div>
-						
+            				
+            				<div class="col-lg-6 mb-3" th:if="${compra.compraStatus.name()} == 'ENTREGUE'">
+            					<form method="post">
+            						<input type="hidden" th:value="${compra.id}">
+	            					<button class="fw-bold bg-0 border-0">
+	            						<i class="fas fa-exchange-alt pe-2 c-green"></i>
+	            						<span class="c-green">Solicitar Troca
+	            					</button>
+	            				</form>
+            				</div>
+            				
+            				<div class="col-lg-6 mb-3" th:if="${compra.compraStatus.name()} == 'TROCA_SOLICITADA'">
+            					<span class="fw-bold bg-0 border-0 c-gray">
+            						<i class="fas fa-exchange-alt pe-2 c-gray"></i>Solicitar Troca
+            					</span>	            				
+            				</div>
+            				
+            				<div class="col-lg-6 mb-3" th:each="cupom : ${cupons}" th:if="${cupom.tipoCupom.name()} == 'TROCA'">
+            					<span class="fw-bold bg-0 border-0 c-green">Cupom de troca disponível:</span>
+            					<span  th:text="${cupom.codigo}"></span>	            				
+            				</div>
+            				
+            				<div class="col-lg-6 mb-3" th:each="cupom : ${cupons}" th:if="${cupom.tipoCupom.name()} == 'COMPENSACAO'">
+            					<span class="fw-bold bg-0 border-0">Cupom de compensação disponível:</span>
+            					<span  th:text="${cupom.codigo}"></span>	            				
+            				</div>
+		            				
 							<div class="d-flex flex-direction-row justify-content-end">
 								<div>
 									<a href="/cliente/historico-de-compras" class="btn btn-primary mr-3 my-3">Voltar</a>
