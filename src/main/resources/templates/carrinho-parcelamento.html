@@ -40,7 +40,7 @@
 	
 	          	<div class="cartao__pgto my-3">
 	          	
-	          		<form method="post" class="d-flex align-items-center justify-content-between" th:action="@{/verificar-cupom}">
+	          		<form method="post" id="form-cupom" class="d-flex align-items-center justify-content-between" th:action="@{/verificar-cupom}">
 	            		<div class="d-flex align-items-center form-group">
 		              		<label for="vale-troca" class="me-4">Cupom:</label>
 		              		<input type="text" name="codigo" class="form-control" id="codigo" >		           		              		
@@ -51,8 +51,8 @@
 	            	
 	            	<div th:if="${cupons != null}" th:each="cupom : ${cupons}" class="d-flex align-items-center form-group mb-3">	              		
               			<label for="vale-troca" class="me-4">Cupom:</label>
-              			<input  type="text" name="codigo" class="form-control me-4" id="codigo" th:value="${cupom.codigo} + ' - R$ ' + ${cupom.valorDesconto} + ' de desconto!'" >
-              			<a th:href="@{'/carrinho-parcelamento/' + ${cupom.codigo}}" class="far fa-times-circle c-red" alt="remover cupom"></a>	              		
+              			<input  type="text" name="codigo" class="form-control me-4" th:id="'codigo'+${cupom.codigo}" th:value="${cupom.codigo} + ' - R$ ' + ${cupom.valorDesconto} + ' de desconto!'" >
+              			<a th:href="@{'/carrinho-parcelamento/' + ${cupom.codigo}}" class="far fa-times-circle c-red" alt="remover cupom" th:id="'remover'+${cupom.codigo}"></a>	              		
 	            	</div>
 	            	
 	            	<div>
@@ -61,14 +61,14 @@
               			 
 	          	</div>
 	
-				<form method="post" th:action="@{/carrinho-parcelamento}">
+				<form method="post" id="form-parcelas" th:action="@{/carrinho-parcelamento}">
 		          	<div class="mt-5">		          
 			            <h3 class="mb-4">Em quantas vezes?</h3>		            	            
 		            	<ul class="parc__list">	            
 		              		<li class="parc__pgto" th:each="parcela, parcStat : ${parcelas}">
 		                		<div>		           
-		                  			<input type="radio" name="parcela" th:id="${parcStat.index}" class="me-2" th:value="${parcela} + ':' + (${parcStat.index} +1)" required>
-		                  			<label th:for="${parcStat.index}"><span class="fw-bold" th:text="${#ids.seq('')}">1x</span><span th:text="'x R$ ' + ${parcela}">R$ 0,00</span></label>
+		                  			<input type="radio" name="parcela" th:id="'parc' + ${parcStat.index}" class="me-2" th:value="${parcela} + ':' + (${parcStat.index} +1)" required>
+		                  			<label th:for="'parc' + ${parcStat.index}" th:id="'parcela' + ${parcStat.index}"><span class="fw-bold" th:text="${#ids.seq('')}">1x</span><span th:text="'x R$ ' + ${parcela}">R$ 0,00</span></label>
 		                		</div>
 		              		</li>
 		            	</ul>

@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 
 @Entity
 public class Compra extends EntidadeDominio {
@@ -30,6 +31,7 @@ public class Compra extends EntidadeDominio {
 	private FormaPgto formaPgto;
 
 	@Enumerated(EnumType.STRING)
+	@OrderBy("dataCadastro ASCS")
 	private CompraStatus compraStatus;
 
 	@ManyToMany

@@ -11,7 +11,7 @@
 		<div class="modal-status">
 			<div class="container my-4 px-4">
 				<a href="#" onclick="modalStatusClose()" class="far fa-times-circle close"></a>
-				<form method="post">
+				<form method="post" id="status-form">
 				
 					<div class="mb-4">
 						<h4>Status da compra:</h4>
@@ -79,13 +79,13 @@
 	            <th scope="col" class="text-center">Detalhes</th>
 	          </tr>
 	        </thead>
-	        <tbody>
+	        <tbody id="vendas-body">
 	          <tr class="cliente" th:each="compra : ${compras}">
 	            <th scope="row"><span th:text="${#ids.seq('')}"></span></th>
 	            <td><span th:text="${compra.dataCadastro}">DATA</span></td>
 	            <td class="info-nome"><span th:text="${compra.cliente.nome}">CLIENTE</span></td>
 	            <td><span th:text="'R$ ' + ${compra.valorTotal}">VALOR</span></td>
-	            <td>
+	            <td id="td-status">
 	            	<a th:if="${compra.compraStatus.name()} != 'TROCA_SOLICITADA' and ${compra.compraStatus.name()} != 'TROCA_AUTORIZADA'" style="cursor:pointer; color:#0a58ca;" th:attr="onclick=|modalStatus(${compra.id})|">
 	            		<span th:text="${compra.compraStatus}">STATUS</span>
 	            	</a>
