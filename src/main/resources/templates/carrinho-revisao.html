@@ -43,12 +43,12 @@
           </div>
 
           <h6>Detalhes do Pagamento</h6>
-          <div class="cartao__pgto d-flex align-items-center justify-content-between mb-5">
+          <div class="cartao__pgto d-flex align-items-center justify-content-between mb-3" th:each="cartao : ${cartoes}">
             <div class="d-flex align-items-center">
               <div class="me-4">
                 <i class="far fa-credit-card pgto__ico"></i>
               </div>
-              <label th:text="'Cartão: ' + ${compra.documento}">Cartão: *** 123</label>
+              <label th:text="'Cartão: ' + ${cartao.numeroCartao}">Cartão: *** 123</label>
             </div>            
             <a href="/carrinho-pgto">Alterar</a>
           </div>

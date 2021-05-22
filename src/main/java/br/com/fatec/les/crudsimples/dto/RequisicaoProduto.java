@@ -9,7 +9,7 @@ import br.com.fatec.les.crudsimples.model.TipoProduto;
 
 public class RequisicaoProduto {
 
-	private String id;
+	private String produtoId;
 	private String nomeProduto;
 	private String qtdProduto;
 	private String tipoProduto;
@@ -18,12 +18,12 @@ public class RequisicaoProduto {
 	private String descProduto;
 	private String estoqueProduto;
 
-	public String getId() {
-		return id;
+	public String getProdutoId() {
+		return produtoId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setProdutoId(String produtoId) {
+		this.produtoId = produtoId;
 	}
 
 	public String getNomeProduto() {
@@ -86,9 +86,9 @@ public class RequisicaoProduto {
 		Produto prod = new Produto();
 
 		prod.setProNome(nomeProduto);
-		
-		if (this.getId() != null) {
-			prod.setId(Long.valueOf(id));
+
+		if (this.getProdutoId() != null) {
+			prod.setId(Long.valueOf(produtoId));
 		}
 		if (this.getQtdProduto() != null) {
 			prod.setProQtde(Integer.parseInt(qtdProduto));
@@ -96,7 +96,7 @@ public class RequisicaoProduto {
 		if (this.getEstoqueProduto() != null) {
 			prod.setProEstoque(Integer.parseInt(estoqueProduto));
 		}
-		
+
 		prod.setProdTipo(TipoProduto.valueOf(tipoProduto));
 		prod.setProImg(imgProduto);
 

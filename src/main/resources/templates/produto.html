@@ -5,57 +5,55 @@
 	<main>
 		<section class="produto mx-3 my-5">
 			<form method="post" id="form-produto">
-		      <div class="row">
-		        <div class="col-lg-6 prod__img text-center">
-		          <img th:src="${produto.proImg}" alt="">
-		        </div>
+	      		<div class="row">
+		        	<div class="col-lg-6 prod__img text-center">
+		          		<img class="img-fluid" th:src="${produto.proImg}" alt="">
+		        	</div>
 		
-		        <div class="col-lg-6 prod__desc pe-5">
-		          <div class="prod__title pb-5">
-		            <h3 class="prod__name" th:text="${produto.proNome}">NOME PRODUTO</h3>
-		            <small class="painel__link">Marca: STRINBERG</small>
-		          </div>
-		          <div class="prod__cor pb-3">
-		            <span>Cor: </span>
-		          </div>
-		          <div class="prod__pgto row py-4 d-flex align-items-center border-bottom border-top border-dark">
-		            <div class="prod__valor col-lg-6 ">
-		              <p><span class="prod__vista fw-bold" th:text="'R$ ' + ${produto.proValor}">VALOR</span> em até <br><span>10 x de </span><span class="fw-bold" th:text="${'R$ ' + produto.proValor/10}">PARCELA</span> sem juros</p>
-		            </div>
-		            <div class="prod__button col-lg-6 text-end">
-	
-	            		<input type="hidden" th:value="${produto.id}" name="id">
-	            		<div class="text-center">
-	            			<a href="/login" class="btn btn-success prod__btn" sec:authorize="!isAuthenticated()">COMPRAR</a>
-              				<button type="submit" class="btn btn-success prod__btn" sec:authorize="isAuthenticated()">COMPRAR</button>
-	            		</div>
-		            		
-		            </div>
+		        	<div class="col-lg-6 prod__desc pe-5">
+		         		<div class="prod__title pb-5">
+		            		<h3 class="prod__name" th:text="${produto.proNome}">NOME PRODUTO</h3>
+		          		</div>
+		          		<div class="prod__cor pb-3">
+		            		<span>Cor: </span>
+		          		</div>
+		          		<div class="prod__pgto row py-4 d-flex align-items-center border-bottom border-top border-dark">
+		            		<div class="prod__valor col-lg-6 ">
+		              			<p>
+		              				<span class="prod__vista fw-bold" th:text="'R$ ' + ${produto.proValor}">VALOR</span> em até <br><span>10 x de </span><span class="fw-bold" th:text="${'R$ ' + produto.proValor/10}">PARCELA</span> sem juros
+	              				</p>
+		            		</div>
+		            		<div class="prod__button col-lg-6 text-end">	
+	            				<input type="hidden" th:value="${produto.id}" name="id">
+	            				<div class="text-center">
+	            					<a href="/login" class="btn btn-success prod__btn" sec:authorize="!isAuthenticated()">COMPRAR</a>
+              						<button type="submit" class="btn btn-success prod__btn" sec:authorize="isAuthenticated()">COMPRAR</button>
+	            				</div>		            		
+		            		</div>		            
+		          		</div>
+		          		<div class="prod__estoque py-3 row">
+		            		<span class="prod__estoque__text col-lg-3">Em estoque.</span>
+		            		<div class="d-flex align-items-center py-3">
+		              			<label class="pe-3">Quantidade:</label>
+		              			<input id="qtde" type="number" name="qtdProduto" min="1" th:max="${produto.proEstoque}" required>
+		            		</div>            
+		          		</div>
+		          		<div class="row align-items-center">
+		            		<div class="col-lg-3">
+		              			<label for="frete">
+		                			<h6>Calcular Frete:</h6>
+		              			</label>
+		            		</div>
 		            
-		          </div>
-		          <div class="prod__estoque py-3 row">
-		            <span class="prod__estoque__text col-lg-3">Em estoque.</span>
-		            <div class="d-flex align-items-center py-3">
-		              <label class="pe-3">Quantidade:</label>
-		              <input id="qtde" type="number" name="qtdProduto" min="1" th:max="${produto.proEstoque}" required>
-		            </div>            
-		          </div>
-		          <div class="row align-items-center">
-		            <div class="col-lg-3">
-		              <label for="frete">
-		                <h6>Calcular Frete:</h6>
-		              </label>
-		            </div>
-		            
-		            <div class="col-lg-6 d-flex align-items-center">
-		              <input type="number" id="frete" class="form-control" placeholder="Informe apenas números">
-		              <a onclick="calculaFrete()" class="btn btn-secondary">Calcular</a>
-		            </div>
-		            <div class="valor fw-bold"></div>
-		          </div>
-		        </div>
-		      </div>
-		   </form>
+			            	<div class="col-lg-6 d-flex align-items-center">
+			              		<input type="number" id="frete" class="form-control" placeholder="Informe apenas números">
+			              		<a onclick="calculaFrete()" class="btn btn-secondary">Calcular</a>
+			            	</div>
+		            		<div class="valor fw-bold"></div>
+		          		</div>
+		        	</div>
+		      	</div>
+		   	</form>
 	    </section>
 
 	    <section class="info mx-4 pb-5 border-top border-bottom border-dark">

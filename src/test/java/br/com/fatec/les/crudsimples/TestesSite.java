@@ -52,17 +52,17 @@ class TestesSite {
 		Thread.sleep(2000);
 	}
 	
-//	@Test
-//	@Order(1)
+	@Test
+	@Order(1)
 	void addCarrinho() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("fulano", "fulano");
 		
 //		ADD PRODUTO NO CARRINHO
 		driver.navigate().to("http://localhost:8080/lesshop");
-		driver.findElement(By.id("form3")).submit();
-		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/produto/3"));
+		driver.findElement(By.id("form4")).submit();
+		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/produto/4"));
 		Thread.sleep(2000);
 		
 		driver.findElement(By.id("qtde")).sendKeys("1");
@@ -73,8 +73,8 @@ class TestesSite {
 		
 //		ADD OUTRO PROODUTO NO CARRINHO
 		driver.navigate().to("http://localhost:8080/lesshop");
-		driver.findElement(By.id("form4")).submit();
-		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/produto/4"));
+		driver.findElement(By.id("form5")).submit();
+		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/produto/5"));
 		Thread.sleep(2000);
 		
 		driver.findElement(By.id("qtde")).sendKeys("2");
@@ -88,13 +88,13 @@ class TestesSite {
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/carrinho-endereco"));
 		
 //		INFORMANDO ENDEREÇO CADASTRADO
-		driver.findElement(By.id("end12")).click();
+		driver.findElement(By.id("end145")).click();
 		driver.findElement(By.id("form-endereco")).submit();
 		Thread.sleep(2000);
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/carrinho-pgto"));
 		
 //		INFORMANDO CARTÃO E CADASTRANDO NOVO
-		driver.findElement(By.id("doc14")).click();
+		driver.findElement(By.id("doc146")).click();
 		driver.findElement(By.id("form-pgto")).submit();
 		Thread.sleep(2000);
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/carrinho-parcelamento"));
@@ -161,7 +161,7 @@ class TestesSite {
 	void visualizarStatusAceito() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("fulano", "fulano");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
@@ -199,7 +199,7 @@ class TestesSite {
 	void visualizarStatusTransporte() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("fulano", "fulano");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
@@ -236,7 +236,7 @@ class TestesSite {
 	void visualizarStatusEntregue() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("fulano", "fulano");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);

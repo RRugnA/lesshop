@@ -21,6 +21,9 @@
 							<div class="col-lg-6">
               					<div>Nome impresso no Cartão: <span th:text="${documento.nomeCartao}">nome</span></div>
             				</div>
+            				<div class="col-lg-2" th:if="${documento.preferencial}">
+            					<div>Preferencial: <i class="far fa-check-circle c-green"></i></div>
+            				</div>
             			</div>
             			
             			<div class="row">

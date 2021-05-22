@@ -13,22 +13,28 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.fatec.les.crudsimples.dto.RequisicaoCliente;
+import br.com.fatec.les.crudsimples.dto.RequisicaoCompra;
 import br.com.fatec.les.crudsimples.dto.RequisicaoDocumento;
 import br.com.fatec.les.crudsimples.dto.RequisicaoEndereco;
+import br.com.fatec.les.crudsimples.dto.RequisicaoProduto;
 import br.com.fatec.les.crudsimples.dto.RequisicaoUsuario;
 import br.com.fatec.les.crudsimples.model.Cliente;
 import br.com.fatec.les.crudsimples.model.Compra;
-import br.com.fatec.les.crudsimples.model.CompraStatus;
+import br.com.fatec.les.crudsimples.model.CompraProduto;
 import br.com.fatec.les.crudsimples.model.Cupom;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
 import br.com.fatec.les.crudsimples.model.Produto;
+import br.com.fatec.les.crudsimples.model.StatusTroca;
 import br.com.fatec.les.crudsimples.model.Usuario;
 import br.com.fatec.les.crudsimples.repository.ClienteRepository;
+import br.com.fatec.les.crudsimples.repository.CompraProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.CompraRepository;
 import br.com.fatec.les.crudsimples.repository.DocumentoRepository;
 import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
 import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
+import br.com.fatec.les.crudsimples.strategy.NumCartao;
+import br.com.fatec.les.crudsimples.strategy.ValidaCarrinho;
 
 @Controller
 @RequestMapping("cliente")
@@ -46,6 +52,14 @@ public class ClienteController {
 	private UsuarioRepository userRepo;
 	@Autowired
 	private CompraRepository compraRepo;
+	@Autowired
+	private CompraProdutoRepository cpRepo;
+	
+	public Cliente localizaCliente(Principal principal) {
+		Usuario usuario = userRepo.findByLogin(principal.getName());
+		Cliente cliente = usuario.getCliente();	
+		return cliente;
+	}	
 	
 	@GetMapping("cadastro-login")
 	public ModelAndView cadastrarLogin() {
@@ -90,14 +104,9 @@ public class ClienteController {
 	}
 	
 	@PostMapping("cadastrar-endereco")
-	public String novoEndereco(Principal principal, RequisicaoEndereco requisicao) {
-		
-		Endereco endereco = requisicao.toEndereco();
-		
-		Usuario usuario = userRepo.findByLogin(principal.getName());
-		
-		Cliente cliente = usuario.getCliente();
-		
+	public String novoEndereco(Principal principal, RequisicaoEndereco requisicao) {		
+		Cliente cliente = localizaCliente(principal);
+		Endereco endereco = requisicao.toEndereco();		
 		endereco.setCliente(cliente);
 		endRepo.save(endereco);
 		
@@ -112,12 +121,8 @@ public class ClienteController {
 	
 	@PostMapping("cadastrar-documento")
 	public String novoDocumento(Principal principal, RequisicaoDocumento requisicao) {
-		
-		Documento documento = requisicao.toDocumento();
-		
-		Usuario usuario = userRepo.findByLogin(principal.getName());		
-		Cliente cliente = usuario.getCliente();
-		
+		Cliente cliente = localizaCliente(principal);
+		Documento documento = requisicao.toDocumento();		
 		documento.setCliente(cliente);
 		docRepo.save(documento);
 		
@@ -141,27 +146,24 @@ public class ClienteController {
 	
 	@GetMapping("/exibir-enderecos")
 	public ModelAndView exibirEnderecos(Principal principal) {
+		Cliente cliente = localizaCliente(principal);
+		List<Endereco> enderecos = endRepo.findByCliente(cliente);
 		mv = new ModelAndView("cliente/exibir-endereco");
-		
-		Usuario user = userRepo.findByLogin(principal.getName());		
-		Cliente cliente = user.getCliente();
-		
-		List<Endereco> enderecos = endRepo.findByCliente(cliente);		
 		mv.addObject("enderecos", enderecos);	
 		
 		return mv;
 	}
 	
 	@GetMapping("/exibir-opcoes-pagamento")
-	public ModelAndView exibirDocumentos(Principal principal) {
-		mv = new ModelAndView("cliente/exibir-documento");
-		
-		Usuario user = userRepo.findByLogin(principal.getName());		
-		Cliente cliente = user.getCliente();
-		
+	public ModelAndView exibirDocumentos(Principal principal) {		
+		Cliente cliente = localizaCliente(principal);	
 		List<Documento> documentos = docRepo.findByCliente(cliente);
-		mv.addObject("documentos", documentos);
 		
+//		EXIBINDO 4 ÚLTIMOS DÍGITOS DO CARTÃO
+		NumCartao.gerarListaNumCartao(documentos);
+		
+		mv = new ModelAndView("cliente/exibir-documento");
+		mv.addObject("documentos", documentos);		
 		return mv;
 	}
 	
@@ -358,8 +360,7 @@ public class ClienteController {
 	
 	@GetMapping("historico-de-compras")
 	public ModelAndView historico(Principal principal) {
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();
+		Cliente cliente = localizaCliente(principal);
 		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
 		
 		mv = new ModelAndView("cliente/historico");
@@ -370,22 +371,32 @@ public class ClienteController {
 	@GetMapping("detalhes-historico/{id}")
 	public ModelAndView detalhesHistorico(@PathVariable("id") Long id) {
 		Compra compra = compraRepo.findById(id).get();
-		List<Produto> produtos = compra.getListaCompras();
+		List<CompraProduto> lcp = cpRepo.findByCompraId(compra.getId());
+		List<Produto> produtos = ValidaCarrinho.gerarListaCompras(lcp);
+//		List<Produto> produtos = compra.getListaCompras();
 		List<Cupom> cupons = compra.getCupons();
+		List<Documento> cartoes = compra.getDocumentos();
 		
 		mv = new ModelAndView("cliente/detalhes-historico");
 		mv.addObject("compra", compra);
 		mv.addObject("produtos", produtos);
 		mv.addObject("cupons", cupons);
+		mv.addObject("cartoes", cartoes);
 		return mv;
 	}
 	
 	@PostMapping("detalhes-historico/{id}")
-	public String solicitarTroca(@PathVariable("id") Long id) {
-		Compra compra = compraRepo.findById(id).get();
-		compra.setCompraStatus(CompraStatus.TROCA_SOLICITADA);
-		compraRepo.save(compra);
+	public String solicitarTroca(RequisicaoCompra reqCompra, RequisicaoProduto reqProd) {
+		Compra compra = compraRepo.findById(Long.valueOf(reqCompra.getCompraId())).get();
+		List<CompraProduto> lcp = cpRepo.findByCompraId(compra.getId());
+		for(CompraProduto cp : lcp) {
+			if(cp.getProduto().getId() == Long.valueOf(reqProd.getProdutoId())) {
+				cp.setStatusTroca(StatusTroca.SOLICITADO);
+				cpRepo.save(cp);
+			}
+		}	
 		
 		return "redirect:/cliente/detalhes-historico/{id}";
 	}
+
 }

@@ -60,10 +60,14 @@
 									<option value="DF">DF</option>
 								</select>
 							</div>	
-							<div class="form-group mb-3 col-4">
+							<div class="form-group mb-3 col-3">
 								<label class="form-label" for="cep">CEP:</label>
 								<input class="form-control cad-num" type="number" name="cep" th:value="${endereco.cep}" placeholder="" required/>
 							</div>	
+							<div class="form-group mb-3 col-3">
+								<label class="form-label" for="apelido">Apelido:</label> 
+								<input class="form-control cad-num" type="text" name="apelido" th:value="${endereco.apelido}" placeholder="casa / trabalho..." required />
+							</div>
 							<div class="d-flex mb-3">
 								<label class="me-3">Tipo de Endereço:</label>
 								<div class="form-check me-3">

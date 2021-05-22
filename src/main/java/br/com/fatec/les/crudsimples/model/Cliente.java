@@ -125,6 +125,10 @@ public class Cliente extends EntidadeDominio {
 	public void addProduto(Produto produto) {
 		this.produtos.add(produto);
 	}
+	
+	public void removeProduto(Produto produto) {
+		this.produtos.remove(produto);
+	}
 
 	public Produto getProduto(int index) {
 		return this.produtos.get(index);

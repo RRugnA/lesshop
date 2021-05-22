@@ -3,6 +3,7 @@
 
 <body>
 	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-adm}"></nav>
 	
 	<header sec:authorize="hasRole('ADM')" th:replace="~{baseCrud :: nav-adm}"></header>
 
@@ -21,7 +22,7 @@
 	            <th scope="col">Cliente</th>
 	            <th scope="col">Documento</th>
 	            <th scope="col">Tipo</th>
-	            <th scope="col">Inativo / Ativo</th>
+	            <th scope="col" class="text-center">Inativo / Ativo</th>
 	          </tr>
 	        </thead>
 	        <tbody>
@@ -30,11 +31,17 @@
 	            <td class="info-nome"><a href="login-adm-cliente.html"><span th:text="${cliente.nome}">NOME</span></a></td>
 	            <td><span th:text="${cliente.numeroDocumento}">XXX.XXX.XXX-XX</span></td>
 	            <td><span th:text="${cliente.tipoCliente}">TIPO CLIENTE</span></td>
-	            <td>
-	              <label class="switch">
-	                <input class="input-switch" type="checkbox" checked>
-	                <span class="slider round"></span>
-	              </label>
+<!-- 	            <td> -->
+<!-- 	              <label class="switch"> -->
+<!-- 	                <input class="input-switch" type="checkbox" checked> -->
+<!-- 	                <span class="slider round"></span> -->
+<!-- 	              </label> -->
+<!-- 	            </td> -->
+	            <td class="text-center">
+	            	<form method="post">
+	            		<input type="hidden" name="clienteId" th:value="${cliente.id}">
+	            		<button type="submit" th:classappend="${cliente.tipoStatus.name()} == 'INATIVO' ? 'fa-ban' : 'fa-unlock-alt'" class="fas btn-ico c-red"></a>
+	            	</form>
 	            </td>
 	          </tr>
 	        </tbody>

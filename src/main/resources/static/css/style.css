@@ -46,6 +46,9 @@ a, a:hover  {
   background-color: transparent;
   border: none;
 }
+.of-hidden {
+	overflow: hidden;
+}
 /* ===== HEADER ===== */
 .header {
   background-color: black;
@@ -295,11 +298,10 @@ a, a:hover  {
   font-size: 20px;
 }
 
-/* ===== SLIDERS ===== */
+/* ===== SLIDER SWITCH ===== */
 .slider.round {
   border-radius: 10px;
 }
-
 .slider.round:before {
   border-radius: 50%;
 }
@@ -363,7 +365,12 @@ a, a:hover  {
   background-color: transparent;
   color: red;
 }
-    
+.input-qtde {
+	width: 45px;
+}
+.c-pointer {
+	cursor: pointer;
+}
 
 /* ===== CONSULTA ===== */
 .invisivel {
@@ -378,6 +385,9 @@ a, a:hover  {
   color: #198754;
   font-size: 30px;
 }
+
+/* ===== CARRINHO ENDERECO ===== */
+
 
 /* ===== PGTO ===== */
 .cartao__pgto, .carrinho__desc {
@@ -419,11 +429,11 @@ a, a:hover  {
 }
 
 /* ===== MODAL ===== */
-.modal-status, .modal-status-troca {
+.modal-status, .modal-status-troca, .modalEndereco {
   position: fixed;
-  top: 50%;
+  top: 20%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   z-index: 10;
   background: white;
   box-shadow: 0 0 4px #464646;
@@ -434,7 +444,8 @@ a, a:hover  {
 .show {
   opacity: 1;
   visibility: visible;
-  transition: all .4s;
+  transform: translate(-50%, 30%);
+  transition: opacity .1s, visibility .1s, transform .4s;
 }
 .close {
   position: absolute;

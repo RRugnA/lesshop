@@ -20,6 +20,7 @@ public class RequisicaoEndereco {
 	private String cidade;
 	private String estado;
 	private String tipoEndereco;
+	private String apelido;
 
 	public String getClienteId() {
 		return clienteId;
@@ -85,6 +86,14 @@ public class RequisicaoEndereco {
 		this.tipoEndereco = tipoEndereco;
 	}
 
+	public String getApelido() {
+		return apelido;
+	}
+
+	public void setApelido(String apelido) {
+		this.apelido = apelido;
+	}
+
 	public Date toValidade(String data) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -104,10 +113,10 @@ public class RequisicaoEndereco {
 		end.setNumero(num);
 		end.setCep(cep);
 		end.setComplemento(complemento);
-
 		end.setTipoEndereco(TipoEndereco.valueOf(tipoEndereco));
 		end.setDataCadastro(LocalDate.now());
-
+		end.setApelido(apelido);
+		
 		Cidade cid = new Cidade();
 		cid.setCidade(cidade);
 

@@ -1,9 +1,13 @@
 package br.com.fatec.les.crudsimples.strategy;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
 import br.com.fatec.les.crudsimples.model.Cupom;
+import br.com.fatec.les.crudsimples.model.TipoCupom;
+import br.com.fatec.les.crudsimples.model.UsoCupom;
 
 public class GeraCupom {
 
@@ -36,4 +40,14 @@ public class GeraCupom {
 	    return null;
 	}
 	
+	public static Cupom cupomTroca(BigDecimal valorTroca) {
+		Cupom cupom = new Cupom();
+		
+		cupom.setDataCadastro(LocalDate.now());
+		cupom.setTipoCupom(TipoCupom.TROCA);
+		cupom.setUsoCupom(UsoCupom.UNICO);
+		cupom.setValorDesconto(valorTroca);
+		
+		return cupom;
+	}
 }		

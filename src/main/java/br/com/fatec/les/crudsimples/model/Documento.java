@@ -14,6 +14,7 @@ public class Documento extends EntidadeDominio {
 	private String numeroCartao;
 	private String nomeCartao;
 	private LocalDate validadeCartao;
+	private boolean preferencial;
 
 	@Enumerated(EnumType.STRING)
 	private BandeiraCartao bandeiraCartao;
@@ -67,6 +68,14 @@ public class Documento extends EntidadeDominio {
 
 	public void setNomeCartao(String nomeCartao) {
 		this.nomeCartao = nomeCartao;
+	}
+
+	public boolean isPreferencial() {
+		return preferencial;
+	}
+
+	public void setPreferencial(boolean preferencial) {
+		this.preferencial = preferencial;
 	}
 
 }

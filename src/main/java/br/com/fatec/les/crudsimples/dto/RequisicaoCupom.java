@@ -59,14 +59,4 @@ public class RequisicaoCupom {
 		return cupom;
 	}
 	
-	public Cupom cupomTroca(BigDecimal valorTroca) {
-		Cupom cupom = new Cupom();
-		
-		cupom.setDataCadastro(LocalDate.now());
-		cupom.setTipoCupom(TipoCupom.TROCA);
-		cupom.setUsoCupom(UsoCupom.UNICO);
-		cupom.setValorDesconto(valorTroca);
-		
-		return cupom;
-	}
 }

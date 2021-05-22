@@ -13,13 +13,14 @@ public class Endereco extends EntidadeDominio {
 	private String numero;
 	private String cep;
 	private String complemento;
+	private String apelido;
 
 	@Enumerated(EnumType.STRING)
 	private TipoEndereco tipoEndereco;
 
 	@Embedded
 	private Cidade cidade;
-	
+
 	@ManyToOne
 	private Cliente cliente;
 
@@ -27,7 +28,6 @@ public class Endereco extends EntidadeDominio {
 		return tipoEndereco;
 	}
 
-	
 	public Cliente getCliente() {
 		return cliente;
 	}
@@ -35,7 +35,6 @@ public class Endereco extends EntidadeDominio {
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-
 
 	public void setTipoEndereco(TipoEndereco tipoEndereco) {
 		this.tipoEndereco = tipoEndereco;
@@ -79,6 +78,14 @@ public class Endereco extends EntidadeDominio {
 
 	public void setCidade(Cidade cidade) {
 		this.cidade = cidade;
+	}
+
+	public String getApelido() {
+		return apelido;
+	}
+
+	public void setApelido(String apelido) {
+		this.apelido = apelido;
 	}
 
 }

@@ -6,7 +6,6 @@
 	<main class="carrinho">
 	    <div class="py-5 text__sucesso">
 	      <h3 class="text-center">Compra realizada com sucesso!</h3>
-	      <h4 class="text-center">Código da compra: C4D1E5</h4>
 	    </div>
 	    
 	    <div class="container py-4">      
@@ -41,8 +40,13 @@
 	              </div>
 	              <div class="col-lg-6">
 	                <h5 class="mb-0 f-16" th:text="'R$ ' + ${compra.valorTotal}">R$ 0,00</h5>
-	                <span class="f-14 c-gray" th:text="${compra.parcelas} + 'x R$' + ${compra.valorParcela} + ' com o cartão de crédito ' + ${compra.documento}">
-	                INFO PGTO</span>
+	                <div th:if="${#arrays.length(cartoes)} > 1" th:each="cartao : ${cartoes}">
+	                	<span th:text="'Cartão: ' + ${cartao.numeroCartao}"></span>
+	                </div>
+	                <div class="d-flex justify-content-between">
+	                	<span class="desc__pgto" th:text="${compra.parcelas} + 'x R$ ' + ${compra.valorParcela}">0x R$ 0,00</span>
+        				<span th:if="${compra.valorParcela2} != null" class="desc__pgto" th:text="${compra.parcelas2} + 'x R$ ' + ${compra.valorParcela2}">0x R$ 0,00</span>
+        			</div>
 	              </div>
 	            </div>
 	

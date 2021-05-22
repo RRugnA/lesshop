@@ -7,8 +7,34 @@
 	<header sec:authorize="hasRole('ADM')" th:replace="~{baseCrud :: nav-adm}"></header>
 
     <main>
-
-    	<div class="container">
+    
+		<div class="modal-status-troca">
+			<div class="container my-4 px-4">
+				<a href="#" onclick="modalStatusTrocaClose()" class="far fa-times-circle close"></a>				
+				
+				<div class="mb-4 text-center">
+					<h4>Autorizar troca?</h4>
+				</div>
+				
+				<div class="d-flex justify-content-between">
+					<div class="me-5">
+						<form method="post">
+							<button type="submit" class="btn btn-danger">Não Autorizar</button>
+						</form>
+					</div>						
+					
+					<div class="">
+						<form method="post">
+							<input type="hidden" name="produtoId" id="troca">
+							<input type="hidden" name="compraId" id="compra">
+							<button type="submit" class="btn btn-primary">Autorizar</button>
+						</form>
+					</div>						
+				</div>				
+			</div>
+		</div>
+		
+    	<div class="container mb-5">
 	      	<div th:if="${compra != null}" class="container mt-5">
 				
 				<div class="card mt-3" >
@@ -35,50 +61,76 @@
             			
             			<hr>
             			
-            			<div class="row" th:each="produto : ${produtos}">
-            			
-            				<div class="col-lg-12">
+            			<div class="row m-0" th:each="produto : ${produtos}">            			
+            				
+            				<div class="col-lg-10 px-0">
             					<span class="fw-bold">Produto: </span>
             					<span th:text="${produto.proNome}">PRODUTO</span>
             				</div>
             				
-            				<div class="col-lg-6">
+            				<div class="col-lg-2" th:each="listaCompras : ${produto.listaCompras}" th:if="${listaCompras.statusTroca.name()} == 'SOLICITADO'">            					
+            					<a href="#" class="c-pointer" th:attr="onclick=|modalStatusTroca(${compra.id}, ${produto.id})|">
+            						<i class="fas fa-exchange-alt pe-2 c-red"></i>
+            						<span class="c-red fw-bold">Troca Solicitada</span>
+            					</a>     						            				
+            				</div>
+            				
+            				<div class="col-lg-2" th:each="listaCompras : ${produto.listaCompras}" th:if="${listaCompras.statusTroca.name()} == 'AUTORIZADO'">            					
+           						<i class="fas fa-check pe-2 c-green"></i>
+           						<span class="c-green fw-bold">Troca Autorizada</span>	    						            				
+            				</div>
+            				
+            				<div class="col-lg-6 mb-3 px-0">
             					<span class="fw-bold">Quantidade: </span>
             					<span th:text="${produto.proQtde}">QUANTIDADE</span>
             				</div>
             				
-            				<div class="col-lg-6">
+            				<div class="col-lg-6 mb-3">
             					<span class="fw-bold">Valor: </span>
             					<span th:text="${produto.proValor}">VALOR</span>
-            				</div>
+            				</div>	
+            				
+            				<hr>            
             				
             			</div>
             			
-            			<hr>
+            			
             			
             			<div class="row">
             				
-            				<div class="col-lg-6">
+            				<div class="col-lg-12 mb-3">
             					<span class="fw-bold">Forma de pagamento: </span>
             					<span th:text="${compra.formaPgto}">FORMA_PGTO</span>
             				</div>
             				
-            				<div class="col-lg-6">
+            				<div class="col-lg-6" th:each="cartao : ${cartoes}">
 	            				<span class="fw-bold">Cartão nº: </span>
-            					<span th:text="${compra.documento}">FORMA_PGTO</span>
+            					<span th:text="${cartao.numeroCartao}">FORMA_PGTO</span>
             				</div>
             				
             				<div class="col-lg-6">
-            					<span class="fw-bold">Quantidade de parcelas: </span>
-            					<span th:text="${compra.parcelas}">PARCELAS</span>
+            					<div>
+            						<span class="fw-bold">Quantidade de parcelas: </span>
+            						<span th:text="${compra.parcelas}">PARCELAS</span>
+            					</div>
+            					<div>
+            						<span class="fw-bold">Valor das parcelas: </span>
+            						<span th:text="${compra.valorParcela}">VALOR_PARCELA</span>
+            					</div>
             				</div>
             				
-            				<div class="col-lg-6">
-	            				<span class="fw-bold">Valor das parcelas: </span>
-            					<span th:text="${compra.valorParcela}">VALOR_PARCELA</span>
+            				<div class="col-lg-6" th:if="${#arrays.length(cartoes)} > 1">
+	            				<div>
+            						<span class="fw-bold">Quantidade de parcelas: </span>
+            						<span th:text="${compra.parcelas2}">PARCELAS</span>
+            					</div>
+            					<div>
+            						<span class="fw-bold">Valor das parcelas: </span>
+            						<span th:text="${compra.valorParcela2}">VALOR_PARCELA</span>
+            					</div>
             				</div>	
             				
-            				<div class="col-lg-6">
+            				<div class="col-lg-12 mt-3">
 	            				<span class="fw-bold">Valor total: </span>
             					<span th:text="'R$ ' + ${compra.valorTotal}">VALOR_TOTAL</span>
             				</div>		
@@ -93,7 +145,7 @@
 	            				<span class="fw-bold">Status da Compra: </span>
             					<span th:text="${compra.compraStatus}">STATUS</span>
             				</div>
-						
+            				
 							<div class="d-flex flex-direction-row justify-content-end">
 								<div>
 									<a href="/adm/exibir-vendas" class="btn btn-primary mr-3 my-3">Voltar</a>

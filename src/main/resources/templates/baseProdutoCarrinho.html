@@ -27,7 +27,7 @@
 	
 	<div class="text-center d-flex justify-content-between my-4">
 		<span class="desc__pgto">Você pagará:</span>
-		<span class="desc__pgto" th:text="${cliente.valorDeCompra}">R$ 0,00</span>
+		<span class="desc__pgto" th:text="${cliente.valorDeCompra}" id="valorFinal">R$ 0,00</span>
 	</div>
 	
 </div>
@@ -76,14 +76,17 @@
         
        	<div class="text-center d-flex justify-content-between my-4">
         	<span class="desc__pgto">Você pagará:</span>
-        	<span class="desc__pgto" th:text="${compra.parcelas} + 'x R$ ' + ${compra.valorParcela}">0x R$ 0,00</span>
+        	<div class="d-flex flex-column">
+        		<span class="desc__pgto" th:text="${compra.parcelas} + 'x R$ ' + ${compra.valorParcela}">0x R$ 0,00</span>
+        		<span class="desc__pgto" th:if="${compra.valorParcela2} != null" th:text="${compra.parcelas2} + 'x R$ ' + ${compra.valorParcela2}">0x R$ 0,00</span>
+			</div>
         </div>
         
      	<hr>
      	
         <div class="text-center d-flex justify-content-between my-4">
            	<span>Total:</span>
-            <span th:text="${compra.valorParcela} * ${compra.parcelas}">R$ 0,00</span>
+            <span th:text="${compra.valorTotal}">R$ 0,00</span>
         </div>
         
 	    <div class="text-center">

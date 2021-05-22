@@ -23,41 +23,87 @@
     </div>	
     
   	<main class="carrinho">
+  	
+  		<section id="modalEndereco" class="modalEndereco">
+  			<a href="#" onclick="modalCarrinhoClose()" class="far fa-times-circle close"></a>
+	  		<div class="container my-4">
+				<div class="card">
+					<form class="card-body" method="POST" th:action="@{/carrinho-pgto/novo-cartao}">
+						
+						<div class="row comboBoxContainer mb-3">
+							
+							<div class="col-4">
+								<label class="col-form-label" for="bandeiraCartao">Cartão:</label>
+								<select class="form-select selectDoc" name="bandeiraCartao" id="bandeiraCartao">
+									<option value="MASTERCARD">Mastercard</option>
+									<option value="VISA">Visa</option>
+								</select>
+							</div>
+							<div class="col-8">
+								<label class="col-form-label" for="numeroCartao">Nome escrito no Cartão:</label>
+								<input class="form-control" type="text" name="nomeCartao" id="nomeCartao" required>
+							</div>
+							<div class="col-4">
+								<label class="col-form-label" for="validadeCartao">Vencimento:</label>
+								<input class="form-control" type="date" name="validadeCartao" id="validadeCartao" required>
+							</div>						
+							<div class="col-5">
+								<label class="col-form-label" for="numeroCartao">Número do Cartão:</label>
+								<input class="form-control cad-num" type="number" name="numeroCartao" id="numeroCartao" required>
+							</div>
+							<div class="col-3">
+								<label class="col-form-label" for="codigoCartao">Código do Cartão:</label>
+								<input class="form-control cad-num" type="number" name="codigoCartao" id="codigoCartao" required>
+							</div>
+						</div>
+						
+						<div class="text-end">
+							<button class="btn btn-primary" type="submit">Salvar</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</section>
 
 	    <div class="container py-4">
-	      <div class="row py-4">
-	        <div class="col-lg-7 me-5">
-	        	<form method="post" id="form-pgto">
-<!-- 	        		<input type="hidden" th:value="${compra.id}"> -->
-		          	<h3 class="mb-4">Como você prefere pagar?</h3>
-		
-		          	<h6>Forma de Pagamento:</h6>
-		          	<div th:each="documento : ${documentos}">
-			          	<div class="cartao__pgto my-3 d-flex align-items-center">
-			            	<input type="radio" name="documento" th:id="'doc' + ${documento.id}" th:value="${documento.id}" required>
-			            	<div class="mx-3">
-			              		<i class="far fa-credit-card pgto__ico"></i>
-			            	</div>
-			            	<label th:for="'doc' + ${documento.id}" th:text="${documento.numeroCartao}">Cartão: *** 123</label>
-			          	</div>
-				  	</div>
+	      	<div class="row py-4">
+	        	<div class="col-lg-7 me-5">
+	        		<form method="post" id="form-pgto">
+	        		
+			          	<h3 class="mb-4">Como você prefere pagar?</h3>
+			
+			          	<h6>Forma de Pagamento: (É possível selecionar até 2 cartões)</h6>
+			          	
+			          	<div th:each="documento : ${documentos}">
+				          	<div class="cartao__pgto my-3 d-flex align-items-center">
+				            	<input type="checkbox" name="documento" th:id="${documento.id}" th:value="${documento.id}">
+				            	<div class="mx-3">
+				              		<i class="far fa-credit-card pgto__ico"></i>
+				            	</div>
+				            	<label th:for="${documento.id}" th:text="${documento.numeroCartao}">Cartão: *** 123</label>
+				          	</div>
+					  	</div>
 				  	
-		          <div class="mb-5">
-		            <a href="cliente/cadastrar-documento">Cadastrar novo Cartão</a>
-		          </div>
+		          		<div class="mb-5">
+		          			<a href="#" class="c-pointer" onclick="modalCarrinho()">Cadastrar novo Cartão</a>
+		         	 	</div>
 		
-		          <div class="cartao__pgto my-3 d-flex align-items-center">
-		            <input type="radio" name="documento" id="boleto" value="0">
-		            <div class="mx-3">
-		              <i class="fas fa-barcode"></i>
-		            </div>
-		            <label for="boleto">Boleto <br><small style="color: gray;">Será aprovado em até 3 dias úteis</small></label>
-		          </div>
-		          <div class="text-end">
-		            <button type="submit" class="btn btn-success">Continuar</a>
-		          </div>
-	          </form>
-	        </div>
+		          		<div class="cartao__pgto my-3 d-flex align-items-center">
+		          		
+		            		<input type="radio" name="documento" id="boleto" value="0">
+		            		<div class="mx-3">
+		              			<i class="fas fa-barcode"></i>
+		            		</div>
+		            		
+		            		<label for="boleto">Boleto <br><small style="color: gray;">Será aprovado em até 3 dias úteis</small></label>
+		          		</div>
+		          		
+		          		<div class="text-end">
+		            		<button type="submit" class="btn btn-success">Continuar</a>
+		          		</div>
+		          		
+	          		</form>
+	        	</div>
 	        
 	        <div th:replace="~{baseProdutoCarrinho :: baseProduto}"></div>
 

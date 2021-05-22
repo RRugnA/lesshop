@@ -1,7 +1,10 @@
 package br.com.fatec.les.crudsimples.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,18 +12,19 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
 @Entity
 public class Compra extends EntidadeDominio {
 
-	@ManyToMany
-	@JoinTable(
-			name = "compra_produto", joinColumns = @JoinColumn(
-			name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(
-			name = "prod_id", referencedColumnName = "id"))
-	private List<Produto> listaCompras;
+//	@ManyToMany
+//	@JoinTable(name = "compra_produto", joinColumns = @JoinColumn(name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "prod_id", referencedColumnName = "id"))
+//	private List<Produto> listaCompras;
+
+	@OneToMany(mappedBy = "compra")
+	private Set<CompraProduto> listaCompras = new HashSet<>();
 
 	@OneToOne
 	private Cliente cliente;
@@ -35,24 +39,27 @@ public class Compra extends EntidadeDominio {
 	private CompraStatus compraStatus;
 
 	@ManyToMany
-	@JoinTable(
-			name = "compra_cupom", joinColumns = @JoinColumn(
-			name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(
-			name = "cupom_id", referencedColumnName = "codigo"))
+	@JoinTable(name = "compra_cupom", joinColumns = @JoinColumn(name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "cupom_id", referencedColumnName = "codigo"))
 	private List<Cupom> cupons;
-	
-	private String documento;
+
+	@ManyToMany
+	@JoinTable(name = "compra_documento", joinColumns = @JoinColumn(name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "documento_id", referencedColumnName = "id"))
+	private List<Documento> documentos = new ArrayList<Documento>();
+
 	private int parcelas;
+	private int parcelas2;
 	private BigDecimal valorTotal;
 	private BigDecimal valorParcela;
+	private BigDecimal valorParcela2;
+	private int qtde;
 
-	public List<Produto> getListaCompras() {
-		return listaCompras;
-	}
-
-	public void setListaCompras(List<Produto> listaCompras) {
-		this.listaCompras = listaCompras;
-	}
+//	public List<Produto> getListaCompras() {
+//		return listaCompras;
+//	}
+//
+//	public void setListaCompras(List<Produto> listaCompras) {
+//		this.listaCompras = listaCompras;
+//	}
 
 	public Cliente getCliente() {
 		return cliente;
@@ -70,12 +77,20 @@ public class Compra extends EntidadeDominio {
 		this.endereco = endereco;
 	}
 
-	public String getDocumento() {
-		return documento;
+	public List<Documento> getDocumentos() {
+		return documentos;
 	}
 
-	public void setDocumento(String documento) {
-		this.documento = documento;
+	public void setDocumentos(List<Documento> documentos) {
+		this.documentos = documentos;
+	}
+
+	public void addDocumento(Documento documento) {
+		this.documentos.add(documento);
+	}
+
+	public void removeDocumento(Documento documento) {
+		this.documentos.remove(documento);
 	}
 
 	public BigDecimal getValorTotal() {
@@ -102,6 +117,14 @@ public class Compra extends EntidadeDominio {
 		this.parcelas = parcelas;
 	}
 
+	public int getParcelas2() {
+		return parcelas2;
+	}
+
+	public void setParcelas2(int parcelas2) {
+		this.parcelas2 = parcelas2;
+	}
+
 	public CompraStatus getCompraStatus() {
 		return compraStatus;
 	}
@@ -118,6 +141,14 @@ public class Compra extends EntidadeDominio {
 		this.valorParcela = valorParcela;
 	}
 
+	public BigDecimal getValorParcela2() {
+		return valorParcela2;
+	}
+
+	public void setValorParcela2(BigDecimal valorParcela2) {
+		this.valorParcela2 = valorParcela2;
+	}
+
 	public List<Cupom> getCupons() {
 		return cupons;
 	}
@@ -125,29 +156,23 @@ public class Compra extends EntidadeDominio {
 	public void setCupons(List<Cupom> cupons) {
 		this.cupons = cupons;
 	}
-	
+
 	public void addCupom(Cupom cupom) {
 		this.cupons.add(cupom);
 	}
-	
+
 	public void removeCupom(Cupom cupom) {
 		this.cupons.remove(cupom);
 	}
 
 	public Compra localizaCompra(CompraStatus situacao, List<Compra> compras) {
-		
-		for(Compra compra : compras) {
-			if(compra.getCompraStatus().equals(situacao)) {
+
+		for (Compra compra : compras) {
+			if (compra.getCompraStatus().equals(situacao)) {
 				return compra;
 			}
 		}
-		
-				
-//		for (Compra compra : compras) {
-//			if (compra.getCompraStatus().equals(CompraStatus.valueOf("ANDAMENTO"))) {
-//				return compra;
-//			}
-//		}
+
 		return null;
 	}
 
@@ -161,6 +186,21 @@ public class Compra extends EntidadeDominio {
 		String[] splitParcela = inputParcela.split(":");
 		return Integer.parseInt(splitParcela[1]);
 	}
-	
-	
+
+	public int getQtde() {
+		return qtde;
+	}
+
+	public void setQtde(int qtde) {
+		this.qtde = qtde;
+	}
+
+	public Set<CompraProduto> getListaCompras() {
+		return listaCompras;
+	}
+
+	public void setListaCompras(Set<CompraProduto> listaCompras) {
+		this.listaCompras = listaCompras;
+	}
+
 }

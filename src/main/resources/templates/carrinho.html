@@ -56,12 +56,14 @@
 		                  <td class="text-center">
 		                    <div>
 		                    	<form method="post" th:action="@{/excluir-carrinho}">
-		                    		<input type="hidden" th:value="${produto.id}" name="id">
+		                    		<input type="hidden" th:value="${produto.id}" name="produtoId">
 		                      		<button type="submit" class="btn-delete"><i class="far fa-trash-alt"></i></button>
 	                      		</form>
 		                    </div>
 		                  </td>
-		                  <td><span th:text="${produto.proQtde}">QTDE</span></td>
+		                  <td class="text-center">
+		                  	<span class="text-center" th:text="${produto.proQtde}">QTDE</span>
+		                  </td>
 		                  <td th:text="${produto.proValor}">VALOR</td>
 		                  <td th:text="${produto.proValor} * ${produto.proQtde}" class="valorProduto">VALOR TOTAL</td>
 		                </tr>
@@ -92,9 +94,6 @@
 		              			<button type="submit" class="btn btn-success nav-carrinho__btn" sec:authorize="isAuthenticated()">FINALIZAR COMPRA</button>
 		              		</form>
 		              	</div>
-<!-- 						<div th:if="!${#arrays.isEmpty(produtos)}">		              		 -->
-<!-- 		              		<a href="/carrinho-endereco" class="btn btn-success nav-carrinho__btn" sec:authorize="isAuthenticated()">FINALIZAR COMPRA</a> -->
-<!-- 		              	</div> -->
 		              	<div th:if="${#arrays.isEmpty(produtos)}">		              		
 		              		<a href="/carrinho-endereco" class="btn btn-success nav-carrinho__btn disabled" sec:authorize="isAuthenticated()">FINALIZAR COMPRA</a>
 		              	</div>

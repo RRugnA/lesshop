@@ -3,6 +3,7 @@
 
 <body>
 	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-adm}"></nav>
 	
 	<header sec:authorize="hasRole('ADM')" th:replace="~{baseCrud :: nav-adm}"></header>
 
@@ -27,7 +28,7 @@
 						</select>
 						<label for="tipoProduto">Classificação:</label>	
 					</div>
-					<input type="hidden" name="id" id="compra">
+					<input type="hidden" name="compraId" id="compra">
 					<div class="text-end">
 						<button type="submit" class="btn btn-primary">Alterar</button>
 					</div>
@@ -37,32 +38,7 @@
 			</div>
 		</div>
 		
-		<div class="modal-status-troca">
-			<div class="container my-4 px-4">
-
-				<form method="post">
-				
-					<div class="mb-4 text-center">
-						<h4>Autorizar troca?</h4>
-					</div>
-					
-					<input type="hidden" name="id" id="troca">
-					
-					<div class="d-flex justify-content-between">
-						<div class="me-5">
-							<a href="#" onclick="modalStatusTrocaClose()" class="btn btn-danger">Voltar</a>
-						</div>						
-						<div class="">
-							<button type="submit" class="btn btn-primary">AUTORIZAR</button>
-						</div>
-					</div>
-
-				</form>
-				
-			</div>
-		</div>
-		
-	    <div class="container">
+	    <div class="container my-3">
 	      <div class="input-group my-3">
 	        <label class="input-group-text" for="">Pesquisar: </label>
 	        <input class="form-control" type="text" id="filtrar-tabela" placeholder="Digite o nome do cliente.">
@@ -86,13 +62,10 @@
 	            <td class="info-nome"><span th:text="${compra.cliente.nome}">CLIENTE</span></td>
 	            <td><span th:text="'R$ ' + ${compra.valorTotal}">VALOR</span></td>
 	            <td id="td-status">
-	            	<a th:if="${compra.compraStatus.name()} != 'TROCA_SOLICITADA' and ${compra.compraStatus.name()} != 'TROCA_AUTORIZADA'" style="cursor:pointer; color:#0a58ca;" th:attr="onclick=|modalStatus(${compra.id})|">
+	            	<a style="cursor:pointer; color:#0a58ca;" th:attr="onclick=|modalStatus(${compra.id})|">
 	            		<span th:text="${compra.compraStatus}">STATUS</span>
 	            	</a>
-	            	<a th:if="${compra.compraStatus.name()} == 'TROCA_SOLICITADA'" style="cursor:pointer; color:#0a58ca;" th:attr="onclick=|modalStatusTroca(${compra.id})|">
-	            		<span th:text="${compra.compraStatus}">STATUS</span>
-	            	</a>
-	            	<span th:if="${compra.compraStatus.name()} == 'TROCA_AUTORIZADA'" style="color:#0a58ca;" th:text="${compra.compraStatus}">STATUS</span>	            	
+<!-- 	            	<span th:if="${compra.compraStatus.name()} == 'TROCA_AUTORIZADA'" style="color:#0a58ca;" th:text="${compra.compraStatus}">STATUS</span>	            	 -->
 	            </td>
 	            <td class="text-center">
             		<a th:href="@{/adm/venda-detalhes/{id}(id = ${compra.id})}" class="fas fa-search-plus border-0 bg-0"></button>	            	

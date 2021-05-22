@@ -8,19 +8,20 @@ import br.com.fatec.les.crudsimples.strategy.ValidaData;
 
 public class RequisicaoDocumento {
 
-	private String clienteId;
+	private String id;
 	private String bandeiraCartao;
 	private String codigoCartao;
 	private String numeroCartao;
 	private String validadeCartao;
 	private String nomeCartao;
+	private String preferencial;
 
-	public String getClienteId() {
-		return clienteId;
+	public String getId() {
+		return id;
 	}
 
-	public void setClienteId(String clienteId) {
-		this.clienteId = clienteId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getBandeiraCartao() {
@@ -63,6 +64,14 @@ public class RequisicaoDocumento {
 		this.nomeCartao = nomeCartao;
 	}
 
+	public String getPreferencial() {
+		return preferencial;
+	}
+
+	public void setPreferencial(String preferencial) {
+		this.preferencial = preferencial;
+	}
+
 	public Documento toDocumento() {
 		Documento doc = new Documento();
 
@@ -72,6 +81,9 @@ public class RequisicaoDocumento {
 		doc.setNomeCartao(nomeCartao);
 		doc.setValidadeCartao(ValidaData.toDate(validadeCartao));
 
+		if(this.preferencial != null) {
+			doc.setPreferencial(true);
+		}
 		doc.setDataCadastro(LocalDate.now());
 
 		return doc;

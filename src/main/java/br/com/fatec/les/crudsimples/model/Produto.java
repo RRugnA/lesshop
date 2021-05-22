@@ -1,12 +1,15 @@
 package br.com.fatec.les.crudsimples.model;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Produto extends EntidadeDominio {
@@ -27,8 +30,11 @@ public class Produto extends EntidadeDominio {
 	@ManyToMany(mappedBy = "produtos")
 	private List<Cliente> clientes;
 
-	@ManyToMany(mappedBy = "listaCompras")
-	private List<Compra> listaCompras;
+//	@ManyToMany(mappedBy = "listaCompras")
+//	private List<Compra> listaCompras;
+
+	@OneToMany(mappedBy = "produto")
+	private Set<CompraProduto> listaCompras = new HashSet<>();
 
 	public String getProNome() {
 		return proNome;
@@ -102,12 +108,20 @@ public class Produto extends EntidadeDominio {
 		this.proEstoque = proEstoque;
 	}
 
-	public List<Compra> getCompras() {
+	public Set<CompraProduto> getListaCompras() {
 		return listaCompras;
 	}
 
-	public void setCompras(List<Compra> compras) {
-		this.listaCompras = compras;
+	public void setListaCompras(Set<CompraProduto> listaCompras) {
+		this.listaCompras = listaCompras;
 	}
+
+//	public List<Compra> getCompras() {
+//		return listaCompras;
+//	}
+//
+//	public void setCompras(List<Compra> compras) {
+//		this.listaCompras = compras;
+//	}
 
 }

@@ -24,6 +24,88 @@
     
 	<main class="carrinho">
 
+		<section id="modalEndereco" class="modalEndereco">
+			<a href="#" onclick="modalCarrinhoClose()" class="far fa-times-circle close"></a>
+			<div class="container my-3">
+				<div class="card">
+					<form class="card-body row" method="POST" th:action="@{/carrinho-endereco/novo-endereco}">
+						<div class="form-group mb-3 col-8">
+							<label class="form-label" for="logradouro">Logradouro:</label> 
+							<input class="form-control" type="text" name="logradouro" placeholder="Informe o endereço completo sem abreviações" required />
+						</div>
+						<div class="form-group mb-3 col-4">
+							<label class="form-label" for="num">Nº:</label> 
+							<input class="form-control cad-num" type="number" name="num" placeholder="caso não possua, informe 's/n'" required />
+						</div>
+						<div class="form-group mb-3 col-12">
+							<label class="form-label" for="complemento">Complemento:</label>
+							<input class="form-control" type="text" name="complemento" placeholder="" required />
+						</div>
+						<div class="form-group mb-3 col-6">
+							<label class="form-label" for="cidade">Cidade:</label> 
+							<input class="form-control" type="text" name="cidade" placeholder="" required />
+						</div>
+						<div class="col-2 mb-3">
+							<label class="form-label" for="estado">Estado:</label> 
+							<select	class="form-select" aria-label="Default" name="estado">
+								<option value="AC">AC</option>
+								<option value="AL">AL</option>
+								<option value="AP">AP</option>
+								<option value="AM">AM</option>
+								<option value="BA">BA</option>
+								<option value="CE">CE</option>
+								<option value="ES">ES</option>
+								<option value="GO">GO</option>
+								<option value="MA">MA</option>
+								<option value="MT">MT</option>
+								<option value="MS">MS</option>
+								<option value="MG">MG</option>
+								<option value="PA">PA</option>
+								<option value="PB">PB</option>
+								<option value="PR">PR</option>
+								<option value="PE">PE</option>
+								<option value="PI">PI</option>
+								<option value="RJ">RJ</option>
+								<option value="RN">RN</option>
+								<option value="RS">RS</option>
+								<option value="RO">RO</option>
+								<option value="RR">RR</option>
+								<option value="SC">SC</option>
+								<option value="SP">SP</option>
+								<option value="SE">SE</option>
+								<option value="TO">TO</option>
+								<option value="DF">DF</option>
+							</select>
+						</div>
+						<div class="form-group mb-3 col-4">
+							<label class="form-label" for="cep">CEP:</label> 
+							<input class="form-control cad-num" type="number" name="cep" placeholder="" required />
+						</div>
+						
+						<div class="form-group mb-3 col-4">
+							<label class="form-label" for="apelido">Apelido:</label> 
+							<input class="form-control cad-num" type="text" name="apelido" placeholder="casa / trabalho..." required />
+						</div>
+						
+						<div class="d-flex mb-3">
+							<label class="me-3">Tipo de Endereço:</label>
+							<div class="form-check me-3">
+								<input class="form-check-input" type="radio" name="tipoEndereco" id="tipoEndereco1" value="ENTREGA"> 
+								<label class="form-check-label" for="tipoEndereco2"> Entrega </label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="tipoEndereco" id="tipoEndereco2" value="COBRANÇA" checked> 
+								<label class="form-check-label" for="tipoEndereco2"> Cobrança </label>
+							</div>
+						</div>
+						<div class="text-end">
+							<button class="btn btn-primary" type="submit">Salvar</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</section>
+
 		<section>
 		    <div class="container py-4">
 		      <div class="row py-4">
@@ -45,7 +127,7 @@
 					                	</div>
 					            
 					                	<div>
-						                  	<h5 class="mb-0" th:text="${endereco.logradouro} + ', ' + ${endereco.numero}" style="font-size: 16px;">Rua Quinze, 22 - Centro</h5>
+						                  	<h5 class="mb-0" th:text="${endereco.apelido} + ' - ' + ${endereco.logradouro} + ', ' + ${endereco.numero}" style="font-size: 16px;">Rua Quinze, 22 - Centro</h5>
 						                  	<span th:text="${endereco.cidade.cidade} + ', ' + ${endereco.cidade.estado.estado}" style="font-size: 14px; color: gray;">Mogi das Cruzes, São Paulo - CEP 08711-222</span>
 					                	</div>			                
 					              	</label>
@@ -60,7 +142,7 @@
 						</div>
 
 			          	<div class="mb-5">
-			            	<a href="cliente/cadastrar-endereco" class="">Cadastrar novo Endereço</a>
+			          		<a href="#" class="c-pointer" onclick="modalCarrinho()">Cadastrar novo Endereço</a>
 			          	</div>
 		          		<div class="text-end">
 		            		<button type="submit" href="" class="btn btn-success">Continuar</a>

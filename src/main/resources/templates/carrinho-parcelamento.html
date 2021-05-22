@@ -23,24 +23,31 @@
     </div>	
     
     <main class="carrinho">
-
+		
 		<div class="container py-4">
 	      <div class="row py-4">
 	        <div class="col-7 me-5">
 	          	<h3 class="mb-4">Como você prefere pagar?</h3>
-	          	<div class="cartao__pgto my-3 d-flex align-items-center justify-content-between">
+	          	
+	          	<div class="cartao__pgto my-3 d-flex align-items-center justify-content-between" th:each="cartao : ${cartoes}">
 	            	<div class="d-flex align-items-center">
 	              		<div class="mx-3">
 	                		<i class="far fa-credit-card pgto__ico"></i>
 	              		</div>
-	              		<label th:text="'Cartão: ' + ${compra.documento}">Cartão: xxx-xxx</label>
-	            	</div>            
-	            	<a href="carrinho-pgto">Alterar</a>
+	              		<label th:text="'Cartão: ' + ${cartao.numeroCartao}">Cartão: xxx-xxx</label>
+	            	</div>   
+	            	<form th:if="${#arrays.length(cartoes)} > 1" method="post" th:action="@{'/carrinho-parcelamento/remover-cartao'}">
+	            		<input type="hidden" th:id="'remover'+${cartao.id}" th:value="${cartao.id}" name="id">
+	            		<button type="submit" class="far fa-times-circle c-red bg-0 border-0"></button>
+	            	</form>
 	          	</div>
-	
-	          	<div class="cartao__pgto my-3">
-	          	
-	          		<form method="post" id="form-cupom" class="d-flex align-items-center justify-content-between" th:action="@{/verificar-cupom}">
+				
+				<div class="mb-3 text-start">
+					<a href="/carrinho-pgto/" class="c-pointer btn btn-success">Voltar as opções de pagamento</a>
+				</div>
+				
+	          	<div class="cartao__pgto my-3">	          	
+	          		<form method="post" id="form-cupom" class="d-flex align-items-center justify-content-between mx-0" th:action="@{/carrinho-parcelamento/cupom}">
 	            		<div class="d-flex align-items-center form-group">
 		              		<label for="vale-troca" class="me-4">Cupom:</label>
 		              		<input type="text" name="codigo" class="form-control" id="codigo" >		           		              		
@@ -52,31 +59,85 @@
 	            	<div th:if="${cupons != null}" th:each="cupom : ${cupons}" class="d-flex align-items-center form-group mb-3">	              		
               			<label for="vale-troca" class="me-4">Cupom:</label>
               			<input  type="text" name="codigo" class="form-control me-4" th:id="'codigo'+${cupom.codigo}" th:value="${cupom.codigo} + ' - R$ ' + ${cupom.valorDesconto} + ' de desconto!'" >
-              			<a th:href="@{'/carrinho-parcelamento/' + ${cupom.codigo}}" class="far fa-times-circle c-red" alt="remover cupom" th:id="'remover'+${cupom.codigo}"></a>	              		
+              			<a th:href="@{'/carrinho-parcelamento/' + ${cupom.codigo} + '-removido'}" class="far fa-times-circle c-red" alt="remover cupom" th:id="'remover'+${cupom.codigo}"></a>	              		
 	            	</div>
 	            	
 	            	<div>
               			<span th:text="${aviso}" th:classappend="${aviso} == 'Código Válido' ? 'c-green' : 'c-red'"></span>
-              		</div>
-              			 
+              		</div>              			 
 	          	</div>
-	
-				<form method="post" id="form-parcelas" th:action="@{/carrinho-parcelamento}">
-		          	<div class="mt-5">		          
-			            <h3 class="mb-4">Em quantas vezes?</h3>		            	            
-		            	<ul class="parc__list">	            
-		              		<li class="parc__pgto" th:each="parcela, parcStat : ${parcelas}">
-		                		<div>		           
-		                  			<input type="radio" name="parcela" th:id="'parc' + ${parcStat.index}" class="me-2" th:value="${parcela} + ':' + (${parcStat.index} +1)" required>
-		                  			<label th:for="'parc' + ${parcStat.index}" th:id="'parcela' + ${parcStat.index}"><span class="fw-bold" th:text="${#ids.seq('')}">1x</span><span th:text="'x R$ ' + ${parcela}">R$ 0,00</span></label>
-		                		</div>
-		              		</li>
-		            	</ul>
-		          	</div>
-		          	<div class="text-end">
-		            	<button type="submit" class="btn btn-success">Continuar</a>
-		          	</div>
-	       		</form>
+				
+				
+				<div class="mb-3">
+					<h3>Opções de Parcelamento:</h3>
+				</div>
+				<div>
+					<form method="post" th:action="@{/carrinho-parcelamento}">
+						<div class="cartao__pgto my-3 row align-items-center justify-content-between mx-0" th:each="cartao, cartStat : ${cartoes}">
+		            	
+			            	<div class="col-5">
+				            	<div class="d-flex align-items-center">
+				              		<div class="mx-3">
+				                		<i class="far fa-credit-card pgto__ico"></i>
+				              		</div>
+				              		<span th:text="'Cartão: ' + ${cartao.numeroCartao}">Cartão: xxx-xxx</span>
+				            	</div> 		
+			            	</div>
+			            	
+			            	<div class="col-3">
+				            	<div>				
+				            		<label for="valorCartao">R$</label>
+				            		<input th:if="${#arrays.length(cartoes)} > 1" class="cad-num cartaoPgto form-control" type="number" name="valorCartao" th:id="'card'+ (${cartStat.index}+1)" th:with="valor=${cliente.valorDeCompra} / ${#arrays.length(cartoes)}" th:value="${#numbers.formatDecimal(valor, 0, 'COMMA', 2, 'POINT')}">
+				            		<input th:if="${#arrays.length(cartoes)} <= 1" class="cad-num cartaoPgto form-control" type="number" name="valorCartao" th:id="'card'+ (${cartStat.index}+1)" th:value="${cliente.valorDeCompra}" readonly>
+				            	</div>
+			            	</div>
+			            	
+			            	
+			            	<div class="col-4">	            	
+			            		
+			            		<label for="valorParcela">Nº de Parcelas</label>
+			            		<select class="form-select selectDoc" name="valorParcela" th:id="'valorParcela'+ (${cartStat.index}+1)">
+									<option value="1">1x</option>
+									<option value="2">2x</option>
+									<option value="3">3x</option>
+									<option value="4">4x</option>
+									<option value="5">5x</option>
+									<option value="6">6x</option>
+									<option value="7">7x</option>
+									<option value="8">8x</option>
+									<option value="9">9x</option>
+									<option value="10">10x</option>
+								</select>
+															
+			            	</div>
+			            	
+						</div>
+						
+						<div class="text-end">
+			            	<button type="submit" class="btn btn-success">Continuar</a>
+			          	</div>
+					
+					</form>					
+				</div>				
+				
+				<div class="d-none">
+					<form method="post" id="form-parcelas" >
+			          	<div class="mt-5">		          
+				            <h3 class="mb-4">Em quantas vezes?</h3>		            	            
+			            	<ul class="parc__list">	            
+			              		<li class="parc__pgto" th:each="parcela, parcStat : ${parcelas}">
+			                		<div>		           
+			                  			<input type="radio" name="parcela" th:id="'parc' + ${parcStat.index}" class="me-2" th:value="${parcela} + ':' + (${parcStat.index} +1)" required>
+			                  			<label th:for="'parc' + ${parcStat.index}" th:id="'parcela' + ${parcStat.index}"><span class="fw-bold" th:text="${#ids.seq('')}">1x</span><span th:text="'x R$ ' + ${parcela}">R$ 0,00</span></label>
+			                		</div>
+			              		</li>
+			            	</ul>
+			          	</div>
+			          	<div class="text-end">
+			            	<button type="submit" class="btn btn-success">Continuar</a>
+			          	</div>
+		       		</form>
+	       		</div>
 	        </div>
 	        
 	        <div th:replace="~{baseProdutoCarrinho :: baseProduto}"></div>

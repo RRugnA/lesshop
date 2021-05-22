@@ -1,27 +1,29 @@
 package br.com.fatec.les.crudsimples.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import br.com.fatec.les.crudsimples.model.Compra;
 import br.com.fatec.les.crudsimples.model.CompraStatus;
 
 public class RequisicaoCompra {
 
-	private String id;
+	private String compraId;
 	private String cliente;
 	private String endereco;
-	private String documento;
-	private String parcela;
+	private List<String> documento;
+	private List<String> valorParcela;
 	private String valorTotal;
 	private String nomeProduto;
 	private String compraStatus;
+	private String qtde;
 
-	public String getId() {
-		return id;
+	public String getCompraId() {
+		return compraId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setCompraId(String compraId) {
+		this.compraId = compraId;
 	}
 
 	public String getCliente() {
@@ -40,20 +42,32 @@ public class RequisicaoCompra {
 		this.endereco = endereco;
 	}
 
-	public String getDocumento() {
+	public List<String> getDocumento() {
 		return documento;
 	}
 
-	public void setDocumento(String documento) {
+	public void setDocumento(List<String> documento) {
 		this.documento = documento;
 	}
 
-	public String getParcela() {
-		return parcela;
+	public void addDocumento(String documento) {
+		this.documento.add(documento);
 	}
 
-	public void setParcela(String parcela) {
-		this.parcela = parcela;
+	public List<String> getValorParcela() {
+		return valorParcela;
+	}
+
+	public String getValorParcela1() {
+		return valorParcela.get(0);
+	}
+
+	public String getValorParcela2() {
+		return valorParcela.get(1);
+	}
+
+	public void setValorParcela(List<String> parcela) {
+		this.valorParcela = parcela;
 	}
 
 	public String getValorTotal() {
@@ -78,6 +92,14 @@ public class RequisicaoCompra {
 
 	public void setCompraStatus(String compraStatus) {
 		this.compraStatus = compraStatus;
+	}
+
+	public String getQtde() {
+		return qtde;
+	}
+
+	public void setQtde(String qtde) {
+		this.qtde = qtde;
 	}
 
 	public Compra toCompra() {
