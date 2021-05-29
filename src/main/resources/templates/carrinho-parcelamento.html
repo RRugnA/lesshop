@@ -34,10 +34,10 @@
 	              		<div class="mx-3">
 	                		<i class="far fa-credit-card pgto__ico"></i>
 	              		</div>
-	              		<label th:text="'Cartão: ' + ${cartao.numeroCartao}">Cartão: xxx-xxx</label>
+	              		<label th:text="'Cartão: ' + ${cartao}">Cartão: xxx-xxx</label>
 	            	</div>   
 	            	<form th:if="${#arrays.length(cartoes)} > 1" method="post" th:action="@{'/carrinho-parcelamento/remover-cartao'}">
-	            		<input type="hidden" th:id="'remover'+${cartao.id}" th:value="${cartao.id}" name="id">
+	            		<input type="hidden" th:id="'remover'+${cartao}" th:value="${cartao}" name="numeroCartao">
 	            		<button type="submit" class="far fa-times-circle c-red bg-0 border-0"></button>
 	            	</form>
 	          	</div>
@@ -80,7 +80,7 @@
 				              		<div class="mx-3">
 				                		<i class="far fa-credit-card pgto__ico"></i>
 				              		</div>
-				              		<span th:text="'Cartão: ' + ${cartao.numeroCartao}">Cartão: xxx-xxx</span>
+				              		<span th:text="'Cartão: ' + ${cartao}">Cartão: xxx-xxx</span>
 				            	</div> 		
 			            	</div>
 			            	

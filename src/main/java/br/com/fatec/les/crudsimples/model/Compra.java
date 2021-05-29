@@ -9,6 +9,10 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -16,17 +20,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
+import br.com.fatec.les.crudsimples.strategy.NumCartao;
+
 @Entity
 public class Compra extends EntidadeDominio {
 
-//	@ManyToMany
-//	@JoinTable(name = "compra_produto", joinColumns = @JoinColumn(name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "prod_id", referencedColumnName = "id"))
-//	private List<Produto> listaCompras;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long compraId;
 
 	@OneToMany(mappedBy = "compra")
 	private Set<CompraProduto> listaCompras = new HashSet<>();
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	private Cliente cliente;
 
 	private String endereco;
@@ -39,13 +45,11 @@ public class Compra extends EntidadeDominio {
 	private CompraStatus compraStatus;
 
 	@ManyToMany
-	@JoinTable(name = "compra_cupom", joinColumns = @JoinColumn(name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "cupom_id", referencedColumnName = "codigo"))
+	@JoinTable(name = "compra_cupom", joinColumns = @JoinColumn(name = "compra_id", referencedColumnName = "compraId"), inverseJoinColumns = @JoinColumn(name = "cupom_id", referencedColumnName = "codigo"))
 	private List<Cupom> cupons;
 
-	@ManyToMany
-	@JoinTable(name = "compra_documento", joinColumns = @JoinColumn(name = "compra_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "documento_id", referencedColumnName = "id"))
-	private List<Documento> documentos = new ArrayList<Documento>();
-
+	private String cartao1;
+	private String cartao2;
 	private int parcelas;
 	private int parcelas2;
 	private BigDecimal valorTotal;
@@ -53,20 +57,20 @@ public class Compra extends EntidadeDominio {
 	private BigDecimal valorParcela2;
 	private int qtde;
 
-//	public List<Produto> getListaCompras() {
-//		return listaCompras;
-//	}
-//
-//	public void setListaCompras(List<Produto> listaCompras) {
-//		this.listaCompras = listaCompras;
-//	}
-
 	public Cliente getCliente() {
 		return cliente;
 	}
 
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
+	}
+
+	public Long getCompraId() {
+		return compraId;
+	}
+
+	public void setCompraId(Long compraId) {
+		this.compraId = compraId;
 	}
 
 	public String getEndereco() {
@@ -77,20 +81,63 @@ public class Compra extends EntidadeDominio {
 		this.endereco = endereco;
 	}
 
-	public List<Documento> getDocumentos() {
-		return documentos;
+//	public List<Documento> getDocumentos() {
+//		return documentos;
+//	}
+//
+//	public void setDocumentos(List<Documento> documentos) {
+//		this.documentos = documentos;
+//	}
+//
+//	public void addDocumento(Documento documento) {
+//		this.documentos.add(documento);
+//	}
+//
+//	public void removeDocumento(Documento documento) {
+//		this.documentos.remove(documento);
+//	}
+
+	public String getCartao1() {
+		return cartao1;
 	}
 
-	public void setDocumentos(List<Documento> documentos) {
-		this.documentos = documentos;
+	public void setCartao1(String cartao1) {
+		this.cartao1 = cartao1;
 	}
 
-	public void addDocumento(Documento documento) {
-		this.documentos.add(documento);
+	public List<String> getCartoes() {
+		List<String> cartoes = new ArrayList<>();
+		if (this.cartao1 != null) {
+			cartoes.add(this.cartao1);
+		}
+		if (this.cartao2 != null) {
+			cartoes.add(this.cartao2);
+		}
+		return cartoes;
 	}
 
-	public void removeDocumento(Documento documento) {
-		this.documentos.remove(documento);
+	public void removeCartao(String cartao) {
+		String verificador1 = NumCartao.gerarNumCartao(this.cartao1);
+		String verificador2 = NumCartao.gerarNumCartao(this.cartao2);
+		if (cartao.equals(verificador1)) {
+			cartao1 = null;
+		}
+		if (cartao.equals(verificador2)) {
+			cartao2 = null;
+		}
+	}
+
+	public void zeraCartoes() {
+		this.cartao1 = null;
+		this.cartao2 = null;
+	}
+
+	public String getCartao2() {
+		return cartao2;
+	}
+
+	public void setCartao2(String cartao2) {
+		this.cartao2 = cartao2;
 	}
 
 	public BigDecimal getValorTotal() {

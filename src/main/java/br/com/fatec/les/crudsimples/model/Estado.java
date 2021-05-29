@@ -3,7 +3,7 @@ package br.com.fatec.les.crudsimples.model;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class Estado extends EntidadeDominio {
+public class Estado {
 
 	private String estado;
 

@@ -8,10 +8,12 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("usuario")
 public class UsuarioController {
+	
+	ModelAndView mv;
 
 	@GetMapping("novo")
 	public ModelAndView novo () {
-		ModelAndView mv = new ModelAndView("usuario/novo");
+		mv = new ModelAndView("usuario/novo");
 		return mv;
 	}
 }

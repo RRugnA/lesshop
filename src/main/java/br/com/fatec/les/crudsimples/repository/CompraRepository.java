@@ -9,6 +9,6 @@ import br.com.fatec.les.crudsimples.model.CompraStatus;
 
 public interface CompraRepository extends JpaRepository<Compra, Long>  {
 
-	List<Compra> findByClienteId(Long id);
+	List<Compra> findByClienteClienteId(Long clienteId);
 	List<Compra> findByCompraStatus(CompraStatus status);
 }

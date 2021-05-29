@@ -5,10 +5,17 @@ import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
 public class Documento extends EntidadeDominio {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long documentoId;
 
 	private String codigoCartao;
 	private String numeroCartao;
@@ -21,6 +28,14 @@ public class Documento extends EntidadeDominio {
 
 	@ManyToOne
 	private Cliente cliente;
+
+	public Long getDocumentoId() {
+		return documentoId;
+	}
+
+	public void setDocumentoId(Long documentoId) {
+		this.documentoId = documentoId;
+	}
 
 	public Cliente getCliente() {
 		return cliente;

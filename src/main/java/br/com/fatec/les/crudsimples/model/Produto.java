@@ -8,88 +8,117 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 @Entity
 public class Produto extends EntidadeDominio {
 
-	private String proNome;
-	private String proImg;
-	private int proQtde;
-	private String proDesc;
-	private BigDecimal proValor;
-	private int proEstoque;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long produtoId;
+
+	private String nome;
+	private String img;
+	private int qtde;
+	private String descricao;
+	private BigDecimal valor;
+	private int estoque;
+	private BigDecimal valorCusto;
 
 	@Enumerated(EnumType.STRING)
-	private TipoProduto prodTipo;
+	private TipoProduto tipoProduto;
 
 	@Enumerated(EnumType.STRING)
-	private StatusProduto prodStatus;
+	private StatusProduto statusProduto;
 
 	@ManyToMany(mappedBy = "produtos")
 	private List<Cliente> clientes;
 
-//	@ManyToMany(mappedBy = "listaCompras")
-//	private List<Compra> listaCompras;
-
 	@OneToMany(mappedBy = "produto")
 	private Set<CompraProduto> listaCompras = new HashSet<>();
 
-	public String getProNome() {
-		return proNome;
+	public Long getProdutoId() {
+		return produtoId;
 	}
 
-	public void setProNome(String proNome) {
-		this.proNome = proNome;
+	public void setProdutoId(Long produtoId) {
+		this.produtoId = produtoId;
 	}
 
-	public String getProImg() {
-		return proImg;
+	public String getNome() {
+		return nome;
 	}
 
-	public void setProImg(String proImg) {
-		this.proImg = proImg;
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
-	public int getProQtde() {
-		return proQtde;
+	public String getImg() {
+		return img;
 	}
 
-	public void setProQtde(int proQtde) {
-		this.proQtde = proQtde;
+	public void setImg(String img) {
+		this.img = img;
 	}
 
-	public String getProDesc() {
-		return proDesc;
+	public int getQtde() {
+		return qtde;
 	}
 
-	public void setProDesc(String proDesc) {
-		this.proDesc = proDesc;
+	public void setQtde(int qtde) {
+		this.qtde = qtde;
 	}
 
-	public BigDecimal getProValor() {
-		return proValor;
+	public String getDescricao() {
+		return descricao;
 	}
 
-	public void setProValor(BigDecimal proValor) {
-		this.proValor = proValor;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 
-	public TipoProduto getProdTipo() {
-		return prodTipo;
+	public BigDecimal getValor() {
+		return valor;
 	}
 
-	public void setProdTipo(TipoProduto prodTipo) {
-		this.prodTipo = prodTipo;
+	public void setValor(BigDecimal valor) {
+		this.valor = valor;
 	}
 
-	public StatusProduto getProdStatus() {
-		return prodStatus;
+	public int getEstoque() {
+		return estoque;
 	}
 
-	public void setProdStatus(StatusProduto prodStatus) {
-		this.prodStatus = prodStatus;
+	public void setEstoque(int estoque) {
+		this.estoque = estoque;
+	}
+
+	public BigDecimal getValorCusto() {
+		return valorCusto;
+	}
+
+	public void setValorCusto(BigDecimal valorCusto) {
+		this.valorCusto = valorCusto;
+	}
+
+	public TipoProduto getTipoProduto() {
+		return tipoProduto;
+	}
+
+	public void setTipoProduto(TipoProduto tipoProduto) {
+		this.tipoProduto = tipoProduto;
+	}
+
+	public StatusProduto getStatusProduto() {
+		return statusProduto;
+	}
+
+	public void setStatusProduto(StatusProduto statusProduto) {
+		this.statusProduto = statusProduto;
 	}
 
 	public List<Cliente> getClientes() {
@@ -100,14 +129,6 @@ public class Produto extends EntidadeDominio {
 		this.clientes = clientes;
 	}
 
-	public int getProEstoque() {
-		return proEstoque;
-	}
-
-	public void setProEstoque(int proEstoque) {
-		this.proEstoque = proEstoque;
-	}
-
 	public Set<CompraProduto> getListaCompras() {
 		return listaCompras;
 	}
@@ -115,13 +136,5 @@ public class Produto extends EntidadeDominio {
 	public void setListaCompras(Set<CompraProduto> listaCompras) {
 		this.listaCompras = listaCompras;
 	}
-
-//	public List<Compra> getCompras() {
-//		return listaCompras;
-//	}
-//
-//	public void setCompras(List<Compra> compras) {
-//		this.listaCompras = compras;
-//	}
 
 }

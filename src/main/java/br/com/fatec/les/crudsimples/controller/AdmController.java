@@ -1,5 +1,6 @@
 package br.com.fatec.les.crudsimples.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +21,20 @@ import br.com.fatec.les.crudsimples.model.CompraProduto;
 import br.com.fatec.les.crudsimples.model.CompraStatus;
 import br.com.fatec.les.crudsimples.model.Cupom;
 import br.com.fatec.les.crudsimples.model.Documento;
+//import br.com.fatec.les.crudsimples.model.LogTransacao;
 import br.com.fatec.les.crudsimples.model.Produto;
 import br.com.fatec.les.crudsimples.model.StatusTroca;
+import br.com.fatec.les.crudsimples.model.Usuario;
 import br.com.fatec.les.crudsimples.repository.ClienteRepository;
 import br.com.fatec.les.crudsimples.repository.CompraProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.CompraRepository;
 import br.com.fatec.les.crudsimples.repository.CupomRepository;
+//import br.com.fatec.les.crudsimples.repository.LogTransacaoRepository;
 import br.com.fatec.les.crudsimples.repository.ProdutoRepository;
-import br.com.fatec.les.crudsimples.strategy.GeraCupom;
+import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
 import br.com.fatec.les.crudsimples.strategy.ValidaCarrinho;
 import br.com.fatec.les.crudsimples.strategy.ValidaCliente;
+import br.com.fatec.les.crudsimples.strategy.ValidaCupom;
 import br.com.fatec.les.crudsimples.strategy.ValidaEstoque;
 
 @Controller
@@ -48,6 +53,10 @@ public class AdmController {
 	private CompraRepository compraRepo;
 	@Autowired
 	private CompraProdutoRepository cpRepo;
+	@Autowired
+	private UsuarioRepository userRepo;
+//	@Autowired
+//	private LogTransacaoRepository ltRepo;
 	
 	@GetMapping("login-adm")
 	public ModelAndView login() {
@@ -89,10 +98,13 @@ public class AdmController {
 	}
 	
 	@PostMapping("/cadastrar-produto")
-	public String novoProduto(RequisicaoProduto requisicao) {
+	public String novoProduto(Principal principal, RequisicaoProduto requisicao) {		
+		Produto produto = requisicao.toProduto();
+		prodRepo.save(produto);
 		
-		Produto prod = requisicao.toProduto();
-		prodRepo.save(prod);
+		Usuario usuario = userRepo.findById(principal.getName()).get();
+//		LogTransacao lt = new LogTransacao(usuario, "INSERT produto " + produto.getId());
+//		ltRepo.save(lt);
 		
 		return "redirect:/adm/controle-estoque";
 	}
@@ -108,29 +120,34 @@ public class AdmController {
 	}
 	
 	@PostMapping("/editar-produto/{id}")
-	public String editarProduto(RequisicaoProduto requisicao) {
+	public String editarProduto(RequisicaoProduto requisicao, Principal principal) {	
 		Produto produto = requisicao.toProduto();		
 		prodRepo.save(produto);
+		
+		Usuario usuario = userRepo.findById(principal.getName()).get();
+//		LogTransacao lt = new LogTransacao(usuario, "UPDATE produto " + produto.getId());
+//		ltRepo.save(lt);
 		
 		return "redirect:/adm/listar-produtos";
 	}
 	
 	@GetMapping("/listar-produtos")
 	public ModelAndView exibiProdutos() {
-		mv = new ModelAndView("adm/adm-exibir-produtos");
-		
-		List<Produto> produtos = prodRepo.findAll();
-		
-		mv.addObject("produtos", produtos);
-		
+		List<Produto> produtos = prodRepo.findAll();	
+		mv = new ModelAndView("adm/adm-exibir-produtos");		
+		mv.addObject("produtos", produtos);		
 		return mv;
 	}
 	
 	@PostMapping("/listar-produtos")
-	public String inativarProduto(RequisicaoProduto requisicao) {
-		Produto produto = prodRepo.findById(Long.valueOf(requisicao.getProdutoId())).get();
+	public String inativarProduto(RequisicaoProduto requisicao, Principal principal) {
+		Produto produto = prodRepo.findById(Long.valueOf(requisicao.getProdutoId())).get();		
 		ValidaEstoque.alteraStatus(produto);		
 		prodRepo.save(produto);
+		
+		Usuario usuario = userRepo.findById(principal.getName()).get();
+//		LogTransacao lt = new LogTransacao(usuario, "UPDATE produto " + produto.getId());
+//		ltRepo.save(lt);
 		
 		return "redirect:/adm/listar-produtos";
 	}
@@ -148,9 +165,14 @@ public class AdmController {
 	}
 	
 	@PostMapping("/cadastrar-cupom")
-	public String novoCupom(RequisicaoCupom requisicao) {
+	public String novoCupom(RequisicaoCupom requisicao, Principal principal) {
 		Cupom cupom = requisicao.toCupom();
 		cupomRepo.save(cupom);
+		
+		Usuario usuario = userRepo.findById(principal.getName()).get();
+//		LogTransacao lt = new LogTransacao(usuario, "INSERT cupom " + cupom.getCodigo());
+//		ltRepo.save(lt);
+		
 		return "redirect:/adm/listar-cupons";
 	}
 	
@@ -174,9 +196,10 @@ public class AdmController {
 	@GetMapping("/venda-detalhes/{id}")
 	public ModelAndView vendaDetalhes(@PathVariable("id") Long id) {
 		Compra compra = compraRepo.findById(id).get();
-		List<CompraProduto> lcp = cpRepo.findByCompraId(compra.getId());
+		List<CompraProduto> lcp = cpRepo.findByCompraCompraId(compra.getCompraId());
 		List<Produto> produtos = ValidaCarrinho.gerarListaCompras(lcp);
-		List<Documento> cartoes = compra.getDocumentos();
+//		List<Documento> cartoes = compra.getDocumentos();
+		List<String> cartoes = compra.getCartoes();
 		
 		mv = new ModelAndView("adm/adm-venda-detalhes");
 		mv.addObject("compra", compra);
@@ -186,27 +209,34 @@ public class AdmController {
 	}
 	
 	@PostMapping("/venda-detalhes/{id}")
-	public String alteraStatusTroca(RequisicaoCompra reqCompra, RequisicaoProduto reqProd) {
+	public String alteraStatusTroca(RequisicaoCompra reqCompra, RequisicaoProduto reqProd, Principal principal) {
+		Usuario usuario = userRepo.findById(principal.getName()).get();
 		Compra compra = compraRepo.findById(Long.valueOf(reqCompra.getCompraId())).get();
-		List<CompraProduto> lcp = cpRepo.findByCompraId(compra.getId());
+		List<CompraProduto> lcp = cpRepo.findByCompraCompraId(compra.getCompraId());
 		Produto produto = prodRepo.findById(Long.valueOf(reqProd.getProdutoId())).get();
 		
 		for(CompraProduto cp : lcp) {
-			if(cp.getProduto().getId() == Long.valueOf(reqProd.getProdutoId())) {
+			if(cp.getProduto().getProdutoId() == Long.valueOf(reqProd.getProdutoId())) {
 				cp.setStatusTroca(StatusTroca.AUTORIZADO);
-				produto.setProEstoque(produto.getProEstoque() + cp.getQuantidade());
-				cpRepo.save(cp);				
+				produto.setEstoque(produto.getEstoque() + cp.getQuantidade());
+				cpRepo.save(cp);	
+				
+//				LogTransacao lt1 = new LogTransacao(usuario, "UPDATE troca " + produto.getId() + " da compra " + cp.getCompra());
+//				ltRepo.save(lt1);
 			}
 		}
 		
 		prodRepo.save(produto);
-		System.out.println("Produto: " + produto.getProNome() + " devolvido ao estoque");
+		System.out.println("Produto: " + produto.getNome() + " devolvido ao estoque");
+		
+//		LogTransacao lt2 = new LogTransacao(usuario, "UPDATE produto " + produto.getId());
+//		ltRepo.save(lt2);
 		
 //		CupomRepo.findAll não pode ser nulo
 		List<Cupom> cupons = cupomRepo.findAll();
 		Cupom cupomTroca = new Cupom();				
-		cupomTroca = GeraCupom.cupomTroca(produto.getProValor());			
-		cupomTroca.setCodigo(GeraCupom.gerarCupom(cupons));
+		cupomTroca = ValidaCupom.cupomTroca(produto.getValor());			
+		cupomTroca.setCodigo(ValidaCupom.gerarCupom(cupons));
 		System.out.println("Código: " + cupomTroca.getCodigo());			
 		cupomRepo.save(cupomTroca);
 		

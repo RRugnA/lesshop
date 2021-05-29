@@ -1,15 +1,8 @@
 package br.com.fatec.les.crudsimples.controller;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.security.Principal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,584 +15,117 @@ import br.com.fatec.les.crudsimples.dto.RequisicaoCupom;
 import br.com.fatec.les.crudsimples.dto.RequisicaoDocumento;
 import br.com.fatec.les.crudsimples.dto.RequisicaoEndereco;
 import br.com.fatec.les.crudsimples.dto.RequisicaoProduto;
-import br.com.fatec.les.crudsimples.model.Cidade;
-import br.com.fatec.les.crudsimples.model.Cliente;
-import br.com.fatec.les.crudsimples.model.Compra;
-import br.com.fatec.les.crudsimples.model.CompraProduto;
-import br.com.fatec.les.crudsimples.model.CompraStatus;
-import br.com.fatec.les.crudsimples.model.Cupom;
-import br.com.fatec.les.crudsimples.model.Documento;
-import br.com.fatec.les.crudsimples.model.Endereco;
-import br.com.fatec.les.crudsimples.model.Estado;
-import br.com.fatec.les.crudsimples.model.FormaPgto;
-import br.com.fatec.les.crudsimples.model.Produto;
-import br.com.fatec.les.crudsimples.model.StatusProduto;
-import br.com.fatec.les.crudsimples.model.StatusTroca;
-import br.com.fatec.les.crudsimples.model.TipoCupom;
-import br.com.fatec.les.crudsimples.model.UsoCupom;
-import br.com.fatec.les.crudsimples.model.Usuario;
-import br.com.fatec.les.crudsimples.repository.ClienteRepository;
-import br.com.fatec.les.crudsimples.repository.CompraProdutoRepository;
-import br.com.fatec.les.crudsimples.repository.CompraRepository;
-import br.com.fatec.les.crudsimples.repository.CupomRepository;
-import br.com.fatec.les.crudsimples.repository.DocumentoRepository;
-import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
-import br.com.fatec.les.crudsimples.repository.ProdutoRepository;
-import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
-import br.com.fatec.les.crudsimples.strategy.NumCartao;
-import br.com.fatec.les.crudsimples.strategy.ValidaCarrinho;
-import br.com.fatec.les.crudsimples.strategy.ValidaCupom;
-import br.com.fatec.les.crudsimples.strategy.ValidaEstoque;
 
 @Controller
 @EnableScheduling
 public class HomeController {
 
-	private ModelAndView mv;
-	
 	@Autowired
-	private ProdutoRepository prodRepo;
-	@Autowired
-	private UsuarioRepository userRepo;
-	@Autowired
-	private ClienteRepository clienteRepo;
-	@Autowired
-	private EnderecoRepository endRepo;
-	@Autowired
-	private DocumentoRepository docRepo;
-	@Autowired
-	private CompraRepository compraRepo;
-	@Autowired
-	private CupomRepository cupomRepo;
-	@Autowired
-	private CompraProdutoRepository cpRepo;
-	
-	public Cliente localizaCliente(Principal principal) {
-		Usuario usuario = userRepo.findByLogin(principal.getName());
-		Cliente cliente = usuario.getCliente();	
-		return cliente;
-	}	
+	private FacadeHome facade;
 	
 	@GetMapping("lesshop")
 	public ModelAndView index() {		
-//		EXIBINDO 8 PRODUTOS NA PÁGINA INICIAL
-		PageRequest paginacao = PageRequest.of(0, 8);		
-		List<Produto> produtos = prodRepo.findByProdStatus(StatusProduto.ESTOQUE, paginacao);
-		
-		mv = new ModelAndView("lesshop");
-		mv.addObject("produtos", produtos);				
-		return mv;
+		return facade.home();
 	}
 	
 	@PostMapping("lesshop")
-	public String index(RequisicaoProduto requisicao) {		
-		Produto produto = prodRepo.findById(Long.valueOf(requisicao.getProdutoId())).get();
-		
-		return "redirect:/produto/" + produto.getId().toString();
+	public String index(RequisicaoProduto requisicao) {			
+		return facade.infoProduto(requisicao);
 	}
 	
 	@GetMapping("produto/{id}")
-	public ModelAndView exibirProduto(@PathVariable("id") Long id) {		
-		Produto produto = prodRepo.findById(id).get();
-		
-		mv = new ModelAndView("produto");
-		mv.addObject("produto", produto);		
-		return mv;
+	public ModelAndView exibirProduto(@PathVariable("id") Long id) {			
+		return facade.exibirProduto(id);
 	}
 	
 	@PostMapping("produto/{id}")
-	public String produto(@PathVariable("id") Long id, Principal principal, RequisicaoProduto requisicao) {
-		
-//		REMOVENDO PRODUTO DO ESTOQUE
-		Produto produto = prodRepo.findById(id).get();
-		ValidaEstoque.baixaEstoque(produto, requisicao);
-		ValidaEstoque.controleEstoque(produto);
-		System.out.println("produto: " + produto.getProdStatus());
-		prodRepo.save(produto);
-		
-//		ADICIONANDO PRODUTO AO CLIENTE
-		Cliente cliente = localizaCliente(principal);
-		produto.setProQtde(Integer.parseInt(requisicao.getQtdProduto()));
-		cliente.addProduto(produto);
-		cliente.addValorDeCompra(produto.getProValor(), produto.getProQtde());
-		clienteRepo.save(cliente);
-		
-		return "redirect:/carrinho/";
+	public String produto(@PathVariable("id") Long id, Principal principal, RequisicaoProduto requisicao) {		
+		return facade.escolherProduto(id, principal, requisicao);
 	}
 	
 	@GetMapping("carrinho")
 	public ModelAndView carrinho(Principal principal) {
-		Cliente cliente = localizaCliente(principal);
-
-//		IDENTIFICANDO OS PRODUTOS NO CARRINHO DO CLIENTE
-		List<Produto> produtos = cliente.getProdutos();
-		
-//		IDENTIFICANDO E DELETANDO COMPRAS NÃO FINALIZADAS
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		for(Compra compra : compras) {
-			if(compra.getCompraStatus().equals(CompraStatus.valueOf("ANDAMENTO"))) {
-				List<CompraProduto> lcp = cpRepo.findByCompraId(compra.getId());
-				for(CompraProduto cp : lcp) {
-					cpRepo.delete(cp);
-				}				
-				compraRepo.delete(compra);				
-			}
-		}
-		
-//		TEMPORIZANDO PRODUTOS DO CLIENTE
-//		if(!cliente.getProdutos().isEmpty()) {
-//			temporizador();
-//			if(!temporizador()) {
-//				System.out.println("Removendo produtos do carrinho...");
-//			}
-//		}
-		
-//		DEVOLVENDO OS PRODUTOS PARA A PÁGINA
-		mv = new ModelAndView("carrinho");
-		mv.addObject("cliente", cliente);
-		mv.addObject("produtos", produtos);
-		return mv;
+		return facade.exibirCarrinho(principal);
 	}
 	
 	@PostMapping("/excluir-carrinho")
-	public String deleteProduto(Principal principal, RequisicaoProduto requisicao) {
-		System.out.println("Removendo item");
-
-		Cliente cliente = localizaCliente(principal);
-		cliente.zeraValorDeCompra();
-		
-//		DEVOLVENDO AO ESTOQUE
-		Produto prod = prodRepo.findById(Long.valueOf(requisicao.getProdutoId())).get();
-		ValidaEstoque.retornaEstoque(prod);
-		prod.setProQtde(0);
-		ValidaEstoque.controleEstoque(prod);
-		System.out.println("produto: " + prod.getProdStatus());
-		prodRepo.save(prod);
-		
-//		RETIRANDO DO CARRINHO DO CLIENTE	
-		cliente.removeProduto(prod);
-		clienteRepo.save(cliente);
-		
-		return "redirect:/carrinho";
+	public String deleteProduto(Principal principal, RequisicaoProduto requisicao) {		
+		return facade.deletarProduto(principal, requisicao);
 	}
 	
 	@PostMapping("carrinho")
-	public String carrinho(Principal principal, RequisicaoCompra requisicao, RequisicaoProduto reqProd) {
-		Cliente cliente = localizaCliente(principal);
-		
-//		INCLUINDO PRODUTO NA COMPRA
-		Compra compra = requisicao.toCompra();		
-		compra.setCliente(cliente);
-		compra.setValorTotal(cliente.getValorDeCompra());
-		
-//		TESTE COMPRAPRODUTO
-		compraRepo.save(compra);	
-		List<Produto> produtos = ValidaCarrinho.getProdutos(cliente);
-		for(Produto produto : produtos) {
-			CompraProduto cp = new CompraProduto();
-			cp.setProduto(produto);
-			cp.setCompra(compra);
-			cp.setStatusTroca(StatusTroca.NAO_SOLICITADO);
-			produto.getListaCompras().add(cp);
-			compra.getListaCompras().add(cp);
-			cpRepo.save(cp);
-		}
-//		compra.setListaCompras(produtos);		
-		compraRepo.save(compra);	
-		
-		return "redirect:/carrinho-endereco";
+	public String carrinho(Principal principal, RequisicaoCompra requisicao, RequisicaoProduto reqProd) {		
+		return facade.salvarCarrinho(principal, requisicao, reqProd);
 	}
 	
 	@GetMapping("carrinho-endereco")
 	public ModelAndView carrinhoEndereco(Principal principal) {
-		Cliente cliente = localizaCliente(principal);
-		
-//		RECUPERAR ENDEREÇO DO CLIENTE
-		List<Endereco> enderecos = endRepo.findByCliente(cliente);	
-		
-//		RECUPERAR LISTA DE PRODUTOS
-		List<Produto> produtos = ValidaCarrinho.getProdutos(cliente);			
-		
-		mv = new ModelAndView("carrinho-endereco");
-		mv.addObject("enderecos", enderecos);	
-		mv.addObject("produtos", produtos);
-		mv.addObject("cliente", cliente);		
-		
-		return mv;
+		return facade.exibirCarrinhoEndereco(principal);
 	}
 	
 	@PostMapping("carrinho-endereco/novo-endereco")
 	public String carrinhoEndereco(Principal principal, RequisicaoEndereco requisicao) {
-		Cliente cliente = localizaCliente(principal);
-		
-		Endereco novoEndereco = requisicao.toEndereco();
-		novoEndereco.setCliente(cliente);
-		endRepo.save(novoEndereco);
-		
-		return "redirect:/carrinho-endereco";
+		return facade.novoEnderecoCarrinhoEndereco(principal, requisicao);
 	}
 	
 	@PostMapping("carrinho-endereco")
-	public String carrinhoEndereco(RequisicaoCompra requisicao, Principal principal) {
-		Cliente cliente = localizaCliente(principal);
-		
-		Endereco end = endRepo.findById(Long.valueOf(requisicao.getEndereco())).get();
-		Cidade cidade = end.getCidade();
-		Estado estado = cidade.getEstado();
-		
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-		compraAtual.setEndereco(end.getLogradouro() + ", " + end.getNumero() + " - " + cidade.getCidade() + "/" + estado.getEstado());
-		compraAtual.setValorTotal(cliente.getValorDeCompra());
-		compraRepo.save(compraAtual);
-		
-		return "redirect:/carrinho-pgto";
+	public String carrinhoEndereco(RequisicaoCompra requisicao, Principal principal) {		
+		return facade.salvarCarrinhoEndereco(requisicao, principal);
 	}
 	
 	@GetMapping("carrinho-pgto")
 	public ModelAndView carrinhoPgto(Principal principal) {
-		Cliente cliente = localizaCliente(principal);	
-		
-		List<Produto> produtos = new ArrayList<Produto>();		
-		for(Produto produto : cliente.getProdutos()) {
-			produtos.add(produto);
-		}
-		
-//		EXIBINDO 4 ÚLTIMOS DÍGITOS DO CARTÃO
-		List<Documento> cartoes = docRepo.findByCliente(cliente);
-		NumCartao.gerarListaNumCartao(cartoes);
-		
-		mv = new ModelAndView("carrinho-pgto");
-		mv.addObject("documentos", cartoes);
-		mv.addObject("produtos", produtos);
-		mv.addObject("cliente", cliente);	
-		
-		return mv;
+		return facade.exibirCarrinhoPgto(principal);
 	}
 	
 	@PostMapping("carrinho-pgto/novo-cartao")
 	public String carrinhoPgto(Principal principal, RequisicaoDocumento requisicao) {
-		Cliente cliente = localizaCliente(principal);	
-		
-		Documento novoCartao = requisicao.toDocumento();
-		novoCartao.setCliente(cliente);
-		docRepo.save(novoCartao);
-		
-		return "redirect:/carrinho-pgto";
+		return facade.novoCartaoCarrinhoPgto(principal, requisicao);
 	}
 	
 	@PostMapping("carrinho-pgto")
 	public String carrinhoPgto(Principal principal, RequisicaoCompra requisicao) {
-		Cliente cliente = localizaCliente(principal);	
-		Compra compraAtual = new Compra();
-		
-//		IDENTIFICANDO COMPRA ATUAL
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-		List<Documento> docs = new ArrayList<Documento>();
-		List<String> ids = requisicao.getDocumento();
-		for(String id : ids) {
-			Documento doc = docRepo.findById(Long.valueOf(id)).get();
-			docs.add(doc);
-		}
-		compraAtual.setDocumentos(docs);
-		compraAtual.setFormaPgto(FormaPgto.CARTAO);
-		compraRepo.save(compraAtual);
-		
-		return "redirect:/carrinho-parcelamento";		
+		return facade.salvarCarrinhoPgto(principal, requisicao);		
 	}
 	
 	@GetMapping("carrinho-parcelamento")
 	public ModelAndView carrinhoParcelamento(Principal principal) {
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();	
-		
-		Compra compraAtual = new Compra();
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-		List<Produto> produtos = ValidaCarrinho.getProdutos(cliente);			
-		List<Cupom> cupons = compraAtual.getCupons();
-		
-//		EXIBINDO 4 ÚLTIMOS DÍGITOS DO CARTÃO
-		List<Documento> cartoes = NumCartao.gerarListaNumCartao(compraAtual.getDocumentos());
-//		List<Documento> cartoes = compraAtual.getDocumentos();
-//		NumCartao.gerarListaNumCartao(cartoes);
-		
-		List<Documento> clienteCartoes = cliente.getDocumentos();
-		
-//		CALCULANDO O VALOR DAS PARCELAS
-		List<BigDecimal> parcelas = new ArrayList<BigDecimal>();		
-		for(int i = 1; i <= 10; i++) {		
-			BigDecimal valorParcela = cliente.getValorDeCompra();
-			valorParcela = valorParcela.divide(new BigDecimal(i), 2, RoundingMode.HALF_DOWN);
-			parcelas.add(valorParcela);
-		}
-		
-		mv = new ModelAndView("carrinho-parcelamento");
-		mv.addObject("compra", compraAtual);
-		mv.addObject("produtos", produtos);
-		mv.addObject("cliente", cliente);	
-		mv.addObject("parcelas", parcelas);
-		mv.addObject("cupons", cupons);
-		mv.addObject("cartoes", cartoes);
-		mv.addObject("clienteCartoes", clienteCartoes);
-		
-		return mv;
+		return facade.exibirCarrinhoParcelamento(principal);
 	}
 	
 	@PostMapping("/carrinho-parcelamento/cupom")
 	public ModelAndView verificarCupom(Principal principal, RequisicaoCupom requisicao) {
-		mv = carrinhoParcelamento(principal);
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();	
-		
-		Compra compraAtual = new Compra();
-
-//		IDENTIFICANDO COMPRA ATUAL
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-//		VALIDANDO CÓDIGO DO CUPOM INFORMADO
-		try {
-			Cupom cupom = cupomRepo.findById(requisicao.getCodigo()).get();
-			
-			if(!ValidaCupom.cupomValido(cupom.getCodigo(), compraAtual.getCupons())) {
-				mv.addObject("aviso", "Código Já utilizado");
-				mv.addObject("cupons", compraAtual.getCupons());
-				return mv;
-			}			
-			
-//		BARRANDO CUPONS DESNECESSÁRIOS (RN0036)
-			BigDecimal somaCupons = ValidaCupom.somaCupons(compraAtual.getCupons());
-			if(ValidaCupom.cupomMaior(somaCupons, compraAtual.getValorTotal())){
-				mv.addObject("aviso", "Cupom não utilizado. O valor atual é suficiente para realizar a compra!");
-				mv.addObject("cupons", compraAtual.getCupons());
-				return mv;
-			}
-			
-			compraAtual.addCupom(cupom);
-			compraRepo.save(compraAtual);					
-			mv.addObject("aviso", "Código Válido");
-			mv.addObject("cupons", compraAtual.getCupons());
-			
-		}catch (NoSuchElementException er){
-			mv.addObject("aviso", "Código inválido");
-			mv.addObject("cupons", compraAtual.getCupons());
-			
-		}
-		
-//		APLICANDO DESCONTO NO VALOR DA COMPRA
-		if(compraAtual.getCupons() != null) {
-			BigDecimal valorDesconto = new BigDecimal(0);
-			for(Cupom cupom : compraAtual.getCupons()) {
-				valorDesconto = valorDesconto.add(cupom.getValorDesconto());
-			}
-			
-			System.out.println("Valor desconto: " + valorDesconto);
-			
-			cliente.setValorDeCompra(cliente.getValorDeCompra().subtract(valorDesconto));
-			if(cliente.getValorDeCompra().doubleValue() < 0) {
-				cliente.setValorDeCompra(new BigDecimal(0));
-			}
-			System.out.println("valor com desconto: " + cliente.getValorDeCompra());
-			clienteRepo.save(cliente);
-		}
-		
-//		CALCULANDO O VALOR DAS PARCELAS
-		List<BigDecimal> parcelas = new ArrayList<BigDecimal>();		
-		for(int i = 1; i <= 10; i++) {		
-			BigDecimal valorParcela = cliente.getValorDeCompra();
-			valorParcela = valorParcela.divide(new BigDecimal(i), 2, RoundingMode.HALF_DOWN);
-			parcelas.add(valorParcela);
-		}
-		
-		mv.addObject("parcelas", parcelas);
-		return mv;
+		return facade.inserirCupom(principal, requisicao);
 	}
 	
 	@PostMapping("carrinho-parcelamento/remover-cartao")
-	public String carrinhoParcelamentoRemoverCartao(Principal principal, RequisicaoDocumento requisicao) {
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();
-		Compra compraAtual = new Compra();
-		
-//		IDENTIFICANDO COMPRA ATUAL
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-		Documento doc = docRepo.findById(Long.valueOf(requisicao.getId())).get();
-		compraAtual.removeDocumento(doc);
-		compraRepo.save(compraAtual);
-		
-		return "redirect:/carrinho-parcelamento";
-		
+	public String carrinhoParcelamentoRemoverCartao(Principal principal, RequisicaoDocumento requisicao) {		
+		return facade.removerCartao(principal, requisicao);
 	}
 	
 	@PostMapping("carrinho-parcelamento")
 	public String carrinhoParcelamento(Principal principal, RequisicaoCompra requisicao) {
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();	
-		Compra compraAtual = new Compra();
-		
-//		IDENTIFICANDO COMPRA ATUAL
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-		compraAtual.setValorParcela(compraAtual.toValorParcela(requisicao.getValorParcela1()));
-		compraAtual.setParcelas(compraAtual.toQtdeParcela(requisicao.getValorParcela1()));
-		
-		if(requisicao.getValorParcela().size() > 1) {
-			compraAtual.setValorParcela2(compraAtual.toValorParcela(requisicao.getValorParcela2()));
-			compraAtual.setParcelas2(compraAtual.toQtdeParcela(requisicao.getValorParcela2()));
-		}
-		
-		compraAtual.setValorTotal(cliente.getValorDeCompra());
-		compraRepo.save(compraAtual);
-		
-		return "redirect:/carrinho-revisao";
+		return facade.salvarCarrinhoParcelamento(principal, requisicao);
 	}
 	
 	@GetMapping("carrinho-parcelamento/{codigo}-removido")
 	public ModelAndView removerCupom(@PathVariable("codigo")String codigo, Principal principal, RequisicaoCupom requisicao) {
-		mv = verificarCupom(principal, requisicao);
-		
-		Cupom cupom = cupomRepo.findById(codigo).get();
-		
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();	
-		
-		Compra compraAtual = new Compra();
-
-//		IDENTIFICANDO COMPRA ATUAL
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-//		REMOVENDO CUPOM DA COMPRA
-		compraAtual.removeCupom(cupom);		
-		compraRepo.save(compraAtual);
-		
-//		REMOVENDO DESCONTO DO VALOR DA COMPRA
-		cliente.setValorDeCompra(cliente.getValorDeCompra().add(cupom.getValorDesconto()));
-		clienteRepo.save(cliente);
-		
-		mv.addObject("aviso", "Cupom excluído");
-		return mv;
+		return facade.removerCupom(codigo, principal, requisicao);
 	}
 	
 	
 	@GetMapping("carrinho-revisao")
 	public ModelAndView carrinhoRevisao(Principal principal) {
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();	
-		
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-		List<Produto> produtos = new ArrayList<Produto>();		
-		for(Produto produto : cliente.getProdutos()) {
-			produtos.add(produto);
-		}
-		
-//		EXIBINDO 4 ÚLTIMOS DÍGITOS DO CARTÃO
-		List<Documento> cartoes = compraAtual.getDocumentos();
-		for(Documento doc : cartoes) {
-			doc.setNumeroCartao(NumCartao.gerarNumCartao(doc));
-		}
-		
-		mv = new ModelAndView("carrinho-revisao");
-		mv.addObject("compra", compraAtual);
-		mv.addObject("cliente", cliente);
-		mv.addObject("produtos", produtos);
-		mv.addObject("cartoes", cartoes);
-		return mv;
+		return facade.exibirCarrinhoRevisao(principal);
 	}
 	
 	@PostMapping("carrinho-revisao")
-	public String carrinhoRevisao(Principal principal, RequisicaoCompra requisicao) {
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();	
-		
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
-		
-		compraAtual.setCompraStatus(CompraStatus.valueOf(requisicao.getCompraStatus()));
-		compraRepo.save(compraAtual);
-		
-		return "redirect:/carrinho-sucesso";
+	public String carrinhoRevisao(Principal principal, RequisicaoCompra requisicao) {	
+		return facade.salvarCarrinhoRevisao(principal, requisicao);
 	}
 	
 	@GetMapping("carrinho-sucesso")
-	public ModelAndView carrinhoSucesso(Principal principal) {
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();	
-		
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
-		Compra compraAtual = new Compra().localizaCompra(CompraStatus.PROCESSAMENTO, compras);
-		
-		BigDecimal valorTotalProdutos = new BigDecimal(0);		
-		List<Produto> produtos = new ArrayList<Produto>();
-		
-		List<CompraProduto> lcp = cpRepo.findByCompraId(compraAtual.getId());
-		for(CompraProduto cp : lcp) {
-			Produto produto = cp.getProduto();
-			produtos.add(produto);
-			valorTotalProdutos = valorTotalProdutos.add(produto.getProValor());
-		}
-		
-		
-//		for(Produto produto: compraAtual.getListaCompras()) {
-//			produtos.add(produto);
-//			valorTotalProdutos = valorTotalProdutos.add(produto.getProValor());
-//		}
-		System.out.println("Valor dos produtos: " + valorTotalProdutos);
-		
-//		EXIBINDO 4 ÚLTIMOS DÍGITOS DO CARTÃO
-		List<Documento> cartoes = compraAtual.getDocumentos();
-		for(Documento doc : cartoes) {
-			doc.setNumeroCartao(NumCartao.gerarNumCartao(doc));
-		}
-		
-		mv = new ModelAndView("carrinho-sucesso");
-		mv.addObject("produtos", produtos);
-		mv.addObject("compra", compraAtual);
-		mv.addObject("cartoes", cartoes);
-		mv.addObject("cliente", cliente);
-		
-		compraAtual.setCompraStatus(CompraStatus.AGUARDANDO_PGTO);
-		
-//		INATIVANDO CUPONS UNITÁRIOS
-		List<Cupom> cupons = compraAtual.getCupons();
-		for(Cupom cupom : cupons) {
-			if(cupom.getUsoCupom().equals(UsoCupom.UNICO))
-				cupom.setTipoCupom(TipoCupom.INATIVO);
-		}
-		compraAtual.setCupons(cupons);
-		
-//		GERANDO CUPOM DE COMPENSAÇÃO
-		BigDecimal somaCupons = ValidaCupom.somaCupons(compraAtual.getCupons());
-		System.out.println("Soma dos cupons: " + somaCupons);
-		if(ValidaCupom.cupomMaior(somaCupons, valorTotalProdutos)) {
-			Cupom cupomCompensacao = new Cupom();
-			cupomCompensacao.setCodigo(ValidaCupom.gerarCupom(compraAtual.getCupons()));
-			cupomCompensacao.setDataCadastro(LocalDate.now());
-			cupomCompensacao.setTipoCupom(TipoCupom.COMPENSACAO);
-			cupomCompensacao.setUsoCupom(UsoCupom.UNICO);
-			cupomCompensacao.setValorDesconto(ValidaCupom.valorCompensado(somaCupons, valorTotalProdutos));
-			System.out.println("Cupom de compensação: " + cupomCompensacao.getCodigo() + " - valor: R$ " + cupomCompensacao.getValorDesconto());
-			cupomRepo.save(cupomCompensacao);
-			compraAtual.addCupom(cupomCompensacao);
-		}		
-		
-		compraRepo.save(compraAtual);
-		
-		List<Produto> listaVazia = new ArrayList<Produto>();
-		cliente.setProdutos(listaVazia);
-		cliente.setValorDeCompra(new BigDecimal(0));
-		clienteRepo.save(cliente);
-		
-		return mv;
+	public ModelAndView carrinhoSucesso(Principal principal) {	
+		return facade.exibirCarrinhoSucesso(principal);
 	}
 }

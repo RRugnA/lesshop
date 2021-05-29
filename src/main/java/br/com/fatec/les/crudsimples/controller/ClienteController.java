@@ -1,6 +1,7 @@
 package br.com.fatec.les.crudsimples.controller;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import br.com.fatec.les.crudsimples.model.CompraProduto;
 import br.com.fatec.les.crudsimples.model.Cupom;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
+import br.com.fatec.les.crudsimples.model.MensagemErros;
 import br.com.fatec.les.crudsimples.model.Produto;
 import br.com.fatec.les.crudsimples.model.StatusTroca;
 import br.com.fatec.les.crudsimples.model.Usuario;
@@ -35,6 +37,7 @@ import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
 import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
 import br.com.fatec.les.crudsimples.strategy.NumCartao;
 import br.com.fatec.les.crudsimples.strategy.ValidaCarrinho;
+import br.com.fatec.les.crudsimples.strategy.ValidaCliente;
 
 @Controller
 @RequestMapping("cliente")
@@ -56,7 +59,7 @@ public class ClienteController {
 	private CompraProdutoRepository cpRepo;
 	
 	public Cliente localizaCliente(Principal principal) {
-		Usuario usuario = userRepo.findByLogin(principal.getName());
+		Usuario usuario = userRepo.findById(principal.getName()).get();
 		Cliente cliente = usuario.getCliente();	
 		return cliente;
 	}	
@@ -76,6 +79,28 @@ public class ClienteController {
 		return "redirect:/login-home";
 	}
 	
+	@GetMapping("alterar-senha")
+	public ModelAndView alterarSenha() {
+		mv = new ModelAndView("cliente/alterar-senha");
+		return mv;
+	}
+	
+	@PostMapping("alterar-senha")
+	public ModelAndView alterarSenha(Principal principal, RequisicaoUsuario requisicao, MensagemErros mensagem) {
+		Usuario usuario = userRepo.findById(principal.getName()).get();
+		if(ValidaCliente.alteraSenha(requisicao, usuario)) {
+			userRepo.save(usuario);
+			mensagem.setMensagem("Senha alterada com sucesso!");
+			mv = new ModelAndView("cliente/alterar-senha");
+			mv.addObject("mensagem", mensagem);
+			return mv;
+		} 		
+		mensagem.setMensagem("Senha Atual incorreta ou campos Nova Senha não são idênticos");
+		mv = new ModelAndView("cliente/alterar-senha");
+		mv.addObject("mensagem", mensagem);
+		return mv;	
+	}
+	
 	@GetMapping("cadastro-pessoal")
 	public ModelAndView cadastrar() {
 		mv = new ModelAndView("cliente/cadastro-pessoal");
@@ -83,12 +108,11 @@ public class ClienteController {
 	}
 	
 	@PostMapping("cadastro-pessoal")
-	public String novo(Principal principal, RequisicaoCliente requisicao) {
-		
+	public String novo(Principal principal, RequisicaoCliente requisicao) {		
 		Cliente cliente = requisicao.toCliente();
-		Usuario usuario = userRepo.findByLogin(principal.getName());
+		Usuario usuario = userRepo.findById(principal.getName()).get();
 		cliente.setUsuario(usuario);
-		
+		System.out.println("cadastrando cliente...");
 		clienteRepo.save(cliente);
 		
 		usuario.setCliente(cliente);
@@ -132,7 +156,7 @@ public class ClienteController {
 	@GetMapping("/exibir-dados-pessoais")
 	public ModelAndView exibirPessoal(Principal principal) {
 		
-		Usuario user = userRepo.findByLogin(principal.getName());	
+		Usuario user = userRepo.findById(principal.getName()).get();	
 		if(user.getCliente() == null) {
 			mv = new ModelAndView("cliente/exibir");
 		} else {
@@ -160,7 +184,7 @@ public class ClienteController {
 		List<Documento> documentos = docRepo.findByCliente(cliente);
 		
 //		EXIBINDO 4 ÚLTIMOS DÍGITOS DO CARTÃO
-		NumCartao.gerarListaNumCartao(documentos);
+		NumCartao.gerarListaDocNumCartao(documentos);
 		
 		mv = new ModelAndView("cliente/exibir-documento");
 		mv.addObject("documentos", documentos);		
@@ -171,8 +195,7 @@ public class ClienteController {
 	public ModelAndView editarPessoal(Principal principal) {
 		mv = new ModelAndView("cliente/editar-cliente");
 		
-		Usuario user = userRepo.findByLogin(principal.getName());
-		Cliente cliente = user.getCliente();
+		Cliente cliente = localizaCliente(principal);
 		
 		mv.addObject("cliente", cliente);
 		
@@ -187,15 +210,15 @@ public class ClienteController {
 		List<Documento> docs = docRepo.findByCliente(cliente);
 		
 		cliente = requisicao.toCliente();
-		cliente.setId(id);
-		
+		cliente.setClienteId(id);
+		cliente.setDataCadastro(LocalDate.now());
 		cliente.setDocumentos(docs);
 		cliente.setEndereço(ends);
 		
-		Usuario usuario = userRepo.findByLogin(principal.getName());
+		Usuario usuario = userRepo.findById(principal.getName()).get();
 		cliente.setUsuario(usuario);
 		
-		System.out.println("id = " + cliente.getId());
+		System.out.println("id = " + cliente.getClienteId());
 		clienteRepo.save(cliente);
 		
 		return "redirect:/cliente/exibir-dados-pessoais";
@@ -237,16 +260,16 @@ public class ClienteController {
 	@PostMapping("editar-endereco/{id}")
 	public String editarEndereco(@PathVariable("id") Long id, RequisicaoEndereco requisicao) {
 		Endereco endereco = endRepo.findById(id).get();
-		Cliente cliente = clienteRepo.findById(endereco.getCliente().getId()).get();
+		Cliente cliente = clienteRepo.findById(endereco.getCliente().getClienteId()).get();
 		
 		endereco = requisicao.toEndereco();
 		endereco.setCliente(cliente);
-		endereco.setId(id);
+		endereco.setEnderecoId(id);
 		
-		System.out.println("id = " + endereco.getId());
+		System.out.println("id = " + endereco.getEnderecoId());
 		endRepo.save(endereco);
 		
-		return "redirect:/cliente/enderecos-cadastrados/" + cliente.getId().toString();
+		return "redirect:/cliente/enderecos-cadastrados/" + cliente.getClienteId().toString();
 	}
 	
 	@GetMapping("cadastrar-documento/{id}")
@@ -282,16 +305,16 @@ public class ClienteController {
 	@PostMapping("editar-documento/{id}")
 	public String editarDocumento(@PathVariable("id") Long id, RequisicaoDocumento requisicao) {
 		Documento documento = docRepo.findById(id).get();
-		Cliente cliente = clienteRepo.findById(documento.getCliente().getId()).get();
+		Cliente cliente = clienteRepo.findById(documento.getCliente().getClienteId()).get();
 		
 		documento = requisicao.toDocumento();
 		documento.setCliente(cliente);
-		documento.setId(id);
+		documento.setDocumentoId(id);
 		
-		System.out.println("id = " + documento.getId());
+		System.out.println("id = " + documento.getDocumentoId());
 		docRepo.save(documento);
 		
-		return "redirect:/cliente/documentos-cadastrados/" + cliente.getId().toString();
+		return "redirect:/cliente/documentos-cadastrados/" + cliente.getClienteId().toString();
 	}
 	
 	@GetMapping("enderecos-cadastrados/{id}")
@@ -361,7 +384,7 @@ public class ClienteController {
 	@GetMapping("historico-de-compras")
 	public ModelAndView historico(Principal principal) {
 		Cliente cliente = localizaCliente(principal);
-		List<Compra> compras = compraRepo.findByClienteId(cliente.getId());
+		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
 		
 		mv = new ModelAndView("cliente/historico");
 		mv.addObject("compras", compras);
@@ -371,11 +394,12 @@ public class ClienteController {
 	@GetMapping("detalhes-historico/{id}")
 	public ModelAndView detalhesHistorico(@PathVariable("id") Long id) {
 		Compra compra = compraRepo.findById(id).get();
-		List<CompraProduto> lcp = cpRepo.findByCompraId(compra.getId());
+		List<CompraProduto> lcp = cpRepo.findByCompraCompraId(compra.getCompraId());
 		List<Produto> produtos = ValidaCarrinho.gerarListaCompras(lcp);
 //		List<Produto> produtos = compra.getListaCompras();
 		List<Cupom> cupons = compra.getCupons();
-		List<Documento> cartoes = compra.getDocumentos();
+//		List<Documento> cartoes = compra.getDocumentos();
+		List<String> cartoes = NumCartao.gerarListaStringNumCartao(compra.getCartoes());
 		
 		mv = new ModelAndView("cliente/detalhes-historico");
 		mv.addObject("compra", compra);
@@ -388,9 +412,9 @@ public class ClienteController {
 	@PostMapping("detalhes-historico/{id}")
 	public String solicitarTroca(RequisicaoCompra reqCompra, RequisicaoProduto reqProd) {
 		Compra compra = compraRepo.findById(Long.valueOf(reqCompra.getCompraId())).get();
-		List<CompraProduto> lcp = cpRepo.findByCompraId(compra.getId());
+		List<CompraProduto> lcp = cpRepo.findByCompraCompraId(compra.getCompraId());
 		for(CompraProduto cp : lcp) {
-			if(cp.getProduto().getId() == Long.valueOf(reqProd.getProdutoId())) {
+			if(cp.getProduto().getProdutoId() == Long.valueOf(reqProd.getProdutoId())) {
 				cp.setStatusTroca(StatusTroca.SOLICITADO);
 				cpRepo.save(cp);
 			}

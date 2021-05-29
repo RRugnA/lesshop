@@ -4,11 +4,18 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
 public class Endereco extends EntidadeDominio {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long enderecoId;
+	
 	private String logradouro;
 	private String numero;
 	private String cep;
@@ -23,6 +30,14 @@ public class Endereco extends EntidadeDominio {
 
 	@ManyToOne
 	private Cliente cliente;
+
+	public Long getEnderecoId() {
+		return enderecoId;
+	}
+
+	public void setEnderecoId(Long enderecoId) {
+		this.enderecoId = enderecoId;
+	}
 
 	public TipoEndereco getTipoEndereco() {
 		return tipoEndereco;

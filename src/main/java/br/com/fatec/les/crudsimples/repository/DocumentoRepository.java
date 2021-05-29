@@ -10,5 +10,6 @@ import br.com.fatec.les.crudsimples.model.Documento;
 public interface DocumentoRepository extends JpaRepository<Documento, Long>  {
 
 	List<Documento> findByCliente(Cliente cliente);
+	Documento findByNumeroCartao(String numeroCartao);
 
 }

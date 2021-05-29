@@ -10,5 +10,5 @@ import br.com.fatec.les.crudsimples.model.StatusProduto;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
-	List<Produto> findByProdStatus(StatusProduto status, Pageable sort);
+	List<Produto> findByStatusProduto(StatusProduto status, Pageable sort);
 }

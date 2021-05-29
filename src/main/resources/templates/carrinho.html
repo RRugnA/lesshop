@@ -47,25 +47,25 @@
 		                <tr th:each="produto : ${produtos}">
 		                  <td>
 		                  	<div class="d-flex">
-			                  	<img th:src="${produto.proImg}" alt="" class="img-fluid car__img">
+			                  	<img th:src="${produto.img}" alt="" class="img-fluid car__img">
 			                    <div style="width:250px; align-self:center;">
-			                      <span th:text="${produto.proNome}">NOME PRODUTO</span>
+			                      <span th:text="${produto.nome}">NOME PRODUTO</span>
 			                    </div>
 		                  	</div>	                    
 		                  </td>
 		                  <td class="text-center">
 		                    <div>
 		                    	<form method="post" th:action="@{/excluir-carrinho}">
-		                    		<input type="hidden" th:value="${produto.id}" name="produtoId">
+		                    		<input type="hidden" th:value="${produto.produtoId}" name="produtoId">
 		                      		<button type="submit" class="btn-delete"><i class="far fa-trash-alt"></i></button>
 	                      		</form>
 		                    </div>
 		                  </td>
 		                  <td class="text-center">
-		                  	<span class="text-center" th:text="${produto.proQtde}">QTDE</span>
+		                  	<span class="text-center" th:text="${produto.qtde}">QTDE</span>
 		                  </td>
-		                  <td th:text="${produto.proValor}">VALOR</td>
-		                  <td th:text="${produto.proValor} * ${produto.proQtde}" class="valorProduto">VALOR TOTAL</td>
+		                  <td th:text="${produto.valor}">VALOR</td>
+		                  <td th:text="${produto.valor} * ${produto.qtde}" class="valorProduto">VALOR TOTAL</td>
 		                </tr>
 		              </tbody>
 		              <tfoot style="background-color: white;">
@@ -90,7 +90,7 @@
 			            </div>
 		              	<div th:if="!${#arrays.isEmpty(produtos)}">	
 		              		<form action="/carrinho" method="post" id="carrinho-finalizar">
-		              			<input th:each="produto : ${produtos}" type="hidden" th:name="${produto.id}">	              		
+		              			<input th:each="produto : ${produtos}" type="hidden" th:name="${produto.produtoId}">	              		
 		              			<button type="submit" class="btn btn-success nav-carrinho__btn" sec:authorize="isAuthenticated()">FINALIZAR COMPRA</button>
 		              		</form>
 		              	</div>

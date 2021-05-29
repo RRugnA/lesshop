@@ -86,10 +86,11 @@ public class RequisicaoCliente {
 		cliente.setNome(nome);
 
 		if (clienteId != null) {
-			cliente.setId(Long.valueOf(clienteId));
+			cliente.setClienteId(Long.valueOf(clienteId));
 		}
-
+		
 		cliente.setDataCadastro(LocalDate.now());
+		System.out.println("requisicao data: " + cliente.getDataCadastro());
 		cliente.setTipoCliente(TipoCliente.valueOf(tipoCliente));
 		cliente.setTipoDocumento(TipoDocumento.valueOf(tipoDocumento));
 		cliente.setNumeroDocumento(codigo);

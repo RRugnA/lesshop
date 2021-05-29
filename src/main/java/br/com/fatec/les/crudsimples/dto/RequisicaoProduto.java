@@ -1,6 +1,7 @@
 package br.com.fatec.les.crudsimples.dto;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import br.com.fatec.les.crudsimples.model.Produto;
@@ -10,13 +11,14 @@ import br.com.fatec.les.crudsimples.model.TipoProduto;
 public class RequisicaoProduto {
 
 	private String produtoId;
-	private String nomeProduto;
-	private String qtdProduto;
+	private String nome;
+	private String qtd;
 	private String tipoProduto;
-	private String imgProduto;
-	private String valorProduto;
-	private String descProduto;
-	private String estoqueProduto;
+	private String img;
+	private String valor;
+	private String descricao;
+	private String estoque;
+	private String valorCusto;
 
 	public String getProdutoId() {
 		return produtoId;
@@ -26,87 +28,101 @@ public class RequisicaoProduto {
 		this.produtoId = produtoId;
 	}
 
-	public String getNomeProduto() {
-		return nomeProduto;
+	public String getNome() {
+		return nome;
 	}
 
-	public void setNomeProduto(String nomeProduto) {
-		this.nomeProduto = nomeProduto;
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
-	public String getQtdProduto() {
-		return qtdProduto;
+	public String getQtd() {
+		return qtd;
 	}
 
-	public void setQtdProduto(String qtdProduto) {
-		this.qtdProduto = qtdProduto;
+	public void setQtd(String qtd) {
+		this.qtd = qtd;
 	}
 
 	public String getTipoProduto() {
 		return tipoProduto;
 	}
 
-	public void setTipoProduto(String tipoProduto) {
-		this.tipoProduto = tipoProduto;
+	public void setTipoProduto(String tipo) {
+		this.tipoProduto = tipo;
 	}
 
-	public String getImgProduto() {
-		return imgProduto;
+	public String getImg() {
+		return img;
 	}
 
-	public void setImgProduto(String imgProduto) {
-		this.imgProduto = imgProduto;
+	public void setImg(String img) {
+		this.img = img;
 	}
 
-	public String getValorProduto() {
-		return valorProduto;
+	public String getValor() {
+		return valor;
 	}
 
-	public void setValorProduto(String valorProduto) {
-		this.valorProduto = valorProduto;
+	public void setValor(String valor) {
+		this.valor = valor;
 	}
 
-	public String getDescProduto() {
-		return descProduto;
+	public String getDescricao() {
+		return descricao;
 	}
 
-	public void setDescProduto(String descProduto) {
-		this.descProduto = descProduto;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 
-	public String getEstoqueProduto() {
-		return estoqueProduto;
+	public String getEstoque() {
+		return estoque;
 	}
 
-	public void setEstoqueProduto(String estoqueProduto) {
-		this.estoqueProduto = estoqueProduto;
+	public void setEstoque(String estoque) {
+		this.estoque = estoque;
+	}
+
+	public String getValorCusto() {
+		return valorCusto;
+	}
+
+	public void setValorCusto(String valorCusto) {
+		this.valorCusto = valorCusto;
 	}
 
 	public Produto toProduto() {
 		Produto prod = new Produto();
 
-		prod.setProNome(nomeProduto);
+		prod.setNome(nome);
 
 		if (this.getProdutoId() != null) {
-			prod.setId(Long.valueOf(produtoId));
+			prod.setProdutoId(Long.valueOf(produtoId));
 		}
-		if (this.getQtdProduto() != null) {
-			prod.setProQtde(Integer.parseInt(qtdProduto));
+		if (this.getQtd() != null) {
+			prod.setQtde(Integer.parseInt(qtd));
 		}
-		if (this.getEstoqueProduto() != null) {
-			prod.setProEstoque(Integer.parseInt(estoqueProduto));
+		if (this.getEstoque() != null) {
+			prod.setEstoque(Integer.parseInt(estoque));
 		}
 
-		prod.setProdTipo(TipoProduto.valueOf(tipoProduto));
-		prod.setProImg(imgProduto);
+		prod.setTipoProduto(TipoProduto.valueOf(tipoProduto));
+		prod.setImg(img);
 
-		BigDecimal valor = new BigDecimal(valorProduto);
-		prod.setProValor(valor);
-
-		prod.setProDesc(descProduto);
+		BigDecimal valorBD = new BigDecimal(valorCusto);
+		prod.setValorCusto(valorBD);
+		
+		BigDecimal valorVenda = new BigDecimal(0);
+		valorVenda = valorBD.multiply(new BigDecimal(0.2));
+		valorVenda = valorVenda.add(valorBD);
+		valorVenda.setScale(2, BigDecimal.ROUND_DOWN);
+		prod.setValor(valorVenda);
+		
+		prod.setDescricao(descricao);
 		prod.setDataCadastro(LocalDate.now());
 
-		prod.setProdStatus(StatusProduto.ESTOQUE);
+		prod.setStatusProduto(StatusProduto.ESTOQUE);
 
 		return prod;
 	}

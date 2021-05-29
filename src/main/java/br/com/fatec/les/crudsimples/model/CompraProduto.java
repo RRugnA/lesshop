@@ -25,7 +25,17 @@ public class CompraProduto {
 	private StatusTroca statusTroca;
 
 	private int quantidade;
+	
+	public CompraProduto() {
+		
+	}
 
+	public CompraProduto(Produto produto, Compra compra, StatusTroca status) {
+		this.produto = produto;
+		this.compra = compra;
+		this.statusTroca = status;
+	}
+	
 	public Compra getCompra() {
 		return compra;
 	}

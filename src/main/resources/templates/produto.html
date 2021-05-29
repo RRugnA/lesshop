@@ -7,12 +7,12 @@
 			<form method="post" id="form-produto">
 	      		<div class="row">
 		        	<div class="col-lg-6 prod__img text-center">
-		          		<img class="img-fluid" th:src="${produto.proImg}" alt="">
+		          		<img class="img-fluid" th:src="${produto.img}" alt="">
 		        	</div>
 		
 		        	<div class="col-lg-6 prod__desc pe-5">
 		         		<div class="prod__title pb-5">
-		            		<h3 class="prod__name" th:text="${produto.proNome}">NOME PRODUTO</h3>
+		            		<h3 class="prod__name" th:text="${produto.nome}">NOME PRODUTO</h3>
 		          		</div>
 		          		<div class="prod__cor pb-3">
 		            		<span>Cor: </span>
@@ -20,11 +20,11 @@
 		          		<div class="prod__pgto row py-4 d-flex align-items-center border-bottom border-top border-dark">
 		            		<div class="prod__valor col-lg-6 ">
 		              			<p>
-		              				<span class="prod__vista fw-bold" th:text="'R$ ' + ${produto.proValor}">VALOR</span> em até <br><span>10 x de </span><span class="fw-bold" th:text="${'R$ ' + produto.proValor/10}">PARCELA</span> sem juros
+		              				<span class="prod__vista fw-bold" th:text="'R$ ' + ${produto.valor}">VALOR</span> em até <br><span>10 x de </span><span class="fw-bold" th:text="${'R$ ' + produto.valor/10}">PARCELA</span> sem juros
 	              				</p>
 		            		</div>
 		            		<div class="prod__button col-lg-6 text-end">	
-	            				<input type="hidden" th:value="${produto.id}" name="id">
+	            				<input type="hidden" th:value="${produto.produtoId}" name="id">
 	            				<div class="text-center">
 	            					<a href="/login" class="btn btn-success prod__btn" sec:authorize="!isAuthenticated()">COMPRAR</a>
               						<button type="submit" class="btn btn-success prod__btn" sec:authorize="isAuthenticated()">COMPRAR</button>
@@ -35,7 +35,7 @@
 		            		<span class="prod__estoque__text col-lg-3">Em estoque.</span>
 		            		<div class="d-flex align-items-center py-3">
 		              			<label class="pe-3">Quantidade:</label>
-		              			<input id="qtde" type="number" name="qtdProduto" min="1" th:max="${produto.proEstoque}" required>
+		              			<input id="qtde" type="number" name="qtd" min="1" th:max="${produto.estoque}" required>
 		            		</div>            
 		          		</div>
 		          		<div class="row align-items-center">
@@ -64,18 +64,7 @@
 	        <div class="info__detail">
 	          <span class="fw-bold">Características</span>
 	          <ul>
-<!-- 	            <li>Guitarra Les Paul Stringberg Lps230</li> -->
-<!-- 	            <li>Marca: Strinberg</li> -->
-<!-- 	            <li>Modelo: LPS 230</li> -->
-<!-- 	            <li>Corpo: Basswood</li> -->
-<!-- 	            <li>Construção: Bolt-On</li> -->
-<!-- 	            <li>Braço: Maple</li> -->
-<!-- 	            <li>Escala: Rosewood</li> -->
-<!-- 	            <li>Captadores: 2HB</li> -->
-<!-- 	            <li>Controles: 2V, 2T</li> -->
-<!-- 	            <li>Chave: 3 Posições</li> -->
-<!-- 	            <li>Tarraxa: Cromada</li> -->
-				<li th:text="${produto.proDesc}">
+				<li th:text="${produto.descricao}">
 	          </ul>
 	        </div>
 	      </div>

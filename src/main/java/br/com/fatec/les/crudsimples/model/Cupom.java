@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
 @Entity
-public class Cupom {
+public class Cupom extends EntidadeDominio {
 
 	@Id
 	private String codigo;

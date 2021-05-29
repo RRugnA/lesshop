@@ -4,7 +4,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 
 @Embeddable
-public class Cidade extends EntidadeDominio {
+public class Cidade {
 
 	private String cidade;
 	

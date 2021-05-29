@@ -7,6 +7,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -19,10 +23,14 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 public class Cliente extends EntidadeDominio {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long clienteId;
+	
 	private String nome;
 	private String numeroDocumento;
 
-	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
 	private Usuario usuario;
 
 	@Enumerated(EnumType.STRING)
@@ -43,19 +51,36 @@ public class Cliente extends EntidadeDominio {
 	private List<Documento> documentos;
 
 	@ManyToMany
-	@JoinTable(name = "cliente_produto", joinColumns = @JoinColumn(name = "cliente_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "produto_id", referencedColumnName = "id"))
+	@JoinTable(name = "cliente_produto", joinColumns = @JoinColumn(name = "cliente_id", referencedColumnName = "clienteId"), inverseJoinColumns = @JoinColumn(name = "produto_id", referencedColumnName = "produtoId"))
 	private List<Produto> produtos;
 
 	private BigDecimal valorDeCompra;
 
-	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, fetch = FetchType.LAZY)
 	private Compra compra;
+
 	public Usuario getUsuario() {
 		return usuario;
 	}
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+
+	public Long getClienteId() {
+		return clienteId;
+	}
+
+	public void setClienteId(Long clienteId) {
+		this.clienteId = clienteId;
+	}
+
+	public Compra getCompra() {
+		return compra;
+	}
+
+	public void setCompra(Compra compra) {
+		this.compra = compra;
 	}
 
 	public String getNome() {
@@ -125,7 +150,7 @@ public class Cliente extends EntidadeDominio {
 	public void addProduto(Produto produto) {
 		this.produtos.add(produto);
 	}
-	
+
 	public void removeProduto(Produto produto) {
 		this.produtos.remove(produto);
 	}
@@ -141,20 +166,20 @@ public class Cliente extends EntidadeDominio {
 	public void setValorDeCompra(BigDecimal valorDoProduto) {
 		this.valorDeCompra = valorDoProduto;
 	}
-	
+
 	public void addValorDeCompra(BigDecimal valorDoProduto, int quantidade) {
-		
+
 		BigDecimal valor = new BigDecimal("0");
 		valor = valor.add(valorDoProduto);
 		valor = valor.multiply(new BigDecimal(quantidade));
-		
-		if(this.valorDeCompra != null) {
+
+		if (this.valorDeCompra != null) {
 			valor = valor.add(this.valorDeCompra);
-		} 
-		
+		}
+
 		this.valorDeCompra = valor;
 	}
-	
+
 	public void zeraValorDeCompra() {
 		this.valorDeCompra = new BigDecimal(0);
 	}

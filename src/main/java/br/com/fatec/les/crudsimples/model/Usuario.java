@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -22,7 +23,7 @@ public class Usuario implements UserDetails {
 
 	private String senha;
 
-	@OneToOne(cascade={CascadeType.PERSIST,CascadeType.REMOVE})
+	@OneToOne(fetch = FetchType.LAZY, cascade={CascadeType.PERSIST,CascadeType.REMOVE})
 	private Cliente cliente;
 
 	@ManyToMany
@@ -31,6 +32,9 @@ public class Usuario implements UserDetails {
 			name = "usuario_id", referencedColumnName = "login"), inverseJoinColumns = @JoinColumn(
 			name = "role_id", referencedColumnName = "nomeRole"))
 	private List<Role> roles;
+	
+//	@OneToOne(mappedBy = "usuario")
+//	private LogTransacao log;
 
 	public String getLogin() {
 		return login;

@@ -3,22 +3,22 @@
 	<div class="container" th:each="produto : ${produtos}">
 	
 		<div class="img__pgto">
-			<img th:src="${produto.proImg}" class="img-fluid" alt="">
+			<img th:src="${produto.img}" class="img-fluid" alt="">
 		</div>
 		
 		<div>
-			<span class="pgto__desc" th:text="${produto.proNome}">PRODUTO</span>
+			<span class="pgto__desc" th:text="${produto.nome}">PRODUTO</span>
 		</div>
 		
 		<div class="text-center mt-2">
-			<span class="pgto__qtd" th:text="'Quantidade: ' + ${produto.proQtde}">Quantidade: 0</span>
+			<span class="pgto__qtd" th:text="'Quantidade: ' + ${produto.qtde}">Quantidade: 0</span>
 		</div>
 		
 		<hr>
 		
 		<div class="text-center d-flex justify-content-between my-4">
 			<span>Produto:</span>
-			<span th:text="${produto.proValor}">R$ 0,00</span>
+			<span th:text="${produto.valor}">R$ 0,00</span>
 		</div>
 		
 		<hr>
@@ -41,22 +41,22 @@
 		<div th:each="produto : ${produtos}">
 		
 	        <div class="img__pgto">
-	        	<img th:src="${produto.proImg}" class="img-fluid" alt="">
+	        	<img th:src="${produto.img}" class="img-fluid" alt="">
 	        </div>
 	        
 	        <div>
-	        	<span class="pgto__desc" th:text="${produto.proNome}">PRODUTO</span>
+	        	<span class="pgto__desc" th:text="${produto.nome}">PRODUTO</span>
 	        </div>
 	        
 	        <div class="text-center mt-2">
-	        	<span class="pgto__qtd" th:text="'Quantidade: ' + ${produto.proQtde}">Quantidade: 0</span>
+	        	<span class="pgto__qtd" th:text="'Quantidade: ' + ${produto.qtde}">Quantidade: 0</span>
 	        </div>
 	        
 	       	<hr>
 	       	
 	        <div class="text-center d-flex justify-content-between my-4">
 	           	<span>Produto:</span>
-	        	<span th:text="${produto.proValor}">R$ 0,00</span>
+	        	<span th:text="${produto.valor}">R$ 0,00</span>
 	        </div>
 	        
 	        <hr>

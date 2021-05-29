@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import br.com.fatec.les.crudsimples.model.CompraProduto;
 
 public interface CompraProdutoRepository extends JpaRepository<CompraProduto, Long>  {
-	List<CompraProduto> findByCompraId(Long id);
+	List<CompraProduto> findByCompraCompraId(Long compraId);
 }

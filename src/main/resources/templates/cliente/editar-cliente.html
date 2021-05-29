@@ -9,9 +9,9 @@
 	
 		<div class="container mt-5">
 			<div class="card">
-				<form class="card-body" th:action="@{'/cliente/editar-cliente/' + ${cliente.id}}" method="POST">
+				<form class="card-body" th:action="@{'/cliente/editar-cliente/' + ${cliente.clienteId}}" method="POST">
 
-					<input type="hidden" name="clienteId" th:value="${cliente.id}">
+					<input type="hidden" name="clienteId" th:value="${cliente.clienteId}">
 					<div class="form-group mb-3">
 						<label class="form-label" for="nome">Nome:</label> 
 						<input class="form-control" type="text" name="nome"	placeholder="Insira o nome completo sem abreviatura" th:value="${cliente.nome}" required />

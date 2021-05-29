@@ -45,17 +45,17 @@
 	        <div class="painel__card card" th:each="produto : ${produtos}">
 	          <div class="card-body">
 	            <div class="painel__img py-3">
-	              <img class="img-fluid" th:src="${produto.proImg}" alt="">
+	              <img class="img-fluid" th:src="${produto.img}" alt="">
 	            </div>
 	            <div class="painel__price">
-	              <span class="fw-bold" th:text="'R$ ' + ${produto.proValor}">VALOR</span>
+	              <span class="fw-bold" th:text="'R$ ' + ${produto.valor}">VALOR</span>
 	            </div>
 	            <div class="painel__desc">
-	              <a href="/produto" class="painel__link"><p th:text="${produto.proNome}">PRODUTO</p></a>
+	              <a href="/produto" class="painel__link"><p th:text="${produto.nome}">PRODUTO</p></a>
 	            </div>
 	            
-	            <form method="post" th:id="'form'+${produto.id}">
-	            	<input type="hidden" th:value="${produto.id}" name="produtoId">
+	            <form method="post" th:id="'form'+${produto.produtoId}">
+	            	<input type="hidden" th:value="${produto.produtoId}" name="produtoId">
 	            	<div class="text-center">
 	              		<button type="submit" class="btn btn-carrinho">Adicionar ao Carrinho</button>
 	            	</div>

@@ -76,11 +76,11 @@
 			          	
 			          	<div th:each="documento : ${documentos}">
 				          	<div class="cartao__pgto my-3 d-flex align-items-center">
-				            	<input type="checkbox" name="documento" th:id="${documento.id}" th:value="${documento.id}">
+				            	<input type="checkbox" name="documento" th:id="${documento.documentoId}" th:value="${documento.documentoId}">
 				            	<div class="mx-3">
 				              		<i class="far fa-credit-card pgto__ico"></i>
 				            	</div>
-				            	<label th:for="${documento.id}" th:text="${documento.numeroCartao}">Cartão: *** 123</label>
+				            	<label th:for="${documento.documentoId}" th:text="${documento.numeroCartao}">Cartão: *** 123</label>
 				          	</div>
 					  	</div>
 				  	
