@@ -40,6 +40,9 @@ public class Produto extends EntidadeDominio {
 
 	@OneToMany(mappedBy = "produto")
 	private Set<CompraProduto> listaCompras = new HashSet<>();
+	
+	@OneToMany(mappedBy = "produto")
+	private List<DadosProduto> dados;
 
 	public Long getProdutoId() {
 		return produtoId;
@@ -137,4 +140,11 @@ public class Produto extends EntidadeDominio {
 		this.listaCompras = listaCompras;
 	}
 
+	@Override
+	public String toString() {
+		return "Produto [produtoId=" + produtoId + ", nome=" + nome + ", img=" + img + ", qtde=" + qtde + ", descricao="
+				+ descricao + ", valor=" + valor + ", estoque=" + estoque + ", valorCusto=" + valorCusto
+				+ ", tipoProduto=" + tipoProduto + ", statusProduto=" + statusProduto + ", clientes=" + clientes
+				+ ", listaCompras=" + listaCompras + "]";
+	}
 }

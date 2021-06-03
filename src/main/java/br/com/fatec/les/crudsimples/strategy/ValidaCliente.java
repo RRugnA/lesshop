@@ -1,11 +1,14 @@
 package br.com.fatec.les.crudsimples.strategy;
 
+import java.security.Principal;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import br.com.fatec.les.crudsimples.dto.RequisicaoUsuario;
 import br.com.fatec.les.crudsimples.model.Cliente;
 import br.com.fatec.les.crudsimples.model.TipoStatus;
 import br.com.fatec.les.crudsimples.model.Usuario;
+import ch.qos.logback.core.net.SyslogOutputStream;
 
 public class ValidaCliente {
 
@@ -56,5 +59,61 @@ public class ValidaCliente {
 		}
 		
 		return false;
+	}
+	
+	public static Cliente localizaCliente(Usuario usuario) {
+		Cliente cliente = usuario.getCliente();	
+		return cliente;
+	}	
+	
+	public static boolean validaSenha(String senha) {
+		boolean validador = true;
+		int verificador;	
+		
+		char[] caracteres = senha.toCharArray();
+		
+		String maiusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		char[] lms = maiusculas.toCharArray();
+		
+		String numeros = "0123456789";
+		char[] lns = numeros.toCharArray();
+		
+//		VALIDA SENHA COM 8 CARACTERES
+		if(senha.length() < 8) {
+			System.out.println("Possui menos de 8 caracteres");
+			validador = false;
+			return validador;
+		}	
+		
+		for(char letra : caracteres) {
+			
+//			VALIDA SENHA COM LETRA MAIÚSCULA
+			verificador = 0;
+			for(char lm : lms) {
+				if(letra == lm){
+					System.out.println("Possui letra maiúscula");
+					verificador = 1;
+				}
+				if(verificador < 1) {
+					validador = false;
+					return validador;
+				}
+			}
+			
+//			VALIDA SENHA COM NÚMERO
+			verificador = 0;
+			for(char ln : lns) {
+				if(letra == ln) {
+					System.out.println("Possui número");
+					verificador = 1;
+				}
+				if(verificador < 1) {
+					validador = false;
+					return validador;
+				}
+			}
+		}
+		
+		return validador;
 	}
 }

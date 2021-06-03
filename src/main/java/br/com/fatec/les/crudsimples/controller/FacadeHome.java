@@ -24,6 +24,7 @@ import br.com.fatec.les.crudsimples.model.Compra;
 import br.com.fatec.les.crudsimples.model.CompraProduto;
 import br.com.fatec.les.crudsimples.model.CompraStatus;
 import br.com.fatec.les.crudsimples.model.Cupom;
+import br.com.fatec.les.crudsimples.model.DadosProduto;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
 import br.com.fatec.les.crudsimples.model.Estado;
@@ -38,12 +39,14 @@ import br.com.fatec.les.crudsimples.repository.ClienteRepository;
 import br.com.fatec.les.crudsimples.repository.CompraProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.CompraRepository;
 import br.com.fatec.les.crudsimples.repository.CupomRepository;
+import br.com.fatec.les.crudsimples.repository.DadosProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.DocumentoRepository;
 import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
 import br.com.fatec.les.crudsimples.repository.ProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
 import br.com.fatec.les.crudsimples.strategy.NumCartao;
 import br.com.fatec.les.crudsimples.strategy.ValidaCarrinho;
+import br.com.fatec.les.crudsimples.strategy.ValidaCliente;
 import br.com.fatec.les.crudsimples.strategy.ValidaCupom;
 import br.com.fatec.les.crudsimples.strategy.ValidaEstoque;
 
@@ -69,12 +72,8 @@ public class FacadeHome {
 	private CompraProdutoRepository cpRepo;
 	@Autowired
 	private CupomRepository cupomRepo;
-	
-	public Cliente localizaCliente(Principal principal) {
-		Usuario usuario = userRepo.findById(principal.getName()).get();
-		Cliente cliente = usuario.getCliente();	
-		return cliente;
-	}	
+	@Autowired
+	private DadosProdutoRepository dadosRepo;
 	
 	public ModelAndView home() {
 //		EXIBINDO 8 PRODUTOS NA PÁGINA INICIAL
@@ -106,7 +105,7 @@ public class FacadeHome {
 		prodRepo.save(produto);
 		
 //		ADICIONANDO PRODUTO AO CLIENTE
-		Cliente cliente = localizaCliente(principal);
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		produto.setQtde(Integer.parseInt(requisicao.getQtd()));
 		cliente.addProduto(produto);
 		cliente.addValorDeCompra(produto.getValor(), produto.getQtde());
@@ -116,8 +115,8 @@ public class FacadeHome {
 	}
 	
 	public ModelAndView exibirCarrinho(Principal principal) {
-		Cliente cliente = localizaCliente(principal);
-
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
+		
 //		IDENTIFICANDO OS PRODUTOS NO CARRINHO DO CLIENTE
 		List<Produto> produtos = cliente.getProdutos();
 		
@@ -141,7 +140,7 @@ public class FacadeHome {
 	}
 	
 	public String deletarProduto(Principal principal, RequisicaoProduto requisicao) {
-		Cliente cliente = localizaCliente(principal);
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		cliente.zeraValorDeCompra();
 		
 //		DEVOLVENDO AO ESTOQUE
@@ -160,7 +159,7 @@ public class FacadeHome {
 	}
 	
 	public String salvarCarrinho(Principal principal, RequisicaoCompra requisicao, RequisicaoProduto reqProd) {
-		Cliente cliente = localizaCliente(principal);
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		
 //		INCLUINDO PRODUTO NA COMPRA
 		Compra compra = requisicao.toCompra();		
@@ -171,10 +170,13 @@ public class FacadeHome {
 		compraRepo.save(compra);	
 		List<Produto> produtos = ValidaCarrinho.getProdutos(cliente);
 		for(Produto produto : produtos) {
-			CompraProduto cp = new CompraProduto(produto, compra, StatusTroca.NAO_SOLICITADO);
+			CompraProduto cp = new CompraProduto(produto, produto.getQtde(), compra, StatusTroca.NAO_SOLICITADO);
 			produto.getListaCompras().add(cp);
 			compra.getListaCompras().add(cp);
 			cpRepo.save(cp);
+			
+			produto.setQtde(0);
+			prodRepo.save(produto);
 		}
 		
 		compraRepo.save(compra);	
@@ -183,7 +185,7 @@ public class FacadeHome {
 	}
 	
 	public ModelAndView exibirCarrinhoEndereco(Principal principal) {
-		Cliente cliente = localizaCliente(principal);
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		
 //		RECUPERAR ENDEREÇO DO CLIENTE
 		List<Endereco> enderecos = endRepo.findByCliente(cliente);	
@@ -200,8 +202,7 @@ public class FacadeHome {
 	}
 	
 	public String novoEnderecoCarrinhoEndereco(Principal principal, RequisicaoEndereco requisicao) {
-		Cliente cliente = localizaCliente(principal);
-		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		Endereco novoEndereco = requisicao.toEndereco();
 		novoEndereco.setCliente(cliente);
 		endRepo.save(novoEndereco);
@@ -210,8 +211,7 @@ public class FacadeHome {
 	}
 	
 	public String salvarCarrinhoEndereco(RequisicaoCompra requisicao, Principal principal) {
-		Cliente cliente = localizaCliente(principal);
-		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		Endereco end = endRepo.findById(Long.valueOf(requisicao.getEndereco())).get();
 		Cidade cidade = end.getCidade();
 		Estado estado = cidade.getEstado();
@@ -227,8 +227,7 @@ public class FacadeHome {
 	}
 	
 	public ModelAndView exibirCarrinhoPgto(Principal principal) {
-		Cliente cliente = localizaCliente(principal);	
-		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());		
 		List<Produto> produtos = new ArrayList<Produto>();		
 		for(Produto produto : cliente.getProdutos()) {
 			produtos.add(produto);
@@ -247,8 +246,7 @@ public class FacadeHome {
 	}
 	
 	public String novoCartaoCarrinhoPgto(Principal principal, RequisicaoDocumento requisicao) {
-		Cliente cliente = localizaCliente(principal);	
-		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		Documento novoCartao = requisicao.toDocumento();
 		novoCartao.setCliente(cliente);
 		docRepo.save(novoCartao);
@@ -257,7 +255,7 @@ public class FacadeHome {
 	}
 	
 	public String salvarCarrinhoPgto(Principal principal, RequisicaoCompra requisicao) {
-		Cliente cliente = localizaCliente(principal);	
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		Compra compraAtual = new Compra();
 		
 //		IDENTIFICANDO COMPRA ATUAL
@@ -326,8 +324,7 @@ public class FacadeHome {
 	
 	public ModelAndView inserirCupom(Principal principal, RequisicaoCupom requisicao) {
 		mv = exibirCarrinhoParcelamento(principal);
-		Cliente cliente = localizaCliente(principal);
-		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());		
 		Compra compraAtual = new Compra();
 
 //		IDENTIFICANDO COMPRA ATUAL
@@ -393,12 +390,9 @@ public class FacadeHome {
 	}
 	
 	public ModelAndView removerCupom(String codigo, Principal principal, RequisicaoCupom requisicao) {
-		mv = inserirCupom(principal, requisicao);
-		
-		Cupom cupom = cupomRepo.findById(codigo).get();
-		
-		Cliente cliente = localizaCliente(principal);
-		
+		mv = inserirCupom(principal, requisicao);		
+		Cupom cupom = cupomRepo.findById(codigo).get();		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());		
 		Compra compraAtual = new Compra();
 
 //		IDENTIFICANDO COMPRA ATUAL
@@ -418,7 +412,7 @@ public class FacadeHome {
 	}
 	
 	public String removerCartao(Principal principal, RequisicaoDocumento requisicao) {
-		Cliente cliente = localizaCliente(principal);
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		Compra compraAtual = new Compra();
 		
 //		IDENTIFICANDO COMPRA ATUAL
@@ -435,7 +429,7 @@ public class FacadeHome {
 	}
 	
 	public String salvarCarrinhoParcelamento(Principal principal, RequisicaoCompra requisicao) {
-		Cliente cliente = localizaCliente(principal);
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		Compra compraAtual = new Compra();
 		
 //		IDENTIFICANDO COMPRA ATUAL
@@ -457,8 +451,7 @@ public class FacadeHome {
 	}
 	
 	public ModelAndView exibirCarrinhoRevisao(Principal principal) {
-		Cliente cliente = localizaCliente(principal);
-		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());		
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
 		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
 		
@@ -478,8 +471,7 @@ public class FacadeHome {
 	}
 	
 	public String salvarCarrinhoRevisao(Principal principal, RequisicaoCompra requisicao) {
-		Cliente cliente = localizaCliente(principal);
-		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());		
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
 		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
 		
@@ -490,8 +482,7 @@ public class FacadeHome {
 	}
 	
 	public ModelAndView exibirCarrinhoSucesso(Principal principal) {
-		Cliente cliente = localizaCliente(principal);	
-		
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
 		Compra compraAtual = new Compra().localizaCompra(CompraStatus.PROCESSAMENTO, compras);
 		
@@ -502,8 +493,13 @@ public class FacadeHome {
 		for(CompraProduto cp : lcp) {
 			Produto produto = cp.getProduto();
 			produtos.add(produto);
+			
+			DadosProduto dp = new DadosProduto(produto, cp.getQuantidade());
+			dadosRepo.save(dp);
+			
 			valorTotalProdutos = valorTotalProdutos.add(produto.getValor());
 		}
+		
 		
 		List<String> cartoes = NumCartao.gerarListaStringNumCartao(compraAtual.getCartoes());
 		

@@ -55,7 +55,6 @@ public class Compra extends EntidadeDominio {
 	private BigDecimal valorTotal;
 	private BigDecimal valorParcela;
 	private BigDecimal valorParcela2;
-	private int qtde;
 
 	public Cliente getCliente() {
 		return cliente;
@@ -232,14 +231,6 @@ public class Compra extends EntidadeDominio {
 	public int toQtdeParcela(String inputParcela) {
 		String[] splitParcela = inputParcela.split(":");
 		return Integer.parseInt(splitParcela[1]);
-	}
-
-	public int getQtde() {
-		return qtde;
-	}
-
-	public void setQtde(int qtde) {
-		this.qtde = qtde;
 	}
 
 	public Set<CompraProduto> getListaCompras() {

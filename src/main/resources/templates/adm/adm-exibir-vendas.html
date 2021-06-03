@@ -62,13 +62,13 @@
 	            <td class="info-nome"><span th:text="${compra.cliente.nome}">CLIENTE</span></td>
 	            <td><span th:text="'R$ ' + ${compra.valorTotal}">VALOR</span></td>
 	            <td id="td-status">
-	            	<a style="cursor:pointer; color:#0a58ca;" th:attr="onclick=|modalStatus(${compra.id})|">
+	            	<a style="cursor:pointer; color:#0a58ca;" th:attr="onclick=|modalStatus(${compra.compraId})|">
 	            		<span th:text="${compra.compraStatus}">STATUS</span>
 	            	</a>
 <!-- 	            	<span th:if="${compra.compraStatus.name()} == 'TROCA_AUTORIZADA'" style="color:#0a58ca;" th:text="${compra.compraStatus}">STATUS</span>	            	 -->
 	            </td>
 	            <td class="text-center">
-            		<a th:href="@{/adm/venda-detalhes/{id}(id = ${compra.id})}" class="fas fa-search-plus border-0 bg-0"></button>	            	
+            		<a th:href="@{/adm/venda-detalhes/{id}(id = ${compra.compraId})}" class="fas fa-search-plus border-0 bg-0"></button>	            	
 	            </td>
 	          </tr>
 	        </tbody>

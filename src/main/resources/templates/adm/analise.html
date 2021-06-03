@@ -1,0 +1,36 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-adm}"></nav>
+	
+	<header sec:authorize="hasRole('ADM')" th:replace="~{baseCrud :: nav-adm}"></header>
+
+    
+	<div id="container" style="height:400px;"></div>
+	
+	
+	<script src="https://www.gstatic.com/charts/loader.js"></script>
+	<script th:inline="javascript">
+		google.charts.load('current', {packages: ['corechart']});
+  		google.charts.setOnLoadCallback(drawChart);
+  		
+  		function drawChart(){
+  			const container = document.querySelector("#container");
+  			const data = new google.visualization.arrayToDataTable([
+  				[ 'Produto', 'Qtde' ],
+  				[ 'Guitarra', 5 ],
+  				[ 'Baixo', 4 ],
+  				[ 'Teclado', 3 ],
+  				[ 'Flauta', 2 ],
+  			])
+  			
+  			const chart = new google.visualization.LineChart(container)
+  			chart.draw(data);
+  		}
+  	</script>
+	
+</body>
+
+</html>

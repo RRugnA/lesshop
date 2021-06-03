@@ -1,8 +1,6 @@
 package br.com.fatec.les.crudsimples.controller;
 
 import java.security.Principal;
-import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,408 +17,168 @@ import br.com.fatec.les.crudsimples.dto.RequisicaoDocumento;
 import br.com.fatec.les.crudsimples.dto.RequisicaoEndereco;
 import br.com.fatec.les.crudsimples.dto.RequisicaoProduto;
 import br.com.fatec.les.crudsimples.dto.RequisicaoUsuario;
-import br.com.fatec.les.crudsimples.model.Cliente;
-import br.com.fatec.les.crudsimples.model.Compra;
-import br.com.fatec.les.crudsimples.model.CompraProduto;
-import br.com.fatec.les.crudsimples.model.Cupom;
-import br.com.fatec.les.crudsimples.model.Documento;
-import br.com.fatec.les.crudsimples.model.Endereco;
 import br.com.fatec.les.crudsimples.model.MensagemErros;
-import br.com.fatec.les.crudsimples.model.Produto;
-import br.com.fatec.les.crudsimples.model.StatusTroca;
-import br.com.fatec.les.crudsimples.model.Usuario;
-import br.com.fatec.les.crudsimples.repository.ClienteRepository;
-import br.com.fatec.les.crudsimples.repository.CompraProdutoRepository;
-import br.com.fatec.les.crudsimples.repository.CompraRepository;
-import br.com.fatec.les.crudsimples.repository.DocumentoRepository;
-import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
-import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
-import br.com.fatec.les.crudsimples.strategy.NumCartao;
-import br.com.fatec.les.crudsimples.strategy.ValidaCarrinho;
-import br.com.fatec.les.crudsimples.strategy.ValidaCliente;
 
 @Controller
 @RequestMapping("cliente")
 public class ClienteController {
-
-	private ModelAndView mv;
 	
 	@Autowired
-	private ClienteRepository clienteRepo;
-	@Autowired
-	private EnderecoRepository endRepo;
-	@Autowired
-	private DocumentoRepository docRepo;
-	@Autowired
-	private UsuarioRepository userRepo;
-	@Autowired
-	private CompraRepository compraRepo;
-	@Autowired
-	private CompraProdutoRepository cpRepo;
-	
-	public Cliente localizaCliente(Principal principal) {
-		Usuario usuario = userRepo.findById(principal.getName()).get();
-		Cliente cliente = usuario.getCliente();	
-		return cliente;
-	}	
+	private FacadeCliente facade;
 	
 	@GetMapping("cadastro-login")
 	public ModelAndView cadastrarLogin() {
-		mv = new ModelAndView("cliente/cadastro-login");
-		return mv;
+		return facade.exibirCadastroLogin();
 	}
 	
 	@PostMapping("cadastro-login")
 	public String novoLogin(RequisicaoUsuario requisicao, RedirectAttributes redirectAttributes) {
-		
-		Usuario usuario = requisicao.toUsuario();
-		userRepo.save(usuario);
-		
-		return "redirect:/login-home";
+		return facade.salvarLogin(requisicao, redirectAttributes);
 	}
 	
 	@GetMapping("alterar-senha")
 	public ModelAndView alterarSenha() {
-		mv = new ModelAndView("cliente/alterar-senha");
-		return mv;
+		return facade.exibirAlterarSenha();
 	}
 	
 	@PostMapping("alterar-senha")
 	public ModelAndView alterarSenha(Principal principal, RequisicaoUsuario requisicao, MensagemErros mensagem) {
-		Usuario usuario = userRepo.findById(principal.getName()).get();
-		if(ValidaCliente.alteraSenha(requisicao, usuario)) {
-			userRepo.save(usuario);
-			mensagem.setMensagem("Senha alterada com sucesso!");
-			mv = new ModelAndView("cliente/alterar-senha");
-			mv.addObject("mensagem", mensagem);
-			return mv;
-		} 		
-		mensagem.setMensagem("Senha Atual incorreta ou campos Nova Senha não são idênticos");
-		mv = new ModelAndView("cliente/alterar-senha");
-		mv.addObject("mensagem", mensagem);
-		return mv;	
+		return facade.salvarAlterarSenha(principal, requisicao, mensagem);	
 	}
 	
 	@GetMapping("cadastro-pessoal")
 	public ModelAndView cadastrar() {
-		mv = new ModelAndView("cliente/cadastro-pessoal");
-		return mv;
+		return facade.exibirCadastroPessoal();
 	}
 	
 	@PostMapping("cadastro-pessoal")
 	public String novo(Principal principal, RequisicaoCliente requisicao) {		
-		Cliente cliente = requisicao.toCliente();
-		Usuario usuario = userRepo.findById(principal.getName()).get();
-		cliente.setUsuario(usuario);
-		System.out.println("cadastrando cliente...");
-		clienteRepo.save(cliente);
-		
-		usuario.setCliente(cliente);
-		userRepo.save(usuario);
-		
-		return "redirect:/cliente/exibir-dados-pessoais";
+		return facade.salvarCadastroPessoal(principal, requisicao);
 	}
 	
 	@GetMapping("cadastrar-endereco")
 	public ModelAndView novoEnderco() {
-		mv = new ModelAndView("cliente/cadastro-endereco");
-		return mv;
+		return facade.exibirCadastroEndereco();
 	}
 	
 	@PostMapping("cadastrar-endereco")
 	public String novoEndereco(Principal principal, RequisicaoEndereco requisicao) {		
-		Cliente cliente = localizaCliente(principal);
-		Endereco endereco = requisicao.toEndereco();		
-		endereco.setCliente(cliente);
-		endRepo.save(endereco);
-		
-		return "redirect:/cliente/exibir-enderecos";
+		return facade.salvarCadastroEndereco(principal, requisicao);
 	}
 	
 	@GetMapping("cadastrar-documento")
 	public ModelAndView novoDocumento() {
-		mv = new ModelAndView("cliente/cadastro-documento");
-		return mv;
+		return facade.exibirCadastroDocumento();
 	}
 	
 	@PostMapping("cadastrar-documento")
 	public String novoDocumento(Principal principal, RequisicaoDocumento requisicao) {
-		Cliente cliente = localizaCliente(principal);
-		Documento documento = requisicao.toDocumento();		
-		documento.setCliente(cliente);
-		docRepo.save(documento);
-		
-		return "redirect:/cliente/exibir-opcoes-pagamento";
+		return facade.salvarCadastroDocumento(principal, requisicao);
 	}
 	
 	@GetMapping("/exibir-dados-pessoais")
 	public ModelAndView exibirPessoal(Principal principal) {
-		
-		Usuario user = userRepo.findById(principal.getName()).get();	
-		if(user.getCliente() == null) {
-			mv = new ModelAndView("cliente/exibir");
-		} else {
-			mv = new ModelAndView("cliente/exibir");
-			Cliente cliente = user.getCliente();
-			mv.addObject("cliente", cliente);
-		}				
-		
-		return mv;		
+		return facade.exibirDadosPessoais(principal);	
 	}
 	
 	@GetMapping("/exibir-enderecos")
 	public ModelAndView exibirEnderecos(Principal principal) {
-		Cliente cliente = localizaCliente(principal);
-		List<Endereco> enderecos = endRepo.findByCliente(cliente);
-		mv = new ModelAndView("cliente/exibir-endereco");
-		mv.addObject("enderecos", enderecos);	
-		
-		return mv;
+		return facade.exibirEnderecos(principal);
 	}
 	
 	@GetMapping("/exibir-opcoes-pagamento")
 	public ModelAndView exibirDocumentos(Principal principal) {		
-		Cliente cliente = localizaCliente(principal);	
-		List<Documento> documentos = docRepo.findByCliente(cliente);
-		
-//		EXIBINDO 4 ÚLTIMOS DÍGITOS DO CARTÃO
-		NumCartao.gerarListaDocNumCartao(documentos);
-		
-		mv = new ModelAndView("cliente/exibir-documento");
-		mv.addObject("documentos", documentos);		
-		return mv;
+		return facade.exibirDocumentos(principal);
 	}
 	
 	@GetMapping("editar-dados-pessoais")
 	public ModelAndView editarPessoal(Principal principal) {
-		mv = new ModelAndView("cliente/editar-cliente");
-		
-		Cliente cliente = localizaCliente(principal);
-		
-		mv.addObject("cliente", cliente);
-		
-		return mv;
+		return facade.exibirEditarDadosPessoais(principal);
 	}
 	
 	@PostMapping("editar-cliente/{id}")
 	public String editarCliente(@PathVariable("id") Long id, RequisicaoCliente requisicao, Principal principal) {
-		Cliente cliente = clienteRepo.findById(id).get();
-		
-		List<Endereco> ends = endRepo.findByCliente(cliente);
-		List<Documento> docs = docRepo.findByCliente(cliente);
-		
-		cliente = requisicao.toCliente();
-		cliente.setClienteId(id);
-		cliente.setDataCadastro(LocalDate.now());
-		cliente.setDocumentos(docs);
-		cliente.setEndereço(ends);
-		
-		Usuario usuario = userRepo.findById(principal.getName()).get();
-		cliente.setUsuario(usuario);
-		
-		System.out.println("id = " + cliente.getClienteId());
-		clienteRepo.save(cliente);
-		
-		return "redirect:/cliente/exibir-dados-pessoais";
+		return facade.salvarEditarDadosPessoais(id, requisicao, principal);
 	}
 	
 	@GetMapping("cadastrar-endereco/{id}")
 	public ModelAndView incluirEndereco(@PathVariable("id") Long id) {
-		mv = new ModelAndView("cliente/cadastro-endereco");
-		
-		Cliente cliente = clienteRepo.findById(id).get();
-		mv.addObject("cliente",cliente);
-		
-		return mv;
+		return facade.incluirEndereco(id);
 	}
 	
 	@PostMapping("cadastrar-endereco/{id}")
-	public String incluirEndereco(@PathVariable("id") Long id, RequisicaoEndereco requisicao) {
-		
-		Endereco endereco = requisicao.toEndereco();
-		Cliente cliente = clienteRepo.findById(id).get();
-		
-		endereco.setCliente(cliente);
-		endRepo.save(endereco);
-		
-		return "redirect:/cliente/exibir";
+	public String incluirEndereco(@PathVariable("id") Long id, RequisicaoEndereco requisicao) {		
+		return facade.salvarNovoEndereco(id, requisicao);
 	}
 	
 	@GetMapping("editar-endereco/{id}")
 	public ModelAndView editarEndereco(@PathVariable("id") Long id) {
-		mv = new ModelAndView("cliente/editar-endereco");
-		
-		Endereco endereco = endRepo.findById(id).get();
-
-		mv.addObject("endereco", endereco);
-		
-		return mv;
+		return facade.exibirEditarEndereco(id);
 	}
 	
 	@PostMapping("editar-endereco/{id}")
 	public String editarEndereco(@PathVariable("id") Long id, RequisicaoEndereco requisicao) {
-		Endereco endereco = endRepo.findById(id).get();
-		Cliente cliente = clienteRepo.findById(endereco.getCliente().getClienteId()).get();
-		
-		endereco = requisicao.toEndereco();
-		endereco.setCliente(cliente);
-		endereco.setEnderecoId(id);
-		
-		System.out.println("id = " + endereco.getEnderecoId());
-		endRepo.save(endereco);
-		
-		return "redirect:/cliente/enderecos-cadastrados/" + cliente.getClienteId().toString();
+		return facade.salvarEditarEndereco(id, requisicao);
 	}
 	
 	@GetMapping("cadastrar-documento/{id}")
 	public ModelAndView incluirDocumento() {
-		mv = new ModelAndView("cliente/cadastro-documento");
-		
-		return mv;
+		return facade.exibirIncluirDocumento();
 	}
 	
 	@PostMapping("cadastrar-documento/{id}")
 	public String incluirDocumento(@PathVariable("id") Long id, RequisicaoDocumento requisicao) {
-		
-		Documento documento = requisicao.toDocumento();
-		Cliente cliente = clienteRepo.findById(id).get();
-		
-		documento.setCliente(cliente);
-		docRepo.save(documento);
-		
-		return "redirect:/cliente/exibir";
+		return facade.salvarIncluirDocumento(id, requisicao);
 	}
 	
 	@GetMapping("editar-documento/{id}")
 	public ModelAndView editarDocumento(@PathVariable("id") Long id) {
-		mv = new ModelAndView("cliente/editar-documento");
-		
-		Documento documento = docRepo.findById(id).get();
-
-		mv.addObject("documento", documento);
-		
-		return mv;
+		return facade.exibirEditarDocumento(id);
 	}
 	
 	@PostMapping("editar-documento/{id}")
 	public String editarDocumento(@PathVariable("id") Long id, RequisicaoDocumento requisicao) {
-		Documento documento = docRepo.findById(id).get();
-		Cliente cliente = clienteRepo.findById(documento.getCliente().getClienteId()).get();
-		
-		documento = requisicao.toDocumento();
-		documento.setCliente(cliente);
-		documento.setDocumentoId(id);
-		
-		System.out.println("id = " + documento.getDocumentoId());
-		docRepo.save(documento);
-		
-		return "redirect:/cliente/documentos-cadastrados/" + cliente.getClienteId().toString();
+		return facade.salvarEditarDocumento(id, requisicao);
 	}
 	
 	@GetMapping("enderecos-cadastrados/{id}")
 	public ModelAndView exibirEndereco(@PathVariable("id") Long id) {
-		mv = new ModelAndView("cliente/exibir-endereco");
-		
-		Cliente cliente = clienteRepo.findById(id).get();
-		mv.addObject("cliente", cliente);
-		
-		List<Endereco> enderecos = endRepo.findByCliente(cliente);		
-		mv.addObject("enderecos", enderecos);	
-		
-		return mv;
+		return facade.exibirEndereco(id);
 	}
 	
 	@GetMapping("documentos-cadastrados/{id}")
 	public ModelAndView exibirDocumento(@PathVariable("id") Long id) {
-		mv = new ModelAndView("cliente/exibir-documento");
-		
-		Cliente cliente = clienteRepo.findById(id).get();
-		mv.addObject("cliente", cliente);
-		
-		List<Documento> documentos = docRepo.findByCliente(cliente);
-		mv.addObject("documentos", documentos);
-
-		return mv;
+		return facade.exibirDocumento(id);
 	}
 	
 	@GetMapping("/excluir-cliente/{id}")
 	public ModelAndView excluirCliente(@PathVariable("id") Long id) {
-		mv = new ModelAndView("cliente/sucesso");
-		
-		Cliente cliente = clienteRepo.findById(id).get();
-		clienteRepo.delete(cliente);
-		
-		String sucesso = "Cliente excluído";
-		mv.addObject("sucesso", sucesso);
-		return mv;
+		return facade.excluirCliente(id);
 	}
 	
 	@GetMapping("excluir-endereco/{id}")
 	public ModelAndView excluirEndereco(@PathVariable("id") Long id) {
-		mv = new ModelAndView("cliente/sucesso");
-		
-		Endereco endereco = endRepo.findById(id).get();
-		endRepo.delete(endereco);
-		
-		String sucesso = "Endereço excluído";
-		mv.addObject("sucesso", sucesso);
-		
-		return mv;
+		return facade.excluirEndereco(id);
 	}
 	
 	@GetMapping("excluir-documento/{id}")
 	public ModelAndView excluirDocumento(@PathVariable("id") Long id) {
-		mv = new ModelAndView("cliente/sucesso");
-		
-		Documento documento = docRepo.findById(id).get();
-		docRepo.delete(documento);
-		
-		String sucesso = "Documento excluído";
-		mv.addObject("sucesso", sucesso);
-		
-		return mv;
+		return facade.excluirDocumento(id);
 	}
 	
 	@GetMapping("historico-de-compras")
 	public ModelAndView historico(Principal principal) {
-		Cliente cliente = localizaCliente(principal);
-		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
-		
-		mv = new ModelAndView("cliente/historico");
-		mv.addObject("compras", compras);
-		return mv;
+		return facade.exibirHistorico(principal);
 	}
 	
 	@GetMapping("detalhes-historico/{id}")
 	public ModelAndView detalhesHistorico(@PathVariable("id") Long id) {
-		Compra compra = compraRepo.findById(id).get();
-		List<CompraProduto> lcp = cpRepo.findByCompraCompraId(compra.getCompraId());
-		List<Produto> produtos = ValidaCarrinho.gerarListaCompras(lcp);
-//		List<Produto> produtos = compra.getListaCompras();
-		List<Cupom> cupons = compra.getCupons();
-//		List<Documento> cartoes = compra.getDocumentos();
-		List<String> cartoes = NumCartao.gerarListaStringNumCartao(compra.getCartoes());
-		
-		mv = new ModelAndView("cliente/detalhes-historico");
-		mv.addObject("compra", compra);
-		mv.addObject("produtos", produtos);
-		mv.addObject("cupons", cupons);
-		mv.addObject("cartoes", cartoes);
-		return mv;
+		return facade.exibirDetalhesHistorico(id);
 	}
 	
 	@PostMapping("detalhes-historico/{id}")
 	public String solicitarTroca(RequisicaoCompra reqCompra, RequisicaoProduto reqProd) {
-		Compra compra = compraRepo.findById(Long.valueOf(reqCompra.getCompraId())).get();
-		List<CompraProduto> lcp = cpRepo.findByCompraCompraId(compra.getCompraId());
-		for(CompraProduto cp : lcp) {
-			if(cp.getProduto().getProdutoId() == Long.valueOf(reqProd.getProdutoId())) {
-				cp.setStatusTroca(StatusTroca.SOLICITADO);
-				cpRepo.save(cp);
-			}
-		}	
-		
-		return "redirect:/cliente/detalhes-historico/{id}";
+		return facade.salvarSolicitarTroca(reqCompra, reqProd);
 	}
 
 }

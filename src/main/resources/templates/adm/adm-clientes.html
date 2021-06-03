@@ -39,8 +39,8 @@
 <!-- 	            </td> -->
 	            <td class="text-center">
 	            	<form method="post">
-	            		<input type="hidden" name="clienteId" th:value="${cliente.id}">
-	            		<button type="submit" th:classappend="${cliente.tipoStatus.name()} == 'INATIVO' ? 'fa-ban' : 'fa-unlock-alt'" class="fas btn-ico c-red"></a>
+	            		<input type="hidden" name="clienteId" th:value="${cliente.clienteId}">
+	            		<button type="submit" th:classappend="${cliente.tipoStatus.name()} == 'INATIVO' ? 'fa-ban' : 'fa-unlock-alt c-green'" class="fas btn-ico c-red"></a>
 	            	</form>
 	            </td>
 	          </tr>

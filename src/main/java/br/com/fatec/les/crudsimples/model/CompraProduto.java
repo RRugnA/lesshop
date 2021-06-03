@@ -30,8 +30,9 @@ public class CompraProduto {
 		
 	}
 
-	public CompraProduto(Produto produto, Compra compra, StatusTroca status) {
+	public CompraProduto(Produto produto, int quantidade, Compra compra, StatusTroca status) {
 		this.produto = produto;
+		this.quantidade = quantidade;
 		this.compra = compra;
 		this.statusTroca = status;
 	}

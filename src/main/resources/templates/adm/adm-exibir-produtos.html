@@ -31,7 +31,7 @@
 	            <th scope="row">
 	            	<span  th:text="${#ids.seq('')}"></span>
 	            </th>
-	            <td th:classappend="${produto.statusProduto.name()} == 'INATIVO' ? 'c-light-gray' ">
+	            <td class="info-nome" th:classappend="${produto.statusProduto.name()} == 'INATIVO' ? 'c-light-gray' ">
 	            	<span th:text="${produto.nome}">NOME</span>
 	            </td>
 	            <td class="text-center" th:classappend="${produto.statusProduto.name()} == 'INATIVO' ? 'c-light-gray'">
@@ -46,7 +46,7 @@
 	            <td class="text-center">
 	            	<form method="post">
 	            		<input type="hidden" name="produtoId" th:value="${produto.produtoId}">
-	            		<button type="submit" th:classappend="${produto.statusProduto.name()} == 'INATIVO' ? 'fa-ban' : 'fa-unlock-alt'" class="fas btn-ico c-red"></a>
+	            		<button type="submit" th:classappend="${produto.statusProduto.name()} == 'INATIVO' ? 'fa-ban' : 'fa-unlock-alt c-green'" class="fas btn-ico c-red"></a>
 	            	</form>
 	            </td>
 	          </tr>

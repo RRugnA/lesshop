@@ -15,27 +15,25 @@
 					<div class="card-header">Detalhes da Compra: </div>
 					<div class="card-body">					
             			
-            			<div class="row m-0" th:each="produto : ${produtos}">
+            			<div class="row m-0" th:each="cp : ${listaCompra}">
             			
-            				<div class="col-lg-10 px-0">
+            				<div class="col-lg-9 px-0">
             					<span class="fw-bold">Produto: </span>
-            					<span th:text="${produto.nome}">PRODUTO</span>
+            					<span th:text="${cp.produto.nome}">PRODUTO</span>
             				</div>
             				
-            				<div class="col-lg-2 px-0" th:each="listaCompras : ${produto.listaCompras}" th:if="${compra.compraStatus.name()} == 'ENTREGUE' and ${listaCompras.statusTroca.name()} == 'NAO_SOLICITADO'">
-            					<div th:if="${listaCompras.statusTroca.name()} == 'NAO_SOLICITADO'">
-	            					<form method="post" class="m-0">
-	            						<input type="hidden" name="compraId" id="compraId" th:value="${compra.compraId}">
-	            						<input type="hidden" name="produtoId" id="produtoId" th:value="${produto.produtoId}">
-		            					<button class="fw-bold bg-0 border-0">
-		            						<i class="fas fa-exchange-alt pe-2 c-green"></i>
-		            						<span class="c-green">Solicitar Troca</span>
-		            					</button>
-		            				</form>
-		            			</div>
+            				<div class="col-lg-2 px-0 campo-troca" th:each="listaCompras : ${cp.produto.listaCompras}" th:if="${compra.compraStatus.name()} == 'ENTREGUE' and ${listaCompras.statusTroca.name()} == 'NAO_SOLICITADO'">
+            					<form method="post" class="m-0">
+            						<input type="hidden" name="compraId" id="compraId" th:value="${compra.compraId}">
+            						<input type="hidden" name="produtoId" id="produtoId" th:value="${cp.produto.produtoId}">
+	            					<button class="fw-bold bg-0 border-0">
+	            						<i class="fas fa-exchange-alt pe-2 c-green"></i>
+	            						<span class="c-green">Solicitar Troca</span>
+	            					</button>
+	            				</form>
             				</div>
             				
-            				<div class="col-lg-2" th:each="listaCompras : ${produto.listaCompras}" th:if="${listaCompras.statusTroca.name()} == 'SOLICITADO'">            					
+            				<div class="col-lg-3" th:each="listaCompras : ${cp.produto.listaCompras}" th:if="${listaCompras.statusTroca.name()} == 'SOLICITADO'">            					
             					<span class="fw-bold bg-0 border-0 c-gray">
             						Aguardando Autorização de Troca
             					</span>            						            				
@@ -43,12 +41,12 @@
             				
             				<div class="col-lg-6 mb-3 px-0">
             					<span class="fw-bold">Quantidade: </span>
-            					<span th:text="${produto.qtde}">QUANTIDADE</span>
+            					<span th:text="${cp.quantidade}">QUANTIDADE</span>
             				</div>
             				
             				<div class="col-lg-6 mb-3 px-0">
             					<span class="fw-bold">Valor: </span>
-            					<span th:text="${produto.valor}">VALOR</span>
+            					<span th:text="${cp.produto.valor}">VALOR</span>
             				</div>
             				
             				<hr>
@@ -101,7 +99,7 @@
 								
 								<div th:each="cupom : ${cupons}" th:if="${cupom.tipoCupom.name()} != 'TROCA' and ${cupom.tipoCupom.name()} != 'COMPENSACAO'">									
 	            					<span class="fw-bold" >Cupom: </span>
-            						<span class="pe-1" th:text="${cupom.codigo}">CÓDIGO</span>
+            						<span class="pe-1" th:text="${cupom.codigo} + ' - R$' + ${cupom.valorDesconto}">CÓDIGO</span>
             					</div>
             				</div>
             				
