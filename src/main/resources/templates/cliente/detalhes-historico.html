@@ -23,7 +23,7 @@
             				</div>
             				
             				<div class="col-lg-2 px-0 campo-troca" th:each="listaCompras : ${cp.produto.listaCompras}" th:if="${compra.compraStatus.name()} == 'ENTREGUE' and ${listaCompras.statusTroca.name()} == 'NAO_SOLICITADO'">
-            					<form method="post" class="m-0">
+            					<form method="post" class="m-0" th:id="'formTroca' + ${#ids.seq('')}">
             						<input type="hidden" name="compraId" id="compraId" th:value="${compra.compraId}">
             						<input type="hidden" name="produtoId" id="produtoId" th:value="${cp.produto.produtoId}">
 	            					<button class="fw-bold bg-0 border-0">

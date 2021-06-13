@@ -28,7 +28,7 @@
   			<a href="#" onclick="modalCarrinhoClose()" class="far fa-times-circle close"></a>
 	  		<div class="container my-4">
 				<div class="card">
-					<form class="card-body" method="POST" th:action="@{/carrinho-pgto/novo-cartao}">
+					<form class="card-body" id="formNovoCartao" method="POST" th:action="@{/carrinho-pgto/novo-cartao}">
 						
 						<div class="row comboBoxContainer mb-3">
 							
@@ -76,7 +76,7 @@
 			          	
 			          	<div th:each="documento : ${documentos}">
 				          	<div class="cartao__pgto my-3 d-flex align-items-center">
-				            	<input type="checkbox" name="documento" th:id="${documento.documentoId}" th:value="${documento.documentoId}">
+				            	<input type="checkbox" name="documento" th:id="'doc' + ${#ids.seq('')}" th:value="${documento.documentoId}">
 				            	<div class="mx-3">
 				              		<i class="far fa-credit-card pgto__ico"></i>
 				            	</div>
@@ -85,7 +85,7 @@
 					  	</div>
 				  	
 		          		<div class="mb-5">
-		          			<a href="#" class="c-pointer" onclick="modalCarrinho()">Cadastrar novo Cartão</a>
+		          			<a href="#" class="c-pointer" id="novoCartao" onclick="modalCarrinho()">Cadastrar novo Cartão</a>
 		         	 	</div>
 		
 		          		<div class="cartao__pgto my-3 d-flex align-items-center">

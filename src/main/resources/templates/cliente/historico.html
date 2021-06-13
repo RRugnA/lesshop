@@ -20,13 +20,13 @@
 	          		</tr>
 	        	</thead>
 		        <tbody>
-		          	<tr class="cliente" th:each="compra : ${compras}">
+		          	<tr class="cliente" th:each="compra, compraStat : ${compras}">
 			            <th scope="row"><span th:text="${#ids.seq('')}"></span></th>
 			            <td class="info-nome"><span th:text="${compra.dataCadastro}">CÓDIGO</span></td>			        
 			            <td><span th:text="'R$ ' + ${compra.valorTotal}">VALOR</span></td>
 			            <td><span th:text="${compra.compraStatus}">STATUS</span></td>
 			            <td>
-	            			<a th:href="@{/cliente/detalhes-historico/{id}(id = ${compra.compraId})}" class="fas fa-search-plus border-0 bg-0"></button>	            	
+	            			<a th:href="@{/cliente/detalhes-historico/{id}(id = ${compra.compraId})}" class="fas fa-search-plus border-0 bg-0" th:id="'compra'+ (${compraStat.index}+1)"></button>	            	
 		            	</td>
 		          	</tr>
 		        </tbody>

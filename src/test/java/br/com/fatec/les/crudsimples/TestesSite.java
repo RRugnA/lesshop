@@ -52,17 +52,27 @@ class TestesSite {
 		Thread.sleep(2000);
 	}
 	
+	void selectInput(String botao, String id, String value) throws InterruptedException {
+		WebElement aClick = driver.findElement(By.xpath("//a[contains(text(), '" + botao + "')]"));
+		JavascriptExecutor jse = (JavascriptExecutor)driver;
+		jse.executeScript("arguments[0].click()", aClick);
+		Thread.sleep(1000);
+		WebElement selectStatus = driver.findElement(By.id(id));
+		Select valorStatus = new Select(selectStatus);
+		valorStatus.selectByValue(value);
+	}
+	
 	@Test
 	@Order(1)
 	void addCarrinho() throws InterruptedException {
 		abrirPagina();
 
-		login("fulano", "fulano");
+		login("user", "user");
 		
 //		ADD PRODUTO NO CARRINHO
 		driver.navigate().to("http://localhost:8080/lesshop");
-		driver.findElement(By.id("form4")).submit();
-		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/produto/4"));
+		driver.findElement(By.id("form1")).submit();
+		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/produto/1"));
 		Thread.sleep(2000);
 		
 		driver.findElement(By.id("qtde")).sendKeys("1");
@@ -73,8 +83,8 @@ class TestesSite {
 		
 //		ADD OUTRO PROODUTO NO CARRINHO
 		driver.navigate().to("http://localhost:8080/lesshop");
-		driver.findElement(By.id("form5")).submit();
-		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/produto/5"));
+		driver.findElement(By.id("form2")).submit();
+		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/produto/2"));
 		Thread.sleep(2000);
 		
 		driver.findElement(By.id("qtde")).sendKeys("2");
@@ -88,30 +98,49 @@ class TestesSite {
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/carrinho-endereco"));
 		
 //		INFORMANDO ENDEREÇO CADASTRADO
-		driver.findElement(By.id("end145")).click();
+		driver.findElement(By.id("end1")).click();
 		driver.findElement(By.id("form-endereco")).submit();
 		Thread.sleep(2000);
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/carrinho-pgto"));
 		
-//		INFORMANDO CARTÃO E CADASTRANDO NOVO
-		driver.findElement(By.id("doc146")).click();
+		
+//		CADASTRANDO NOVO CARTÃO		
+		selectInput("Cadastrar novo Cartão", "bandeiraCartao", "VISA");
+		driver.findElement(By.id("nomeCartao")).sendKeys("USUARIO NOVO");
+		Thread.sleep(1000);
+		driver.findElement(By.id("validadeCartao")).sendKeys("12102028");
+		Thread.sleep(1000);
+		driver.findElement(By.id("numeroCartao")).sendKeys("1111222233339898");
+		Thread.sleep(1000);
+		driver.findElement(By.id("codigoCartao")).sendKeys("222");
+		Thread.sleep(1000);
+		driver.findElement(By.id("formNovoCartao")).submit();
+		Thread.sleep(2000);
+		
+//		INFORMANDO CARTÃO
+		driver.findElement(By.id("doc1")).click();
+		driver.findElement(By.id("doc2")).click();
 		driver.findElement(By.id("form-pgto")).submit();
 		Thread.sleep(2000);
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/carrinho-parcelamento"));
 		
-//		INFORMANDO CUPOM DE DESCONTO
-//		driver.findElement(By.id("codigo")).sendKeys("DES2021");
-//		driver.findElement(By.id("form-cupom")).submit();
-//		Thread.sleep(2000);
-//		driver.findElement(By.id("codigo")).sendKeys("TST2021");
-//		driver.findElement(By.id("form-cupom")).submit();
-//		Thread.sleep(2000);
-//		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/verificar-cupom"));
-//		driver.findElement(By.id("removerTST2021")).click();
+//		INFORMANDO CUPOM DE DESCONTO		
+		driver.findElement(By.id("codigo")).sendKeys("DES2021");
+		driver.findElement(By.id("form-cupom")).submit();
+		Thread.sleep(2000);
+		driver.navigate().refresh();
+		Thread.sleep(2000);
 		
 //		INFORMANDO QTDE DE PARCELAS
-		driver.findElement(By.id("parcela2")).click();
-		driver.findElement(By.id("form-parcelas")).submit();
+		driver.findElement(By.id("card1")).sendKeys("2500");	
+		WebElement selectParcela = driver.findElement(By.id("valorParcela1"));
+		Select valorParcela = new Select(selectParcela);
+		valorParcela.selectByIndex(2);		
+		WebElement selectParcela2 = driver.findElement(By.id("valorParcela2"));
+		Select valorParcela2 = new Select(selectParcela2);
+		valorParcela2.selectByIndex(4);
+		Thread.sleep(2000);
+		driver.findElement(By.id("valorParcela1")).submit();
 		Thread.sleep(2000);
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/carrinho-revisao"));
 		
@@ -161,7 +190,7 @@ class TestesSite {
 	void visualizarStatusAceito() throws InterruptedException {
 		abrirPagina();
 
-		login("fulano", "fulano");
+		login("user", "user");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
@@ -199,7 +228,7 @@ class TestesSite {
 	void visualizarStatusTransporte() throws InterruptedException {
 		abrirPagina();
 
-		login("fulano", "fulano");
+		login("user", "user");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
@@ -236,10 +265,54 @@ class TestesSite {
 	void visualizarStatusEntregue() throws InterruptedException {
 		abrirPagina();
 
-		login("fulano", "fulano");
+		login("user", "user");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/cliente/historico-de-compras"));
+		
+//		SOLICITAR TROCA
+		driver.findElement(By.id("compra3")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("formTroca2")).click();
+		Thread.sleep(2000);
+	}
+	
+	@Test
+	@Order(8)
+	void autorizarTroca() throws InterruptedException {
+		abrirPagina();
+
+		login("admin", "admin");
+		
+//		VISUALIZAR VENDAS
+		driver.findElement(By.id("adm-vendas")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("compra8")).click();
+		Thread.sleep(2000);
+		
+//		AUTORIZAR TROCA
+		WebElement aClick = driver.findElement(By.xpath("//span[contains(text(), 'Troca Solicitada')]"));
+		JavascriptExecutor jse = (JavascriptExecutor)driver;
+		jse.executeScript("arguments[0].click()", aClick);
+		Thread.sleep(2000);
+		driver.findElement(By.id("modalTroca")).submit();
+		Thread.sleep(2000);
+	}
+	
+	@Test
+	@Order(9)
+	void visualizarCupomDeTroca() throws InterruptedException {
+		abrirPagina();
+
+		login("user", "user");
+		
+		driver.findElement(By.id("cliente-historico")).click();
+		Thread.sleep(2000);
+		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/cliente/historico-de-compras"));
+		
+//		SOLICITAR TROCA
+		driver.findElement(By.id("compra3")).click();
+		Thread.sleep(4000);
 	}
 }

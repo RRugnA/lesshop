@@ -93,4 +93,12 @@ public class ValidaCupom {
 		
 		return cupom;
 	}
+	
+	public static List<Cupom> validaUsoUnico(List<Cupom> cupons) {
+		for(Cupom cupom : cupons) {
+			if(cupom.getUsoCupom().equals(UsoCupom.UNICO))
+				cupom.setTipoCupom(TipoCupom.INATIVO);
+		}
+		return cupons;
+	}
 }		

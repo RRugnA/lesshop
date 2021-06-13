@@ -24,7 +24,6 @@ import br.com.fatec.les.crudsimples.model.Compra;
 import br.com.fatec.les.crudsimples.model.CompraProduto;
 import br.com.fatec.les.crudsimples.model.CompraStatus;
 import br.com.fatec.les.crudsimples.model.Cupom;
-import br.com.fatec.les.crudsimples.model.DadosProduto;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
 import br.com.fatec.les.crudsimples.model.Estado;
@@ -34,7 +33,6 @@ import br.com.fatec.les.crudsimples.model.StatusProduto;
 import br.com.fatec.les.crudsimples.model.StatusTroca;
 import br.com.fatec.les.crudsimples.model.TipoCupom;
 import br.com.fatec.les.crudsimples.model.UsoCupom;
-import br.com.fatec.les.crudsimples.model.Usuario;
 import br.com.fatec.les.crudsimples.repository.ClienteRepository;
 import br.com.fatec.les.crudsimples.repository.CompraProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.CompraRepository;
@@ -45,10 +43,12 @@ import br.com.fatec.les.crudsimples.repository.EnderecoRepository;
 import br.com.fatec.les.crudsimples.repository.ProdutoRepository;
 import br.com.fatec.les.crudsimples.repository.UsuarioRepository;
 import br.com.fatec.les.crudsimples.strategy.NumCartao;
+import br.com.fatec.les.crudsimples.strategy.ValidaCP;
 import br.com.fatec.les.crudsimples.strategy.ValidaCarrinho;
 import br.com.fatec.les.crudsimples.strategy.ValidaCliente;
 import br.com.fatec.les.crudsimples.strategy.ValidaCupom;
 import br.com.fatec.les.crudsimples.strategy.ValidaEstoque;
+import br.com.fatec.les.crudsimples.strategy.ValidaParcela;
 
 @Controller
 public class FacadeHome {
@@ -72,8 +72,6 @@ public class FacadeHome {
 	private CompraProdutoRepository cpRepo;
 	@Autowired
 	private CupomRepository cupomRepo;
-	@Autowired
-	private DadosProdutoRepository dadosRepo;
 	
 	public ModelAndView home() {
 //		EXIBINDO 8 PRODUTOS NA PÁGINA INICIAL
@@ -174,9 +172,6 @@ public class FacadeHome {
 			produto.getListaCompras().add(cp);
 			compra.getListaCompras().add(cp);
 			cpRepo.save(cp);
-			
-			produto.setQtde(0);
-			prodRepo.save(produto);
 		}
 		
 		compraRepo.save(compra);	
@@ -191,7 +186,7 @@ public class FacadeHome {
 		List<Endereco> enderecos = endRepo.findByCliente(cliente);	
 		
 //		RECUPERAR LISTA DE PRODUTOS
-		List<Produto> produtos = ValidaCarrinho.getProdutos(cliente);			
+		List<Produto> produtos = ValidaCarrinho.getProdutos(cliente);
 		
 		mv = new ModelAndView("carrinho-endereco");
 		mv.addObject("enderecos", enderecos);	
@@ -256,11 +251,10 @@ public class FacadeHome {
 	
 	public String salvarCarrinhoPgto(Principal principal, RequisicaoCompra requisicao) {
 		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
-		Compra compraAtual = new Compra();
 		
 //		IDENTIFICANDO COMPRA ATUAL
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
 		compraAtual.zeraCartoes();
 		
 		List<Documento> docs = new ArrayList<Documento>();
@@ -287,12 +281,10 @@ public class FacadeHome {
 	}
 	
 	public ModelAndView exibirCarrinhoParcelamento(Principal principal) {
-		Usuario user = userRepo.findById(principal.getName()).get();
-		Cliente cliente = user.getCliente();	
+		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());	
 		
-		Compra compraAtual = new Compra();
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
 		
 		List<Produto> produtos = ValidaCarrinho.getProdutos(cliente);			
 		List<Cupom> cupons = compraAtual.getCupons();
@@ -303,12 +295,7 @@ public class FacadeHome {
 		List<Documento> clienteCartoes = cliente.getDocumentos();
 		
 //		CALCULANDO O VALOR DAS PARCELAS
-		List<BigDecimal> parcelas = new ArrayList<BigDecimal>();		
-		for(int i = 1; i <= 10; i++) {		
-			BigDecimal valorParcela = cliente.getValorDeCompra();
-			valorParcela = valorParcela.divide(new BigDecimal(i), 2, RoundingMode.HALF_DOWN);
-			parcelas.add(valorParcela);
-		}
+		List<BigDecimal> parcelas = ValidaParcela.valorParcelas(cliente.getValorDeCompra());		
 		
 		mv = new ModelAndView("carrinho-parcelamento");
 		mv.addObject("compra", compraAtual);
@@ -325,11 +312,10 @@ public class FacadeHome {
 	public ModelAndView inserirCupom(Principal principal, RequisicaoCupom requisicao) {
 		mv = exibirCarrinhoParcelamento(principal);
 		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());		
-		Compra compraAtual = new Compra();
 
 //		IDENTIFICANDO COMPRA ATUAL
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
 		
 //		VALIDANDO CÓDIGO DO CUPOM INFORMADO
 		try {
@@ -393,11 +379,10 @@ public class FacadeHome {
 		mv = inserirCupom(principal, requisicao);		
 		Cupom cupom = cupomRepo.findById(codigo).get();		
 		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());		
-		Compra compraAtual = new Compra();
 
 //		IDENTIFICANDO COMPRA ATUAL
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
 		
 //		REMOVENDO CUPOM DA COMPRA
 		compraAtual.removeCupom(cupom);		
@@ -413,11 +398,10 @@ public class FacadeHome {
 	
 	public String removerCartao(Principal principal, RequisicaoDocumento requisicao) {
 		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
-		Compra compraAtual = new Compra();
 		
 //		IDENTIFICANDO COMPRA ATUAL
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
 		
 //		Documento doc = docRepo.findById(Long.valueOf(requisicao.getId())).get();
 		String numeroCartao = requisicao.getNumeroCartao();
@@ -430,11 +414,10 @@ public class FacadeHome {
 	
 	public String salvarCarrinhoParcelamento(Principal principal, RequisicaoCompra requisicao) {
 		Cliente cliente = ValidaCliente.localizaCliente(userRepo.findById(principal.getName()).get());
-		Compra compraAtual = new Compra();
 		
 //		IDENTIFICANDO COMPRA ATUAL
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
-		compraAtual = compraAtual.localizaCompra(CompraStatus.ANDAMENTO, compras);
+		Compra compraAtual = new Compra().localizaCompra(CompraStatus.ANDAMENTO, compras);
 		
 		compraAtual.setValorParcela(compraAtual.toValorParcela(requisicao.getValorParcela1()));
 		compraAtual.setParcelas(compraAtual.toQtdeParcela(requisicao.getValorParcela1()));
@@ -486,20 +469,9 @@ public class FacadeHome {
 		List<Compra> compras = compraRepo.findByClienteClienteId(cliente.getClienteId());
 		Compra compraAtual = new Compra().localizaCompra(CompraStatus.PROCESSAMENTO, compras);
 		
-		BigDecimal valorTotalProdutos = new BigDecimal(0);		
-		List<Produto> produtos = new ArrayList<Produto>();
-		
 		List<CompraProduto> lcp = cpRepo.findByCompraCompraId(compraAtual.getCompraId());
-		for(CompraProduto cp : lcp) {
-			Produto produto = cp.getProduto();
-			produtos.add(produto);
-			
-			DadosProduto dp = new DadosProduto(produto, cp.getQuantidade());
-			dadosRepo.save(dp);
-			
-			valorTotalProdutos = valorTotalProdutos.add(produto.getValor());
-		}
-		
+		BigDecimal valorTotalProdutos = ValidaCP.getValorTotal(lcp);
+		List<Produto> produtos = ValidaCP.getProdutos(lcp);
 		
 		List<String> cartoes = NumCartao.gerarListaStringNumCartao(compraAtual.getCartoes());
 		
@@ -513,10 +485,7 @@ public class FacadeHome {
 		
 //		INATIVANDO CUPONS UNITÁRIOS
 		List<Cupom> cupons = compraAtual.getCupons();
-		for(Cupom cupom : cupons) {
-			if(cupom.getUsoCupom().equals(UsoCupom.UNICO))
-				cupom.setTipoCupom(TipoCupom.INATIVO);
-		}
+		cupons = ValidaCupom.validaUsoUnico(cupons);		
 		compraAtual.setCupons(cupons);
 		
 //		GERANDO CUPOM DE COMPENSAÇÃO
