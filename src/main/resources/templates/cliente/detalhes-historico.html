@@ -22,7 +22,7 @@
             					<span th:text="${cp.produto.nome}">PRODUTO</span>
             				</div>
             				
-            				<div class="col-lg-2 px-0 campo-troca" th:each="listaCompras : ${cp.produto.listaCompras}" th:if="${compra.compraStatus.name()} == 'ENTREGUE' and ${listaCompras.statusTroca.name()} == 'NAO_SOLICITADO'">
+            				<div class="col-lg-2 px-0 campo-troca" th:if="${compra.compraStatus.name()} == 'ENTREGUE' and ${cp.statusTroca.name()} == 'NAO_SOLICITADO'">
             					<form method="post" class="m-0" th:id="'formTroca' + ${#ids.seq('')}">
             						<input type="hidden" name="compraId" id="compraId" th:value="${compra.compraId}">
             						<input type="hidden" name="produtoId" id="produtoId" th:value="${cp.produto.produtoId}">
@@ -33,11 +33,17 @@
 	            				</form>
             				</div>
             				
-            				<div class="col-lg-3" th:each="listaCompras : ${cp.produto.listaCompras}" th:if="${listaCompras.statusTroca.name()} == 'SOLICITADO'">            					
+           					<div class="col-lg-3" th:if="${cp.statusTroca.name()} == 'SOLICITADO'">            					
             					<span class="fw-bold bg-0 border-0 c-gray">
             						Aguardando Autorização de Troca
             					</span>            						            				
-            				</div>
+           					</div>
+           					
+           					<div class="col-lg-3" th:if="${cp.statusTroca.name()} == 'AUTORIZADO'">            					
+            					<span class="fw-bold bg-0 border-0">
+            						Troca Autorizada
+            					</span>            						            				
+           					</div>
             				
             				<div class="col-lg-6 mb-3 px-0">
             					<span class="fw-bold">Quantidade: </span>

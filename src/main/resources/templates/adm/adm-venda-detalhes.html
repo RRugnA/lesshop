@@ -68,14 +68,14 @@
             					<span th:text="${cp.produto.nome}">PRODUTO</span>
             				</div>
             				
-            				<div class="col-lg-2" th:each="listaCompras : ${cp.produto.listaCompras}" th:if="${listaCompras.statusTroca.name()} == 'SOLICITADO'">            					
+            				<div class="col-lg-2"  th:if="${cp.statusTroca.name()} == 'SOLICITADO'">            					
             					<a href="#" class="c-pointer" th:attr="onclick=|modalStatusTroca(${compra.compraId}, ${cp.produto.produtoId})|">
             						<i class="fas fa-exchange-alt pe-2 c-red"></i>
             						<span class="c-red fw-bold">Troca Solicitada</span>
             					</a>     						            				
             				</div>
             				
-            				<div class="col-lg-2" th:each="listaCompras : ${cp.produto.listaCompras}" th:if="${listaCompras.statusTroca.name()} == 'AUTORIZADO'">            					
+            				<div class="col-lg-2"  th:if="${cp.statusTroca.name()} == 'AUTORIZADO'">            					
            						<i class="fas fa-check pe-2 c-green"></i>
            						<span class="c-green fw-bold">Troca Autorizada</span>	    						            				
             				</div>

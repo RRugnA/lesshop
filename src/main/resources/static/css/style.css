@@ -458,10 +458,3 @@ a, a:hover  {
   background: white;
   border-radius: 50%;
 }
-
-.campo-troca {
-	display: none;
-}
-.campo-troca:nth-child(3){
-	display: block;
-}

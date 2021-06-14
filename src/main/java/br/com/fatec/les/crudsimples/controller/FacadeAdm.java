@@ -255,43 +255,9 @@ public class FacadeAdm {
 		return mv;
 	}
 	public ModelAndView exibirGraficoVendas() {
-		List<DadosProduto> dpList = dpRepo.findAll();
-//		Map<String, List<DadosProduto>> dpMap = new HashMap<>();
-		Map<String, Dados> dpMap = new HashMap<String, Dados>();
-		
-		for(DadosProduto dp : dpList) {
-			if(dpMap.containsKey(dp.getProduto().getNome())) {
-				List<Integer> listQtde = new ArrayList<Integer>();
-				listQtde.add(dp.getQtde());
-				List<String> listDate = new ArrayList<String>();
-				listDate.add(dp.getDataCadastro().toString());
-				
-				Dados dados2 = new Dados(listQtde, listDate);
-				dpMap.get(dp.getProduto().getNome() + dados2);
-			}else {
-				List<Integer> tempListQtde = new ArrayList<Integer>();
-				tempListQtde.add(dp.getQtde());
-				
-				List<String> tempListDate = new ArrayList<String>();
-				tempListDate.add(dp.getDataCadastro().toString());
-				
-				Dados dados = new Dados(tempListQtde, tempListDate);
-				
-				dpMap.put(dp.getProduto().getNome(), dados);
-			}
-		}
-//		for (String produto : dpMap.keySet()) { 
-//			System.out.print(produto + " "); 
-//		}
-//		for (Map.Entry<String, Dados> entrada : dpMap.entrySet()) { 
-//			System.out.println(entrada.getKey()); 
-//			System.out.println(entrada.getValue());
-//		}
-		
-		Dados dados3 = dpMap.get("Baixo 4 Cordas Giannini GB200A SONICX Preto");
-		System.out.println(dados3.getData());
+
 		mv = new ModelAndView("adm/analise");
-		mv.addObject("dados", dpMap);
+		
 		return mv;
 	}
 	

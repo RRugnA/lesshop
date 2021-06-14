@@ -1,0 +1,99 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	
+	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-adm}"></nav>
+	
+	<header sec:authorize="hasRole('ADM')" th:replace="~{baseCrud :: nav-adm}"></header>
+
+    <main class="my-5">
+    
+    	<div class="container">
+    	
+    		<form method="post">
+    		
+		    	<div class="row align-items-center">
+		    		
+		    		<div class="col-4">
+		    			<div>
+		    				<h5>Escolha o produto para analisar: </h5>
+		    			</div>
+		    		</div>
+		    		
+					<div class="col-6">
+						<select	class="form-select" aria-label="Default" name="produtoId">
+							<option th:each="produto : ${produtos}" th:value="${produto.produtoId}" th:text="${produto.nome}">AC</option>							
+						</select>
+					</div>
+					
+					<div class="col-2">
+						<button type="submit" class="btn btn-primary">Gerar Gráfico</button>
+					</div>
+				</div>
+				
+			</form>
+			
+    	</div>
+    	
+    	<div class="container my-5" id="container" style="height: 400px;"></div>
+    	
+		<a class="d-none" th:href="@{/adm/displayBarGraph}">Bar-Graph</a>
+	</main>
+	
+	
+	<script th:inline="javascript">
+	$(function(){
+		Highcharts.chart('container', {
+			chart: {
+				reverse: true
+			},
+		    title: {
+		        text: 'Análise de venda de Produtos'
+		    },
+
+		    subtitle: {
+		        text: 'Gráfico de quantidade por mês'
+		    },
+
+		    yAxis: {
+		        title: {
+		            text: 'Quantidade de produtos comprados'
+		        },
+		    	reverse: false
+		    },
+
+		    xAxis: {
+		    	categories: [[${surveyMap.keySet()}]],
+		    	reversed: true
+		    },
+
+		    legend: {
+		        layout: 'vertical',
+		        align: 'right',
+		        verticalAlign: 'middle'
+		    },
+
+		    plotOptions: {
+		        series: {
+		            label: {
+		                connectorAllowed: false
+		            },
+		        }
+		    },
+
+		    series: [{
+		        name: [[${nomeProduto}]],
+		        data: [[${surveyMap.values()}]]
+		    }]
+		
+		});
+	});
+	</script>
+</body>
+</html>

@@ -24,6 +24,7 @@ import br.com.fatec.les.crudsimples.model.Compra;
 import br.com.fatec.les.crudsimples.model.CompraProduto;
 import br.com.fatec.les.crudsimples.model.CompraStatus;
 import br.com.fatec.les.crudsimples.model.Cupom;
+import br.com.fatec.les.crudsimples.model.DadosProduto;
 import br.com.fatec.les.crudsimples.model.Documento;
 import br.com.fatec.les.crudsimples.model.Endereco;
 import br.com.fatec.les.crudsimples.model.Estado;
@@ -72,6 +73,8 @@ public class FacadeHome {
 	private CompraProdutoRepository cpRepo;
 	@Autowired
 	private CupomRepository cupomRepo;
+	@Autowired
+	private DadosProdutoRepository dpRepo;
 	
 	public ModelAndView home() {
 //		EXIBINDO 8 PRODUTOS NA PÁGINA INICIAL
@@ -460,6 +463,15 @@ public class FacadeHome {
 		
 		compraAtual.setCompraStatus(CompraStatus.valueOf(requisicao.getCompraStatus()));
 		compraRepo.save(compraAtual);
+		
+//		DADOS PRODUTO
+		for(CompraProduto cp : compraAtual.getListaCompras()) {
+			DadosProduto dp = new DadosProduto();
+			dp.setDataCadastro(LocalDate.now());
+			dp.setProduto(cp.getProduto());
+			dp.setQtde(cp.getQuantidade());
+			dpRepo.save(dp);
+		}
 		
 		return "redirect:/carrinho-sucesso";
 	}

@@ -1,0 +1,44 @@
+<html>
+<head th:replace="~{baseIndex :: head}"></head>
+
+<body>
+	<div th:replace="~{baseIndex :: header}"></div>
+	<nav th:replace="~{baseCrud :: nav-adm}"></nav>
+	
+	<header sec:authorize="hasRole('ADM')" th:replace="~{baseCrud :: nav-adm}"></header>
+
+    <main class="my-5">
+    
+    	<div class="container">
+    	
+    		<form th:action="@{/adm/displayLineGraph}">
+    		
+		    	<div class="row align-items-center">
+		    		
+		    		<div class="col-4">
+		    			<div>
+		    				<h5>Escolha o produto para analisar: </h5>
+		    			</div>
+		    		</div>
+		    		
+					<div class="col-6">
+						<select	class="form-select" aria-label="Default" name="produto">
+							<option th:each="produto : ${produtos}" th:value="${produto.produtoId}" th:text="${produto.nome}">AC</option>							
+						</select>
+					</div>
+					
+					<div class="col-2">
+						<button type="submit" class="btn btn-primary">Gerar Gráfico</button>
+					</div>
+				</div>
+				
+			</form>
+			
+    	</div>
+    	
+		<a class="d-none" th:href="@{/adm/displayBarGraph}">Bar-Graph</a>
+	</main>
+	
+</body>
+
+</html>
