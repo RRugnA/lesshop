@@ -67,7 +67,7 @@ class TestesSite {
 	void addCarrinho() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("homer", "homer");
 		
 //		ADD PRODUTO NO CARRINHO
 		driver.navigate().to("http://localhost:8080/lesshop");
@@ -106,7 +106,7 @@ class TestesSite {
 		
 //		CADASTRANDO NOVO CARTÃO		
 		selectInput("Cadastrar novo Cartão", "bandeiraCartao", "VISA");
-		driver.findElement(By.id("nomeCartao")).sendKeys("USUARIO NOVO");
+		driver.findElement(By.id("nomeCartao")).sendKeys("HOMER NOVO");
 		Thread.sleep(1000);
 		driver.findElement(By.id("validadeCartao")).sendKeys("12102028");
 		Thread.sleep(1000);
@@ -190,7 +190,7 @@ class TestesSite {
 	void visualizarStatusAceito() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("homer", "homer");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
@@ -228,7 +228,7 @@ class TestesSite {
 	void visualizarStatusTransporte() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("homer", "homer");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
@@ -265,14 +265,14 @@ class TestesSite {
 	void visualizarStatusEntregue() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("homer", "homer");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/cliente/historico-de-compras"));
 		
 //		SOLICITAR TROCA
-		driver.findElement(By.id("compra3")).click();
+		driver.findElement(By.id("compra1")).click();
 		Thread.sleep(2000);
 		driver.findElement(By.id("formTroca2")).click();
 		Thread.sleep(2000);
@@ -288,7 +288,7 @@ class TestesSite {
 //		VISUALIZAR VENDAS
 		driver.findElement(By.id("adm-vendas")).click();
 		Thread.sleep(2000);
-		driver.findElement(By.id("compra8")).click();
+		driver.findElement(By.id("compra10")).click();
 		Thread.sleep(2000);
 		
 //		AUTORIZAR TROCA
@@ -305,14 +305,26 @@ class TestesSite {
 	void visualizarCupomDeTroca() throws InterruptedException {
 		abrirPagina();
 
-		login("user", "user");
+		login("homer", "homer");
 		
 		driver.findElement(By.id("cliente-historico")).click();
 		Thread.sleep(2000);
 		assertTrue(driver.getCurrentUrl().equals("http://localhost:8080/cliente/historico-de-compras"));
 		
 //		SOLICITAR TROCA
-		driver.findElement(By.id("compra3")).click();
+		driver.findElement(By.id("compra1")).click();
 		Thread.sleep(4000);
 	}
+	
+//	@Test
+//	@Order(10)
+//	void analiseDeProdutos() throws InterruptedException {
+//		abrirPagina();
+//
+//		login("admin", "admin");
+//		
+//		driver.findElement(By.id("adm-analise")).click();
+//		Thread.sleep(2000);
+//		driver.findElement(By.id("produtoId")).click();
+//	}
 }

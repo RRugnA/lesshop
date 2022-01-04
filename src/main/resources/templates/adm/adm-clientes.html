@@ -28,15 +28,9 @@
 	        <tbody>
 	          <tr class="cliente" th:each="cliente : ${clientes}">
 	            <th scope="row"><span th:text="${#ids.seq('')}"></span></th>
-	            <td class="info-nome"><a href="login-adm-cliente.html"><span th:text="${cliente.nome}">NOME</span></a></td>
+	            <td class="info-nome"><span th:text="${cliente.nome}">NOME</span></td>
 	            <td><span th:text="${cliente.numeroDocumento}">XXX.XXX.XXX-XX</span></td>
 	            <td><span th:text="${cliente.tipoCliente}">TIPO CLIENTE</span></td>
-<!-- 	            <td> -->
-<!-- 	              <label class="switch"> -->
-<!-- 	                <input class="input-switch" type="checkbox" checked> -->
-<!-- 	                <span class="slider round"></span> -->
-<!-- 	              </label> -->
-<!-- 	            </td> -->
 	            <td class="text-center">
 	            	<form method="post">
 	            		<input type="hidden" name="clienteId" th:value="${cliente.clienteId}">

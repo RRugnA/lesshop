@@ -18,18 +18,40 @@
     	
     		<form method="post">
     		
-		    	<div class="row align-items-center">
+		    	<div class="row align-items-end">
 		    		
-		    		<div class="col-4">
+		    		<div class="col-12">
 		    			<div>
 		    				<h5>Escolha o produto para analisar: </h5>
 		    			</div>
 		    		</div>
 		    		
-					<div class="col-6">
-						<select	class="form-select" aria-label="Default" name="produtoId">
-							<option th:each="produto : ${produtos}" th:value="${produto.produtoId}" th:text="${produto.nome}">AC</option>							
+					<div class="col-4">
+						<label class="col-form-label" for="produtoId">Produto:</label>
+						<select	class="form-select" aria-label="Default" name="produtoId" id="selectProdutoGraf">
+							<option th:each="produto : ${produtos}" th:value="${produto.produtoId}" th:text="${produto.nome}">Nome</option>							
 						</select>
+					</div>
+					
+					
+					<div class="col-3" th:if="${dataInicial} == null">
+						<label class="col-form-label" for="dataInicial">Data Inicial:</label>
+						<input class="form-control" type="date" name="dataInicial" id="dataInicial" required>
+					</div>
+					
+					<div class="col-3" th:if="${dataInicial} != null">
+						<label class="col-form-label" for="dataInicial">Data Inicial:</label>
+						<input class="form-control" type="date" name="dataInicial" id="dataInicial"  th:value="${dataInicial}" required>
+					</div>
+					
+					<div class="col-3" th:if="${dataFinal} == null">
+						<label class="col-form-label" for="dataFinal">Data Final:</label>
+						<input class="form-control" type="date" name="dataFinal" id="dataFinal" required>
+					</div>
+					
+					<div class="col-3" th:if="${dataFinal} != null">
+						<label class="col-form-label" for="dataFinal">Data Final:</label>
+						<input class="form-control" type="date" name="dataFinal" id="dataFinal" th:value="${dataFinal}" required>
 					</div>
 					
 					<div class="col-2">

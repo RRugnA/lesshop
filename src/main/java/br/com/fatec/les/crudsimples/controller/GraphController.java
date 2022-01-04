@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.fatec.les.crudsimples.dto.RequisicaoDadosProduto;
 import br.com.fatec.les.crudsimples.dto.RequisicaoProduto;
 import br.com.fatec.les.crudsimples.model.DadosProduto;
 import br.com.fatec.les.crudsimples.model.Produto;
@@ -41,20 +42,29 @@ public class GraphController {
 	}
 
 	@PostMapping("/analiseGrafica")
-	public ModelAndView lineGraph(RequisicaoProduto requisicao, Model model) {
+	public ModelAndView lineGraph(RequisicaoDadosProduto reqDP, RequisicaoProduto requisicao, Model model) {
 		List<Produto> produtos = prodRepo.findAll();
 		List<DadosProduto> ldp = dpRepo.findByProdutoProdutoId(Long.valueOf(requisicao.getProdutoId()));		
 		Map<String, Integer> surveyMap = new LinkedHashMap<>();
 		String nome = "";
+		DadosProduto dpInicial = reqDP.toDPInicial();
+		DadosProduto dpFinal = reqDP.toDPFinal();
 		
 		for(DadosProduto dp : ldp) {
-			surveyMap.put(dp.getDataCadastro().getMonth().toString(), dp.getQtde());
-			nome = dp.getProduto().getNome();
+			if(dp.getDataCadastro().isEqual(dpInicial.getDataCadastro()) || dp.getDataCadastro().isAfter(dpInicial.getDataCadastro())) {
+				if(dp.getDataCadastro().isEqual(dpFinal.getDataCadastro()) || dp.getDataCadastro().isBefore(dpFinal.getDataCadastro())) {
+					surveyMap.put(dp.getDataCadastro().getMonth().toString(), dp.getQtde());
+					nome = dp.getProduto().getNome();
+				}				
+			}			
 		}
+		
 		ModelAndView mv = new ModelAndView("adm/analiseGrafica");
 		mv.addObject("produtos", produtos);
 		mv.addObject("surveyMap", surveyMap);
 		mv.addObject("nomeProduto", nome);
+		mv.addObject("dataInicial", dpInicial.getDataCadastro().toString());
+		mv.addObject("dataFinal", dpFinal.getDataCadastro().toString());
 		return mv;
 	}
 
